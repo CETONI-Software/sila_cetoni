@@ -32,6 +32,7 @@ import os
 import argparse
 from configparser import ConfigParser
 import logging
+from typing import Tuple
 try:
     import coloredlogs
 except ModuleNotFoundError:
@@ -117,6 +118,8 @@ class neMESYSServer(SiLA2Server):
         sila2_config = ConfigParser()
         sila2_config.read(config_filename)
 
+        meta_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'meta')
+
         # registering features
         #  Register PumpDriveControlService
         self.PumpDriveControlService_servicer = PumpDriveControlService(
@@ -129,7 +132,7 @@ class neMESYSServer(SiLA2Server):
         )
         self.add_feature(feature_id='PumpDriveControlService',
                          servicer=self.PumpDriveControlService_servicer,
-                         data_path='meta')
+                         data_path=meta_path)
         #  Register PumpUnitController
         self.PumpUnitController_servicer = PumpUnitController(
             pump=qmix_pump,
@@ -140,7 +143,7 @@ class neMESYSServer(SiLA2Server):
         )
         self.add_feature(feature_id='PumpUnitController',
                          servicer=self.PumpUnitController_servicer,
-                         data_path='meta')
+                         data_path=meta_path)
         #  Register PumpFluidDosingService
         self.PumpFluidDosingService_servicer = PumpFluidDosingService(
             pump=qmix_pump,
@@ -151,7 +154,7 @@ class neMESYSServer(SiLA2Server):
         )
         self.add_feature(feature_id='PumpFluidDosingService',
                          servicer=self.PumpFluidDosingService_servicer,
-                         data_path='meta')
+                         data_path=meta_path)
         #  Register SyringeConfigurationController
         self.SyringeConfigurationController_servicer = SyringeConfigurationController(
             pump=qmix_pump,
@@ -162,7 +165,7 @@ class neMESYSServer(SiLA2Server):
         )
         self.add_feature(feature_id='SyringeConfigurationController',
                          servicer=self.SyringeConfigurationController_servicer,
-                         data_path='meta')
+                         data_path=meta_path)
         #  Register ValvePositionController
         self.ValvePositionController_servicer = ValvePositionController(
             pump=qmix_pump,
@@ -173,7 +176,7 @@ class neMESYSServer(SiLA2Server):
         )
         self.add_feature(feature_id='ValvePositionController',
                          servicer=self.ValvePositionController_servicer,
-                         data_path='meta')
+                         data_path=meta_path)
         #  Register ShutdownController
         self.ShutdownController_servicer = ShutdownController(
             pump=qmix_pump,
@@ -187,7 +190,7 @@ class neMESYSServer(SiLA2Server):
         )
         self.add_feature(feature_id='ShutdownController',
                          servicer=self.ShutdownController_servicer,
-                         data_path='meta')
+                         data_path=meta_path)
 
         self.simulation_mode = simulation_mode
 
@@ -218,7 +221,7 @@ class neMESYSServer(SiLA2Server):
 
         self.simulation_mode = False
 
-def connect_to_bus_and_enable_pump(config_path: str) -> (qmixbus.Bus, qmixpump.Pump):
+def connect_to_bus_and_enable_pump(config_path: str) -> Tuple[qmixbus.Bus, qmixpump.Pump]:
     """
         Loads a valid Qmix configuration, connects to the bus,
         retrieves the pump and enables it.
