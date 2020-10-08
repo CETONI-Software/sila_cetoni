@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="pumps.syringepumps" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>ControlLoopService</Identifier>
+    <DisplayName>Control Loop Service</DisplayName>
+    <Description>Allows to control a Qmix Device with a Control Loop</Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>WriteSetPoint</Identifier>
+        <DisplayName>Write Set Point</DisplayName>
+        <Description>Write a Set Point value to the Controller Device</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>SetPointValue</Identifier>
+            <DisplayName>Set Point Value</DisplayName>
+            <Description>The Set Point value to write</Description>
+            <DataType>
+                <Basic>Real</Basic>
+            </DataType>
+        </Parameter>
+        <DefinedExecutionErrors>
+            <Identifier>SetPointOutOfRange</Identifier>
+        </DefinedExecutionErrors>
+    </Command>
+    <Command>
+        <Identifier>RunControlLoop</Identifier>
+        <DisplayName>Run Control Loop</DisplayName>
+        <Description>Run the Control Loop</Description>
+        <Observable>Yes</Observable>
+    </Command>
+    <Command>
+        <Identifier>StopControlLoop</Identifier>
+        <DisplayName>Stop Control Loop</DisplayName>
+        <Description>Stops the Control Loop (has no effect, if no Loop is currently running)</Description>
+        <Observable>No</Observable>
+    </Command>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>ControllerValue</Identifier>
+        <DisplayName>Controller Value</DisplayName>
+        <Description>The actual value from the Device</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+
+    <!-- Errors -->
+    <DefinedExecutionError>
+        <Identifier>SetPointOutOfRange</Identifier>
+        <DisplayName>SetPointOutOfRange</DisplayName>
+        <Description>The Set Point is not in the valid range for the Device</Description>
+    </DefinedExecutionError>
+</Feature>
