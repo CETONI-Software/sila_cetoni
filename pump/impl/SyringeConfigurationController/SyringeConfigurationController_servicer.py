@@ -43,7 +43,7 @@ from .gRPC import SyringeConfigurationController_pb2 as SyringeConfigurationCont
 from .gRPC import SyringeConfigurationController_pb2_grpc as SyringeConfigurationController_pb2_grpc
 
 # import SiLA errors
-import neMESYS_errors
+from .. import neMESYS_errors
 
 # import simulation and real implementation
 from .SyringeConfigurationController_simulation import SyringeConfigurationControllerSimulation

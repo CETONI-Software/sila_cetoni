@@ -48,7 +48,7 @@ from .gRPC import PumpFluidDosingService_pb2 as PumpFluidDosingService_pb2
 from .gRPC import PumpFluidDosingService_pb2_grpc as PumpFluidDosingService_pb2_grpc
 
 # import SiLA errors
-from neMESYS_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKError, DeviceError
+from ..neMESYS_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKError, DeviceError
 
 # import simulation and real implementation
 from .PumpFluidDosingService_simulation import PumpFluidDosingServiceSimulation

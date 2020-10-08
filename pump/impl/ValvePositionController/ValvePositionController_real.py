@@ -45,7 +45,7 @@ from .gRPC import ValvePositionController_pb2 as ValvePositionController_pb2
 # import default arguments
 from .ValvePositionController_default_arguments import default_dict
 # import SiLA errors
-import neMESYS_errors
+from .. import neMESYS_errors
 
 # import qmixsdk
 from qmixsdk import qmixbus

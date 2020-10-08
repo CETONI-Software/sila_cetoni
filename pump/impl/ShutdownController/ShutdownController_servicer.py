@@ -45,7 +45,7 @@ from .gRPC import ShutdownController_pb2 as ShutdownController_pb2
 from .gRPC import ShutdownController_pb2_grpc as ShutdownController_pb2_grpc
 
 # import SiLA errors
-import neMESYS_errors
+from .. import neMESYS_errors
 
 # import simulation and real implementation
 from .ShutdownController_simulation import ShutdownControllerSimulation

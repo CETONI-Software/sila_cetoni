@@ -43,7 +43,7 @@ from .gRPC import PumpUnitController_pb2 as PumpUnitController_pb2
 from .gRPC import PumpUnitController_pb2_grpc as PumpUnitController_pb2_grpc
 
 # import SiLA errors
-import neMESYS_errors
+from .. import neMESYS_errors
 
 # import simulation and real implementation
 from .PumpUnitController_simulation import PumpUnitControllerSimulation

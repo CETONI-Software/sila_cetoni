@@ -53,9 +53,9 @@ from .gRPC import PumpFluidDosingService_pb2 as PumpFluidDosingService_pb2
 # import default arguments
 from .PumpFluidDosingService_default_arguments import default_dict
 # import SiLA errors
-import neMESYS_errors
+from .. import neMESYS_errors
 
-import PumpUnitController.unit_conversion as uc
+from ..PumpUnitController import unit_conversion as uc
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class PumpFluidDosingServiceReal:

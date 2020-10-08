@@ -37,7 +37,7 @@ import grpc         # used for type hinting only
 # import qmixsdk
 from qmixsdk import qmixpump
 
-import PumpUnitController.unit_conversion as uc
+from . import unit_conversion as uc
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
@@ -47,7 +47,7 @@ from .gRPC import PumpUnitController_pb2 as PumpUnitController_pb2
 # from .gRPC import PumpUnitController_pb2_grpc as PumpUnitController_pb2_grpc
 
 # import SiLA errors
-import neMESYS_errors
+from .. import neMESYS_errors
 
 # import default arguments
 from .PumpUnitController_default_arguments import default_dict

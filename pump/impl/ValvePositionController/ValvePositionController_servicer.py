@@ -44,7 +44,7 @@ from .gRPC import ValvePositionController_pb2 as ValvePositionController_pb2
 from .gRPC import ValvePositionController_pb2_grpc as ValvePositionController_pb2_grpc
 
 # import SiLA errors
-import neMESYS_errors
+from .. import neMESYS_errors
 
 # import simulation and real implementation
 from .ValvePositionController_simulation import ValvePositionControllerSimulation

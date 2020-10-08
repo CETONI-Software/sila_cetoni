@@ -47,7 +47,7 @@ from .gRPC import PumpDriveControlService_pb2 as PumpDriveControlService_pb2
 from .gRPC import PumpDriveControlService_pb2_grpc as PumpDriveControlService_pb2_grpc
 
 # import SiLA errors
-import neMESYS_errors
+from .. import neMESYS_errors
 
 # import simulation and real implementation
 from .PumpDriveControlService_simulation import PumpDriveControlServiceSimulation

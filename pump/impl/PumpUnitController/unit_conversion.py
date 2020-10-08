@@ -1,7 +1,7 @@
 import logging
 
 # import SiLA errors
-import neMESYS_errors
+from .. import neMESYS_errors
 
 from qmixsdk import qmixpump
 
