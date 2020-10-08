@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="pumps.syringepumps" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>ValvePositionController</Identifier>
+    <DisplayName>Valve Position Controller</DisplayName>
+    <Description>Allows to specify a certain logical position for a valve. The Position property can be querried at any time to obtain the current valve position.</Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>SwitchToPosition</Identifier>
+        <DisplayName>Switch To Position</DisplayName>
+        <Description>Switches the valve to the specified position. The given position has to be less than the NumberOfPositions or else a ValidationError is thrown.</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>Position</Identifier>
+            <DisplayName>Position</DisplayName>
+            <Description>The target position that the valve should be switched to.</Description>
+            <DataType>
+                <Basic>Integer</Basic>
+            </DataType>
+        </Parameter>
+    </Command>
+    <Command>
+        <Identifier>TogglePosition</Identifier>
+        <DisplayName>Toogle Position</DisplayName>
+        <Description>This command only applies for 2-way valves to toggle between its two different positions. If the command is called for any other valve type a ValveNotToggleable error is thrown.</Description>
+        <Observable>No</Observable>
+        <DefinedExecutionErrors>
+            <Identifier>ValveNotToggleable</Identifier>
+        </DefinedExecutionErrors>
+    </Command>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>NumberOfPositions</Identifier>
+        <DisplayName>Number Of Positions</DisplayName>
+        <Description>The number of the valve positions available.</Description>
+        <Observable>No</Observable>
+        <DataType>
+            <Basic>Integer</Basic>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>Position</Identifier>
+        <DisplayName>Position</DisplayName>
+        <Description>The current logical valve position. This is a value between 0 and NumberOfPositions - 1.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Integer</Basic>
+        </DataType>
+    </Property>
+
+    <!-- Errors -->
+    <DefinedExecutionError>
+        <Identifier>ValveNotToggleable</Identifier>
+        <DisplayName>Valve Not Toggleable</DisplayName>
+        <Description>The current valve does not support toggling because it has more than only two possible positions.</Description>
+    </DefinedExecutionError>
+
+</Feature>

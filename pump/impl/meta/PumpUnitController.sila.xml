@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="pumps.syringepumps" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>PumpUnitController</Identifier>
+    <DisplayName>Pump Unit Controller</DisplayName>
+    <Description>Allows to control the currently used units for passing and retrieving flow rates and volumes to and from a pump.</Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>SetFlowUnit</Identifier>
+        <DisplayName>Set Flow Unit</DisplayName>
+        <Description>Sets the flow unit for the pump. The flow unit defines the unit to be used for all flow values passed to or retrieved from the pump.</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>FlowUnit</Identifier>
+            <DisplayName>FlowUnit</DisplayName>
+            <Description>The flow unit to set. It has to something like "ml/s" or "µl/s", for instance.</Description>
+            <DataType>
+                <Basic>String</Basic>
+            </DataType>
+        </Parameter>
+    </Command>
+    <Command>
+        <Identifier>SetVolumeUnit</Identifier>
+        <DisplayName>Set Volume Unit</DisplayName>
+        <Description>Sets the default volume unit. The volume unit defines the unit to be used for all volume values passed to or retrieved from the pump.</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>VolumeUnit</Identifier>
+            <DisplayName>Volume Unit</DisplayName>
+            <Description>The volume unit to set. It has to be something like "ml" or "µl", for instance.</Description>
+            <DataType>
+                <Basic>String</Basic>
+            </DataType>
+        </Parameter>
+        </Command>
+
+        <!-- Properties -->
+        <Property>
+            <Identifier>FlowUnit</Identifier>
+            <DisplayName>Flow Unit</DisplayName>
+            <Description>The currently used flow unit.</Description>
+            <Observable>Yes</Observable>
+            <DataType>
+                <Basic>String</Basic>
+            </DataType>
+        </Property>
+        <Property>
+            <Identifier>VolumeUnit</Identifier>
+            <DisplayName>Volume Unit</DisplayName>
+            <Description>The currently used volume unit.</Description>
+            <Observable>Yes</Observable>
+            <DataType>
+                <Basic>String</Basic>
+            </DataType>
+        </Property>
+</Feature>
