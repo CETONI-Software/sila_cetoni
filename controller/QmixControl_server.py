@@ -83,9 +83,6 @@ class QmixControlServer(SiLA2Server):
 
         self.simulation_mode = simulation_mode
 
-        # starting and running the gRPC/SiLA2 server
-        self.run()
-
 
 def parse_command_line():
     """
