@@ -15,7 +15,7 @@ ________________________________________________________________________
 ________________________________________________________________________
 """
 
-from sila2lib.error_handling.server_err import SiLAExecutionError
+from sila2lib.error_handling.server_err import *
 
 from qmixsdk.qmixbus import DeviceError
 
