@@ -39,7 +39,7 @@ from typing import Union
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
 # import SiLA errors
-from qmix_error import QmixSDKError, DeviceError, SiLAFrameworkError
+from qmix_error import QmixSDKError, DeviceError, SiLAFrameworkError, SiLAValidationError
 
 # import gRPC modules for this feature
 from .gRPC import ControlLoopService_pb2 as ControlLoopService_pb2
@@ -118,8 +118,9 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
 
         try:
             return self.implementation.WriteSetPoint(request, context)
-        except DeviceError as err:
-            err = QmixSDKError(err)
+        except (SiLAValidationError, DeviceError) as err:
+            if isinstance(err, QmixSDKError):
+                err = QmixSDKError(err)
             err.raise_rpc_error(context=context)
 
     def RunControlLoop(self, request, context: grpc.ServicerContext) \

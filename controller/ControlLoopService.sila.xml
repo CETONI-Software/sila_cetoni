@@ -33,9 +33,6 @@
                 </Constrained>
             </DataType>
         </Parameter>
-        <DefinedExecutionErrors>
-            <Identifier>SetPointOutOfRange</Identifier>
-        </DefinedExecutionErrors>
     </Command>
     <Command>
         <Identifier>RunControlLoop</Identifier>
@@ -99,11 +96,4 @@
             </Constrained>
         </DataType>
     </Property>
-
-    <!-- Errors -->
-    <DefinedExecutionError>
-        <Identifier>SetPointOutOfRange</Identifier>
-        <DisplayName>SetPointOutOfRange</DisplayName>
-        <Description>The Set Point is not in the valid range for the Device</Description>
-    </DefinedExecutionError>
 </Feature>
