@@ -15,7 +15,22 @@
             <DisplayName>Set Point Value</DisplayName>
             <Description>The Set Point value to write</Description>
             <DataType>
-                <Basic>Real</Basic>
+                <Constrained>
+                    <DataType>
+                        <Basic>Real</Basic>
+                    </DataType>
+                    <Constraints>
+                        <Unit>
+                            <Label>°C</Label>
+                            <Factor>1</Factor>
+                            <Offset>237.15</Offset>
+                            <UnitComponent>
+                                <SIUnit>Kelvin</SIUnit>
+                                <Exponent>1</Exponent>
+                            </UnitComponent>
+                        </Unit>
+                    </Constraints>
+                </Constrained>
             </DataType>
         </Parameter>
         <DefinedExecutionErrors>
@@ -42,7 +57,22 @@
         <Description>The actual value from the Device</Description>
         <Observable>Yes</Observable>
         <DataType>
-            <Basic>Real</Basic>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>°C</Label>
+                        <Factor>1</Factor>
+                        <Offset>237.15</Offset>
+                        <UnitComponent>
+                            <SIUnit>Kelvin</SIUnit>
+                            <Exponent>1</Exponent>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
         </DataType>
     </Property>
     <Property>
@@ -51,7 +81,22 @@
         <Description>The current SetPoint value of the Device</Description>
         <Observable>Yes</Observable>
         <DataType>
-            <Basic>Real</Basic>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>°C</Label>
+                        <Factor>1</Factor>
+                        <Offset>237.15</Offset>
+                        <UnitComponent>
+                            <SIUnit>Kelvin</SIUnit>
+                            <Exponent>1</Exponent>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
         </DataType>
     </Property>
 
