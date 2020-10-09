@@ -46,6 +46,11 @@ class ControlLoopServiceStub(object):
                 request_serializer=ControlLoopService__pb2.Subscribe_ControllerValue_Parameters.SerializeToString,
                 response_deserializer=ControlLoopService__pb2.Subscribe_ControllerValue_Responses.FromString,
                 )
+        self.Subscribe_SetPointValue = channel.unary_stream(
+                '/sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.ControlLoopService/Subscribe_SetPointValue',
+                request_serializer=ControlLoopService__pb2.Subscribe_SetPointValue_Parameters.SerializeToString,
+                response_deserializer=ControlLoopService__pb2.Subscribe_SetPointValue_Responses.FromString,
+                )
 
 
 class ControlLoopServiceServicer(object):
@@ -97,6 +102,14 @@ class ControlLoopServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Subscribe_SetPointValue(self, request, context):
+        """Set Point Value
+        The current SetPoint value of the Device
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ControlLoopServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -129,6 +142,11 @@ def add_ControlLoopServiceServicer_to_server(servicer, server):
                     servicer.Subscribe_ControllerValue,
                     request_deserializer=ControlLoopService__pb2.Subscribe_ControllerValue_Parameters.FromString,
                     response_serializer=ControlLoopService__pb2.Subscribe_ControllerValue_Responses.SerializeToString,
+            ),
+            'Subscribe_SetPointValue': grpc.unary_stream_rpc_method_handler(
+                    servicer.Subscribe_SetPointValue,
+                    request_deserializer=ControlLoopService__pb2.Subscribe_SetPointValue_Parameters.FromString,
+                    response_serializer=ControlLoopService__pb2.Subscribe_SetPointValue_Responses.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -235,5 +253,21 @@ class ControlLoopService(object):
         return grpc.experimental.unary_stream(request, target, '/sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.ControlLoopService/Subscribe_ControllerValue',
             ControlLoopService__pb2.Subscribe_ControllerValue_Parameters.SerializeToString,
             ControlLoopService__pb2.Subscribe_ControllerValue_Responses.FromString,
+            options, channel_credentials,
+            call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Subscribe_SetPointValue(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.ControlLoopService/Subscribe_SetPointValue',
+            ControlLoopService__pb2.Subscribe_SetPointValue_Parameters.SerializeToString,
+            ControlLoopService__pb2.Subscribe_SetPointValue_Responses.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)

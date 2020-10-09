@@ -42,3 +42,7 @@ default_dict['StopControlLoop_Responses'] = {
 default_dict['Subscribe_ControllerValue_Responses'] = {
     'ControllerValue': silaFW_pb2.Real(value=0.0)
 }
+
+default_dict['Subscribe_SetPointValue_Responses'] = {
+    'SetPointValue': silaFW_pb2.Real(value=0.0)
+}

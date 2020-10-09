@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x18\x43ontrolLoopService.proto\x12\x38sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1\x1a\x13SiLAFramework.proto\"O\n\x18WriteSetPoint_Parameters\x12\x33\n\rSetPointValue\x18\x01 \x01(\x0b\x32\x1c.sila2.org.silastandard.Real\"\x19\n\x17WriteSetPoint_Responses\"\x1b\n\x19RunControlLoop_Parameters\"\x1a\n\x18RunControlLoop_Responses\"\x1c\n\x1aStopControlLoop_Parameters\"\x1b\n\x19StopControlLoop_Responses\"&\n$Subscribe_ControllerValue_Parameters\"\\\n#Subscribe_ControllerValue_Responses\x12\x35\n\x0f\x43ontrollerValue\x18\x01 \x01(\x0b\x32\x1c.sila2.org.silastandard.Real2\x96\x08\n\x12\x43ontrolLoopService\x12\xb8\x01\n\rWriteSetPoint\x12R.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.WriteSetPoint_Parameters\x1aQ.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.WriteSetPoint_Responses\"\x00\x12\x94\x01\n\x0eRunControlLoop\x12S.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.RunControlLoop_Parameters\x1a+.sila2.org.silastandard.CommandConfirmation\"\x00\x12n\n\x13RunControlLoop_Info\x12,.sila2.org.silastandard.CommandExecutionUUID\x1a%.sila2.org.silastandard.ExecutionInfo\"\x00\x30\x01\x12\x9b\x01\n\x15RunControlLoop_Result\x12,.sila2.org.silastandard.CommandExecutionUUID\x1aR.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.RunControlLoop_Responses\"\x00\x12\xbe\x01\n\x0fStopControlLoop\x12T.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.StopControlLoop_Parameters\x1aS.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.StopControlLoop_Responses\"\x00\x12\xde\x01\n\x19Subscribe_ControllerValue\x12^.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_ControllerValue_Parameters\x1a].sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_ControllerValue_Responses\"\x00\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\x18\x43ontrolLoopService.proto\x12\x38sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1\x1a\x13SiLAFramework.proto\"O\n\x18WriteSetPoint_Parameters\x12\x33\n\rSetPointValue\x18\x01 \x01(\x0b\x32\x1c.sila2.org.silastandard.Real\"\x19\n\x17WriteSetPoint_Responses\"\x1b\n\x19RunControlLoop_Parameters\"\x1a\n\x18RunControlLoop_Responses\"\x1c\n\x1aStopControlLoop_Parameters\"\x1b\n\x19StopControlLoop_Responses\"&\n$Subscribe_ControllerValue_Parameters\"\\\n#Subscribe_ControllerValue_Responses\x12\x35\n\x0f\x43ontrollerValue\x18\x01 \x01(\x0b\x32\x1c.sila2.org.silastandard.Real\"$\n\"Subscribe_SetPointValue_Parameters\"X\n!Subscribe_SetPointValue_Responses\x12\x33\n\rSetPointValue\x18\x01 \x01(\x0b\x32\x1c.sila2.org.silastandard.Real2\xf1\t\n\x12\x43ontrolLoopService\x12\xb8\x01\n\rWriteSetPoint\x12R.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.WriteSetPoint_Parameters\x1aQ.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.WriteSetPoint_Responses\"\x00\x12\x94\x01\n\x0eRunControlLoop\x12S.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.RunControlLoop_Parameters\x1a+.sila2.org.silastandard.CommandConfirmation\"\x00\x12n\n\x13RunControlLoop_Info\x12,.sila2.org.silastandard.CommandExecutionUUID\x1a%.sila2.org.silastandard.ExecutionInfo\"\x00\x30\x01\x12\x9b\x01\n\x15RunControlLoop_Result\x12,.sila2.org.silastandard.CommandExecutionUUID\x1aR.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.RunControlLoop_Responses\"\x00\x12\xbe\x01\n\x0fStopControlLoop\x12T.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.StopControlLoop_Parameters\x1aS.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.StopControlLoop_Responses\"\x00\x12\xde\x01\n\x19Subscribe_ControllerValue\x12^.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_ControllerValue_Parameters\x1a].sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_ControllerValue_Responses\"\x00\x30\x01\x12\xd8\x01\n\x17Subscribe_SetPointValue\x12\\.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_SetPointValue_Parameters\x1a[.sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_SetPointValue_Responses\"\x00\x30\x01\x62\x06proto3'
   ,
   dependencies=[SiLAFramework__pb2.DESCRIPTOR,])
 
@@ -231,8 +231,64 @@ _SUBSCRIBE_CONTROLLERVALUE_RESPONSES = _descriptor.Descriptor(
   serialized_end=463,
 )
 
+
+_SUBSCRIBE_SETPOINTVALUE_PARAMETERS = _descriptor.Descriptor(
+  name='Subscribe_SetPointValue_Parameters',
+  full_name='sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_SetPointValue_Parameters',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=465,
+  serialized_end=501,
+)
+
+
+_SUBSCRIBE_SETPOINTVALUE_RESPONSES = _descriptor.Descriptor(
+  name='Subscribe_SetPointValue_Responses',
+  full_name='sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_SetPointValue_Responses',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='SetPointValue', full_name='sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_SetPointValue_Responses.SetPointValue', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=503,
+  serialized_end=591,
+)
+
 _WRITESETPOINT_PARAMETERS.fields_by_name['SetPointValue'].message_type = SiLAFramework__pb2._REAL
 _SUBSCRIBE_CONTROLLERVALUE_RESPONSES.fields_by_name['ControllerValue'].message_type = SiLAFramework__pb2._REAL
+_SUBSCRIBE_SETPOINTVALUE_RESPONSES.fields_by_name['SetPointValue'].message_type = SiLAFramework__pb2._REAL
 DESCRIPTOR.message_types_by_name['WriteSetPoint_Parameters'] = _WRITESETPOINT_PARAMETERS
 DESCRIPTOR.message_types_by_name['WriteSetPoint_Responses'] = _WRITESETPOINT_RESPONSES
 DESCRIPTOR.message_types_by_name['RunControlLoop_Parameters'] = _RUNCONTROLLOOP_PARAMETERS
@@ -241,6 +297,8 @@ DESCRIPTOR.message_types_by_name['StopControlLoop_Parameters'] = _STOPCONTROLLOO
 DESCRIPTOR.message_types_by_name['StopControlLoop_Responses'] = _STOPCONTROLLOOP_RESPONSES
 DESCRIPTOR.message_types_by_name['Subscribe_ControllerValue_Parameters'] = _SUBSCRIBE_CONTROLLERVALUE_PARAMETERS
 DESCRIPTOR.message_types_by_name['Subscribe_ControllerValue_Responses'] = _SUBSCRIBE_CONTROLLERVALUE_RESPONSES
+DESCRIPTOR.message_types_by_name['Subscribe_SetPointValue_Parameters'] = _SUBSCRIBE_SETPOINTVALUE_PARAMETERS
+DESCRIPTOR.message_types_by_name['Subscribe_SetPointValue_Responses'] = _SUBSCRIBE_SETPOINTVALUE_RESPONSES
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 WriteSetPoint_Parameters = _reflection.GeneratedProtocolMessageType('WriteSetPoint_Parameters', (_message.Message,), {
@@ -299,6 +357,20 @@ Subscribe_ControllerValue_Responses = _reflection.GeneratedProtocolMessageType('
   })
 _sym_db.RegisterMessage(Subscribe_ControllerValue_Responses)
 
+Subscribe_SetPointValue_Parameters = _reflection.GeneratedProtocolMessageType('Subscribe_SetPointValue_Parameters', (_message.Message,), {
+  'DESCRIPTOR' : _SUBSCRIBE_SETPOINTVALUE_PARAMETERS,
+  '__module__' : 'ControlLoopService_pb2'
+  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_SetPointValue_Parameters)
+  })
+_sym_db.RegisterMessage(Subscribe_SetPointValue_Parameters)
+
+Subscribe_SetPointValue_Responses = _reflection.GeneratedProtocolMessageType('Subscribe_SetPointValue_Responses', (_message.Message,), {
+  'DESCRIPTOR' : _SUBSCRIBE_SETPOINTVALUE_RESPONSES,
+  '__module__' : 'ControlLoopService_pb2'
+  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.Subscribe_SetPointValue_Responses)
+  })
+_sym_db.RegisterMessage(Subscribe_SetPointValue_Responses)
+
 
 
 _CONTROLLOOPSERVICE = _descriptor.ServiceDescriptor(
@@ -307,8 +379,8 @@ _CONTROLLOOPSERVICE = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=466,
-  serialized_end=1512,
+  serialized_start=594,
+  serialized_end=1859,
   methods=[
   _descriptor.MethodDescriptor(
     name='WriteSetPoint',
@@ -362,6 +434,15 @@ _CONTROLLOOPSERVICE = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_SUBSCRIBE_CONTROLLERVALUE_PARAMETERS,
     output_type=_SUBSCRIBE_CONTROLLERVALUE_RESPONSES,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Subscribe_SetPointValue',
+    full_name='sila2.de.cetoni.pumps.syringepumps.controlloopservice.v1.ControlLoopService.Subscribe_SetPointValue',
+    index=6,
+    containing_service=None,
+    input_type=_SUBSCRIBE_SETPOINTVALUE_PARAMETERS,
+    output_type=_SUBSCRIBE_SETPOINTVALUE_RESPONSES,
     serialized_options=None,
   ),
 ])

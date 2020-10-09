@@ -111,8 +111,8 @@ class ControlLoopServiceReal:
             )
 
         self.controller.enable_control_loop(True)
-        success = ('' if self.controller.is_control_loop_enabled() else 'not ') + 'successful'
-        logging.debug(f"Starting control loop was {success}")
+        result = ('' if self.controller.is_control_loop_enabled() else 'not ') + 'successful'
+        logging.debug(f"Starting control loop with set point {self.controller.get_setpoint()} was {result}")
 
         # respond with UUID and lifetime of execution
         self.loop_run_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
@@ -211,6 +211,27 @@ class ControlLoopServiceReal:
             request.ControllerValue (Controller Value): The actual value from the Device
         """
         while True:
-            yield silaFW_pb2.Real(value=self.controller.read_actual_value())
+            yield ControlLoopService_pb2.Subscribe_ControllerValue_Responses(
+                ControllerValue=silaFW_pb2.Real(value=self.controller.read_actual_value())
+            )
+            time.sleep(0.5) # give client some time to catch up
+
+
+    def Subscribe_SetPointValue(self, request, context: grpc.ServicerContext) \
+            -> ControlLoopService_pb2.Subscribe_SetPointValue_Responses:
+        """
+        Requests the observable property Set Point Value
+            The current SetPoint value of the Device
+
+        :param request: An empty gRPC request object (properties have no parameters)
+        :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
+
+        :returns: A response object with the following fields:
+            request.SetPointValue (Set Point Value): The current SetPoint value of the Device
+        """
+        while True:
+            yield ControlLoopService_pb2.Subscribe_SetPointValue_Responses(
+                SetPointValue=silaFW_pb2.Real(value=self.controller.get_setpoint())
+            )
             time.sleep(0.5) # give client some time to catch up
 

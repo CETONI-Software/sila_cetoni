@@ -45,6 +45,15 @@
             <Basic>Real</Basic>
         </DataType>
     </Property>
+    <Property>
+        <Identifier>SetPointValue</Identifier>
+        <DisplayName>Set Point Value</DisplayName>
+        <Description>The current SetPoint value of the Device</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
 
     <!-- Errors -->
     <DefinedExecutionError>

@@ -252,3 +252,27 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             err = QmixSDKError(err)
             err.raise_rpc_error(context=context)
 
+
+    def Subscribe_SetPointValue(self, request, context: grpc.ServicerContext) \
+            -> ControlLoopService_pb2.Subscribe_SetPointValue_Responses:
+        """
+        Requests the observable property Set Point Value
+            The current SetPoint value of the Device
+
+        :param request: An empty gRPC request object (properties have no parameters)
+        :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
+
+        :returns: A response object with the following fields:
+            request.SetPointValue (Set Point Value): The current SetPoint value of the Device
+        """
+
+        logging.debug(
+            "Property SetPointValue requested in {current_mode} mode".format(
+                current_mode=('simulation' if self.simulation_mode else 'real')
+            )
+        )
+        try:
+            return self.implementation.Subscribe_SetPointValue(request, context)
+        except DeviceError as err:
+            err = QmixSDKError(err)
+            err.raise_rpc_error(context=context)
