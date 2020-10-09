@@ -37,7 +37,8 @@ import grpc         # used for type hinting only
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
-from qmixsdk import qmixcontroller
+# import SiLA errors
+from qmix_error import SiLAFrameworkError, SiLAFrameworkErrorType
 
 # import gRPC modules for this feature
 from .gRPC import ControlLoopService_pb2 as ControlLoopService_pb2
@@ -55,7 +56,7 @@ class ControlLoopServiceReal:
         The SiLA 2 driver for Qmix Control Devices
     """
 
-    def __init__(self, controller: qmixcontroller.ControllerChannel):
+    def __init__(self, controller: ControllerChannel):
         """
         Class initialiser
 
@@ -65,41 +66,7 @@ class ControlLoopServiceReal:
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
         self.controller = controller
-        # TODO continue
-
-    def _get_command_state(self, command_uuid: str) -> silaFW_pb2.ExecutionInfo:
-        """
-        Method to fill an ExecutionInfo message from the SiLA server for observable commands
-
-        :param command_uuid: The uuid of the command for which to return the current state
-
-        :return: An execution info object with the current command state
-        """
-
-        #: Enumeration of silaFW_pb2.ExecutionInfo.CommandStatus
-        command_status = silaFW_pb2.ExecutionInfo.CommandStatus.waiting
-        #: Real silaFW_pb2.Real(0...1)
-        command_progress = None
-        #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
-        command_estimated_remaining = None
-        #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
-        command_lifetime_of_execution = None
-
-        # TODO: check the state of the command with the given uuid and return the correct information
-
-        # just return a default in this example
-        return silaFW_pb2.ExecutionInfo(
-            commandStatus=command_status,
-            progressInfo=(
-                command_progress if command_progress is not None else None
-            ),
-            estimatedRemainingTime=(
-                command_estimated_remaining if command_estimated_remaining is not None else None
-            ),
-            updatedLifetimeOfExecution=(
-                command_lifetime_of_execution if command_lifetime_of_execution is not None else None
-            )
-        )
+        self.loop_run_uuid: silaFW_pb2.CommandExecutionUUID = None
 
     def WriteSetPoint(self, request, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.WriteSetPoint_Responses:
@@ -115,20 +82,11 @@ class ControlLoopServiceReal:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        # initialise the return value
-        return_value = None
+        setpoint = request.SetPointValue.value
+        logging.info(f"Writing SetPoint {setpoint} to device")
+        self.controller.write_setpoint(setpoint)
 
-        # TODO:
-        #   Add implementation of Real for command WriteSetPoint here and write the resulting response
-        #   in return_value
-
-        # fallback to default
-        if return_value is None:
-            return_value = ControlLoopService_pb2.WriteSetPoint_Responses(
-                **default_dict['WriteSetPoint_Responses']
-            )
-
-        return return_value
+        return ControlLoopService_pb2.WriteSetPoint_Responses()
 
 
     def RunControlLoop(self, request, context: grpc.ServicerContext) \
@@ -146,25 +104,21 @@ class ControlLoopServiceReal:
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
 
-        # initialise default values
-        #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
-        lifetime_of_execution: silaFW_pb2.Duration = None
+        if self.loop_run_uuid is not None:
+            raise SiLAFrameworkError(
+                error_type=SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_ACCEPTED,
+                msg="There is a running control loop already. Cannot start a new loop!"
+            )
 
-        # TODO:
-        #   Execute the actual command
-        #   Optional: Generate a lifetime_of_execution
+        self.controller.enable_control_loop(True)
+        success = ('' if self.controller.is_control_loop_enabled() else 'not ') + 'successful'
+        logging.debug(f"Starting control loop was {success}")
 
         # respond with UUID and lifetime of execution
-        command_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
-        if lifetime_of_execution is not None:
-            return silaFW_pb2.CommandConfirmation(
-                commandExecutionUUID=command_uuid,
-                lifetimeOfExecution=lifetime_of_execution
-            )
-        else:
-            return silaFW_pb2.CommandConfirmation(
-                commandExecutionUUID=command_uuid
-            )
+        self.loop_run_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
+        return silaFW_pb2.CommandConfirmation(
+            commandExecutionUUID=self.loop_run_uuid
+        )
 
     def RunControlLoop_Info(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.ExecutionInfo:
@@ -184,51 +138,31 @@ class ControlLoopServiceReal:
         # Get the UUID of the command
         command_uuid = request.value
 
-        # Get the current state
-        execution_info = self._get_command_state(command_uuid=command_uuid)
+        if command_uuid != self.loop_run_uuid.value:
+            raise SiLAFrameworkError(
+                error_type=SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID,
+                msg="There is no command execution with the given UUID!"
+            )
 
-        # construct the initial return dictionary in case while is not executed
-        return_values = {'commandStatus': execution_info.commandStatus}
-        if execution_info.HasField('progressInfo'):
-            return_values['progressInfo'] = execution_info.progressInfo
-        if execution_info.HasField('estimatedRemainingTime'):
-            return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
-        if execution_info.HasField('updatedLifetimeOfExecution'):
-            return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
+        yield silaFW_pb2.ExecutionInfo(
+            commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.waiting
+        )
 
         # we loop only as long as the command is running
-        while execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.waiting \
-                or execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.running:
-            # TODO:
-            #   Evaluate the command status --> command_status. Options:
-            #       command_stats = silaFW_pb2.ExecutionInfo.CommandStatus.waiting
-            #       command_stats = silaFW_pb2.ExecutionInfo.CommandStatus.running
-            #       command_stats = silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully
-            #       command_stats = silaFW_pb2.ExecutionInfo.CommandStatus.finishedWithError
-            #   Optional:
-            #       * Determine the progress (progressInfo)
-            #       * Determine the estimated remaining time
-            #       * Update the Lifetime of execution
+        while self.controller.is_control_loop_enabled():
+            yield silaFW_pb2.ExecutionInfo(
+                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.running
+            )
 
-            # Update all values
-            execution_info = self._get_command_state(command_uuid=command_uuid)
-
-            # construct the return dictionary
-            return_values = {'commandStatus': execution_info.commandStatus}
-            if execution_info.HasField('progressInfo'):
-                return_values['progressInfo'] = execution_info.progressInfo
-            if execution_info.HasField('estimatedRemainingTime'):
-                return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
-            if execution_info.HasField('updatedLifetimeOfExecution'):
-                return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
-
-            yield silaFW_pb2.ExecutionInfo(**return_values)
-
+            logging.debug(f"Current controller value: {self.controller.read_actual_value()}")
+            logging.debug(f"Device status: {self.controller.read_status()}")
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(1)
         else:
             # one last time yield the status
-            yield silaFW_pb2.ExecutionInfo(**return_values)
+            yield silaFW_pb2.ExecutionInfo(
+                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully
+            )
 
     def RunControlLoop_Result(self, request, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.RunControlLoop_Responses:
@@ -242,24 +176,7 @@ class ControlLoopServiceReal:
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-
-        # initialise the return value
-        return_value: ControlLoopService_pb2.RunControlLoop_Responses = None
-
-        # Get the UUID of the command
-        command_uuid = request.value
-
-        # TODO:
-        #   Add implementation of Real for command RunControlLoop here and write the resulting response
-        #   in return_value
-
-        # fallback to default
-        if return_value is None:
-            return_value = ControlLoopService_pb2.RunControlLoop_Responses(
-                **default_dict['RunControlLoop_Responses']
-            )
-
-        return return_value
+        return ControlLoopService_pb2.RunControlLoop_Responses()
 
 
     def StopControlLoop(self, request, context: grpc.ServicerContext) \
@@ -276,21 +193,10 @@ class ControlLoopServiceReal:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        # initialise the return value
-        return_value = None
+        self.controller.enable_control_loop(False)
+        self.loop_run_uuid = None
 
-        # TODO:
-        #   Add implementation of Real for command StopControlLoop here and write the resulting response
-        #   in return_value
-
-        # fallback to default
-        if return_value is None:
-            return_value = ControlLoopService_pb2.StopControlLoop_Responses(
-                **default_dict['StopControlLoop_Responses']
-            )
-
-        return return_value
-
+        return ControlLoopService_pb2.StopControlLoop_Responses()
 
     def Subscribe_ControllerValue(self, request, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.Subscribe_ControllerValue_Responses:
@@ -304,22 +210,7 @@ class ControlLoopServiceReal:
         :returns: A response object with the following fields:
             request.ControllerValue (Controller Value): The actual value from the Device
         """
-
-        # initialise the return value
-        return_value: ControlLoopService_pb2.Subscribe_ControllerValue_Responses = None
-
-        # we could use a timeout here if we wanted
         while True:
-            # TODO:
-            #   Add implementation of Real for property ControllerValue here and write the resulting
-            #   response in return_value
-
-            # create the default value
-            if return_value is None:
-                return_value = ControlLoopService_pb2.Subscribe_ControllerValue_Responses(
-                    **default_dict['Subscribe_ControllerValue_Responses']
-                )
-
-
-            yield return_value
+            yield silaFW_pb2.Real(value=self.controller.read_actual_value())
+            time.sleep(0.5) # give client some time to catch up
 
