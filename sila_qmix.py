@@ -27,6 +27,7 @@ ________________________________________________________________________
 
 __version__ = "0.0.1"
 
+import sys
 import time
 import argparse
 import logging
@@ -41,6 +42,8 @@ from typing import List
 from pump.impl.neMESYS_server import neMESYSServer
 from controller.QmixControl_server import QmixControlServer
 
+# adjust PATH to point to QmixSDK
+sys.path.append("C:/QmixSDK/lib/python")
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump, qmixcontroller
 
