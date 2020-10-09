@@ -56,7 +56,7 @@ class QmixControlServer(SiLA2Server):
             server_type=cmd_args.server_type, server_uuid=None,
             version=__version__,
             vendor_url="cetoni.de",
-            ip="127.0.0.1", port=50052,
+            ip="127.0.0.1", port=int(cmd_args.port),
             key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert
         )
 
