@@ -11,26 +11,14 @@ ________________________________________________________________________
 :file:    neMESYS_errors.py
 :authors: Florian Meinicke
 :date (creation)          2019-08-26
-:date (last modification) 2019-08-26
+:date (last modification) 2020-10-09
 ________________________________________________________________________
 """
 
 from sila2lib.error_handling.server_err import SiLAExecutionError, \
 SiLAValidationError, SiLAFrameworkError, SiLAFrameworkErrorType
 
-from qmixsdk.qmixbus import DeviceError
-
-
-class QmixSDKError(SiLAExecutionError):
-    """
-    An unexpected error that was thrown by the QmixSDK during the execution of a command.
-    """
-
-    def __init__(self, qmixsdk_error: DeviceError = None):
-        msg = f"The QmixSDK threw an unexpected error {qmixsdk_error}"
-
-        super().__init__(msg=msg, error_identifier=None)
-
+from qmix_error import QmixSDKError, DeviceError
 
 
 class FlowRateOutOfRangeError(SiLAValidationError):
