@@ -46,6 +46,8 @@ from .gRPC import ControlLoopService_pb2 as ControlLoopService_pb2
 # import default arguments
 from .ControlLoopService_default_arguments import default_dict
 
+from qmixsdk.qmixcontroller import ControllerChannel
+
 # noinspection PyPep8Naming,PyUnusedLocal
 class ControlLoopServiceReal:
     """
@@ -53,7 +55,7 @@ class ControlLoopServiceReal:
         The SiLA 2 driver for Qmix Control Devices
     """
 
-    def __init__(self):
+    def __init__(self, controller: qmixcontroller.ControllerChannel):
         """
         Class initialiser
 
@@ -62,6 +64,8 @@ class ControlLoopServiceReal:
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
+        self.controller = controller
+        # TODO continue
 
     def _get_command_state(self, command_uuid: str) -> silaFW_pb2.ExecutionInfo:
         """

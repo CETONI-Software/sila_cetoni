@@ -55,18 +55,20 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
     implementation: Union[ControlLoopServiceSimulation, ControlLoopServiceReal]
     simulation_mode: bool
 
-    def __init__(self, simulation_mode: bool = True):
+    def __init__(self, controller, simulation_mode: bool = True):
         """
         Class initialiser.
 
+        :param controller: The Qmix Control Channel device
         :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode.
         """
 
+        self.controller = controller
         self.simulation_mode = simulation_mode
         if simulation_mode:
-            self._inject_implementation(ControlLoopServiceSimulation())
+            self.switch_to_simulation_mode()
         else:
-            self._inject_implementation(ControlLoopServiceReal())
+            self.switch_to_real_mode()
 
     def _inject_implementation(self,
                                implementation: Union[ControlLoopServiceSimulation,
@@ -90,7 +92,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
     def switch_to_real_mode(self):
         """Method that will automatically be called by the server when the real mode is requested."""
         self.simulation_mode = False
-        self._inject_implementation(ControlLoopServiceReal())
+        self._inject_implementation(ControlLoopServiceReal(self.controller))
 
     def WriteSetPoint(self, request, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.WriteSetPoint_Responses:
