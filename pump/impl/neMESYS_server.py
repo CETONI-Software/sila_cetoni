@@ -106,25 +106,13 @@ class neMESYSServer(SiLA2Server):
             )
         )
 
-        # reading config file
-        config_dir = os.path.join(
-            os.environ.get('APPDATA') or os.path.join(
-                os.path.expanduser('~'),
-                '.config',
-                'sila2'
-            )
-        )
-        config_filename = os.path.join(config_dir, self.server_name.replace(' ', '_') + '.conf')
-        sila2_config = ConfigParser()
-        sila2_config.read(config_filename)
-
         meta_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'meta')
 
         # registering features
         #  Register PumpDriveControlService
         self.PumpDriveControlService_servicer = PumpDriveControlService(
             pump=qmix_pump,
-            sila2_conf=sila2_config,
+            sila2_conf=self.sila2_config,
             simulation_mode=simulation_mode)
         PumpDriveControlService_pb2_grpc.add_PumpDriveControlServiceServicer_to_server(
             self.PumpDriveControlService_servicer,
@@ -181,7 +169,7 @@ class neMESYSServer(SiLA2Server):
         self.ShutdownController_servicer = ShutdownController(
             pump=qmix_pump,
             server_name=self.server_name,
-            sila2_conf=sila2_config,
+            sila2_conf=self.sila2_config,
             simulation_mode=simulation_mode
         )
         ShutdownController_pb2_grpc.add_ShutdownControllerServicer_to_server(
