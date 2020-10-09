@@ -1,2 +1,4 @@
 .vscode/*
 NDM_sim_1/*
+__pycache__/
+configs/
