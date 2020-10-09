@@ -49,7 +49,7 @@ class QmixControlServer(SiLA2Server):
     The SiLA 2 driver for Qmix Control Devices
     """
 
-    def __init__(self, cmd_args, simulation_mode: bool = True):
+    def __init__(self, cmd_args, qmix_controller, simulation_mode: bool = True):
         """Class initialiser"""
         super().__init__(
             name=cmd_args.server_name, description=cmd_args.description,
@@ -70,7 +70,9 @@ class QmixControlServer(SiLA2Server):
 
         # registering features
         #  Register ControlLoopService
-        self.ControlLoopService_servicer = ControlLoopService(simulation_mode=self.simulation_mode)
+        self.ControlLoopService_servicer = ControlLoopService(
+            controller=qmix_controller,
+            simulation_mode=self.simulation_mode)
         ControlLoopService_pb2_grpc.add_ControlLoopServiceServicer_to_server(
             self.ControlLoopService_servicer,
             self.grpc_server
