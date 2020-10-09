@@ -30,6 +30,7 @@ __version__ = "0.1.0"
 
 import logging
 import argparse
+import os
 
 # Import the main SiLA library
 from sila2lib.sila_server import SiLA2Server
@@ -65,6 +66,8 @@ class QmixControlServer(SiLA2Server):
             )
         )
 
+        meta_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'meta')
+
         # registering features
         #  Register ControlLoopService
         self.ControlLoopService_servicer = ControlLoopService(simulation_mode=self.simulation_mode)
@@ -74,7 +77,7 @@ class QmixControlServer(SiLA2Server):
         )
         self.add_feature(feature_id='ControlLoopService',
                          servicer=self.ControlLoopService_servicer,
-                         data_path='meta')
+                         data_path=meta_path)
 
         self.simulation_mode = simulation_mode
 
