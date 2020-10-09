@@ -37,12 +37,12 @@ except ModuleNotFoundError:
     print("`pip install coloredlogs`")
 from typing import List
 
-# import neMESYS server
+# import Qmix servers
 from pump.impl.neMESYS_server import neMESYSServer
+from controller.QmixControl_server import QmixControlServer
 
 # import qmixsdk
-from qmixsdk import qmixbus
-from qmixsdk import qmixpump
+from qmixsdk import qmixbus, qmixpump, qmixcontroller
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -73,14 +73,12 @@ def get_availabe_pumps() -> List[qmixpump.Pump]:
         :return: A list of all found pumps connected to the bus
         :rtype: [qmixpump.Pump]
     """
-    logging.debug("Looking up devices...")
-
-    pumpcount = qmixpump.Pump.get_no_of_pumps()
-    logging.debug("Number of pumps: %s", pumpcount)
+    pump_count = qmixpump.Pump.get_no_of_pumps()
+    logging.debug("Number of pumps: %s", pump_count)
 
     pumps = []
 
-    for i in range(pumpcount):
+    for i in range(pump_count):
         pump = qmixpump.Pump()
         pump.lookup_by_device_index(i)
         logging.debug("Found pump %d named %s", i, pump.get_device_name())
@@ -100,6 +98,27 @@ def enable_pumps(pumps: List[qmixpump.Pump]):
             pump.clear_fault()
         if not pump.is_enabled():
             pump.enable(True)
+
+def get_availabe_controllers() -> List[qmixcontroller.ControllerChannel]:
+    """
+    Looks up all controller channels from the current configuration and constructs
+    a list of all found channels
+
+        :return: A list of all found controller channels connected to the bus
+        :rtype: [qmixcontroller.ControllerChannel]
+    """
+    channel_count = qmixcontroller.ControllerChannel.get_no_of_channels()
+    logging.debug("Number of controller channels: %s", channel_count)
+
+    channels = []
+
+    for i in range(channel_count):
+        channel = qmixcontroller.ControllerChannel()
+        channel.lookup_channel_by_index(i)
+        logging.debug("Found channel %d named %s", i, channel.get_name())
+        channels.append(channel)
+
+    return channels
 
 def stop_and_close_bus(bus: qmixbus.Bus):
     """
@@ -127,7 +146,7 @@ def parse_command_line():
 
 
 if __name__ == '__main__':
-    logging_level = logging.INFO # or use logging.ERROR for less output
+    logging_level = logging.DEBUG # or use logging.ERROR for less output
     try:
         coloredlogs.install(fmt='%(asctime)s %(levelname)s| %(module)s.%(funcName)s: %(message)s',
                             level=logging_level)
@@ -136,9 +155,12 @@ if __name__ == '__main__':
 
     parsed_args = parse_command_line()
 
+    logging.debug("Starting bus...")
     bus = open_bus(parsed_args.config_path)
+    logging.debug("Looking up devices...")
     pumps = get_availabe_pumps()
-    # get more devices ...
+    controllers = get_availabe_controllers()
+    # TODO get more devices ...
     bus.start()
     enable_pumps(pumps)
 
@@ -159,7 +181,17 @@ if __name__ == '__main__':
         server = neMESYSServer(cmd_args=args, qmix_pump=pump, simulation_mode=False)
         server.run(block=False)
         servers += [server]
+    for channel in controllers:
+        args.port = args.port + len(servers)
+        args.server_name = channel.get_name().replace("_", " ")
+        args.description = "Allows to control a Qmix Controller Channel"
 
+        server = QmixControlServer(cmd_args=args, qmix_controller=channel, simulation_mode=False)
+        server.run(block=False)
+        servers += [server]
+
+    logging.info("All servers started!")
+    print("Press Ctrl-C to stop...")
     try:
         while True:
             time.sleep(_ONE_DAY_IN_SECONDS)
