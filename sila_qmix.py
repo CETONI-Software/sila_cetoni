@@ -38,12 +38,13 @@ except ModuleNotFoundError:
     print("`pip install coloredlogs`")
 from typing import List
 
+# adjust PATH to point to QmixSDK
+sys.path.append("C:/QmixSDK/lib/python")
+
 # import Qmix servers
 from pump.impl.neMESYS_server import neMESYSServer
 from controller.QmixControl_server import QmixControlServer
 
-# adjust PATH to point to QmixSDK
-sys.path.append("C:/QmixSDK/lib/python")
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump, qmixcontroller
 
