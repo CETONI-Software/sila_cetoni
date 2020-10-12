@@ -92,7 +92,7 @@ class PumpFluidDosingServiceReal:
             time.sleep(0.25)
 
         msg = "The requested {param} ({requested_val} {unit}) has to be in the range \
-            bewtween 0 {unit} {exclusive} and {max_val} {unit} for this pump."
+            between 0 {unit} {exclusive} and {max_val} {unit} for this pump."
         if flow_rate <= 0 or flow_rate > max_flow_rate:
             unit = uc.flow_unit_to_string(self.pump.get_flow_unit())
             raise neMESYS_errors.FlowRateOutOfRangeError(
@@ -101,7 +101,7 @@ class PumpFluidDosingServiceReal:
         if fill_level is not None and (fill_level < 0 or fill_level > max_fill_level):
             unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
             raise neMESYS_errors.FillLevelOutOfRangeError(
-                msg.format(param="fill level", unit=unit, requested_val=fill_level, max_val=max_fill_level)
+                msg.format(param="fill level", unit=unit, exclusive="", requested_val=fill_level, max_val=max_fill_level)
             )
         if volume is not None and (volume <= 0 or volume > max_fill_level):
             unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
