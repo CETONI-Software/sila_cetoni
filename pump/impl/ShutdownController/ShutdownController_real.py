@@ -36,9 +36,11 @@ import logging
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
+from configparser import ConfigParser
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
+from sila2lib._internal.config import get_config_dir as sila_get_config_dir
 
 # import gRPC modules for this feature
 from .gRPC import ShutdownController_pb2 as ShutdownController_pb2
@@ -61,7 +63,7 @@ class ShutdownControllerReal:
         This is a sample service for controlling neMESYS syringe pumps via SiLA2
     """
 
-    def __init__(self, pump, server_name, sila2_conf):
+    def __init__(self, pump, server_name, sila2_conf: ConfigParser):
         """Class initialiser"""
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
@@ -76,8 +78,7 @@ class ShutdownControllerReal:
         """
         Saves the current drive position counter so that it can be restored next time.
         """
-        config_dir = os.path.join(os.environ.get('APPDATA') or os.path.join(
-            os.path.expanduser('~'), '.config', 'sila2'), self.server_name)
+        config_dir = sila_get_config_dir(subdir=self.server_name)
         config_filename = os.path.join(config_dir, self.server_name + '.conf')
 
         pump_name = self.pump.get_pump_name()
