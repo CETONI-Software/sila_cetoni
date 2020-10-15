@@ -31,8 +31,8 @@ __version__ = "0.0.1"
 import os
 import argparse
 from configparser import ConfigParser
-import logging
 from typing import Tuple
+import logging
 try:
     import coloredlogs
 except ModuleNotFoundError:
@@ -81,6 +81,7 @@ from .SyringeConfigurationController.SyringeConfigurationController_servicer imp
 from .ValvePositionController.ValvePositionController_servicer import ValvePositionController
 from .ShutdownController.ShutdownController_servicer import ShutdownController
 
+from local_ip import LOCAL_IP
 
 class neMESYSServer(SiLA2Server):
     """
@@ -96,7 +97,7 @@ class neMESYSServer(SiLA2Server):
             server_uuid=None,
             version=__version__,
             vendor_url="cetoni.de",
-            ip="127.0.0.1", port=int(cmd_args.port),
+            ip=LOCAL_IP, port=int(cmd_args.port),
             key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert
         )
 

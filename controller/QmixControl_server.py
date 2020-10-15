@@ -44,6 +44,8 @@ from .ControlLoopService.ControlLoopService_default_arguments import default_dic
 # Import the servicer modules for each feature
 from .ControlLoopService.ControlLoopService_servicer import ControlLoopService
 
+from local_ip import LOCAL_IP
+
 class QmixControlServer(SiLA2Server):
     """
     The SiLA 2 driver for Qmix Control Devices
@@ -56,7 +58,7 @@ class QmixControlServer(SiLA2Server):
             server_type=cmd_args.server_type, server_uuid=None,
             version=__version__,
             vendor_url="cetoni.de",
-            ip="127.0.0.1", port=int(cmd_args.port),
+            ip=LOCAL_IP, port=int(cmd_args.port),
             key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert
         )
 

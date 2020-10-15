@@ -201,7 +201,7 @@ if __name__ == '__main__':
             time.sleep(_ONE_DAY_IN_SECONDS)
     except KeyboardInterrupt:
         print()
-        logging.debug("shutting down servers...")
+        logging.debug("Shutting down servers...")
         for server in servers:
             server.stop_grpc_server()
 
