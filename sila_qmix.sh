@@ -1,9 +1,12 @@
 #!/bin/bash
 #
-# Wrapper script for all python scripts that use the QmixSDK Python Integration
+# Wrapper script for sila_qmix.py script
 # It sets the PATH, PYTHONPATH and LD_LIBRARY_PATH environment variables so that
-# python and ctypes find the necessary files and shared libraries.
+# python and ctypes find the necessary files and shared libraries of QmixSDK.
 #
+# Parameters to this script are passed right on to the sila_qmix.py script
+#
+#set -x
 
 # change this path to point to your QmixSDK installation
 export QMIXSDK_PATH="$HOME/QmixSDK_Linux"
@@ -13,6 +16,5 @@ export PYTHONPATH="$QMIXSDK_PATH/python":"$PYTHONPATH"
 export LD_LIBRARY_PATH="$QMIXSDK_PATH/lib":"$LD_LIBRARY_PATH"
 
 curr_dir=$(pwd)
-cd $(dirname $1)
-python3 $(basename $1) ${@:2}
+python3 sila_qmix.py $@
 cd $curr_dir
