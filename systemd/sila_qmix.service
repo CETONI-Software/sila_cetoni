@@ -1,0 +1,17 @@
+[Unit]
+Description=SiLA Qmix
+Wants=sys-subsystem-net-devices-can0.device
+After=sys-subsystem-net-devices-can0.device
+
+[Service]
+Type=simple
+ExecStartPre=+-/sbin/ip link set can0 type can bitrate 500000
+ExecStartPre=+-/sbin/ip link set can0 up
+ExecStartPre=+/bin/sh -c '/sbin/ip addr show can0 | grep UP'
+ExecStart=/home/pi/sila_qmix/sila_qmix.sh /home/pi/sila_qmix/configs/2xnem
+KillSignal=SIGINT
+WorkingDirectory=/home/pi/sila_qmix
+User=pi
+
+[Install]
+WantedBy=default.target multi-user.target
