@@ -79,7 +79,7 @@ class ContiflowServer(SiLA2Server):
             )
         )
 
-        data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..',
+        data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                  'features', 'de', 'cetoni', 'pumps', 'contiflowpumps')
 
         # registering features
@@ -93,7 +93,7 @@ class ContiflowServer(SiLA2Server):
             self.ContinuousFlowConfigurationService_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService',
+        self.add_feature(feature_id='ContinuousFlowConfigurationService',
                          servicer=self.ContinuousFlowConfigurationService_servicer,
                          data_path=data_path)
         #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController
@@ -106,7 +106,7 @@ class ContiflowServer(SiLA2Server):
             self.ContinuousFlowInitializationController_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController',
+        self.add_feature(feature_id='ContinuousFlowInitializationController',
                          servicer=self.ContinuousFlowInitializationController_servicer,
                          data_path=data_path)
 

@@ -107,7 +107,7 @@ class neMESYSServer(SiLA2Server):
             )
         )
 
-        data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..',
+        data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                  'features', 'de', 'cetoni', 'pumps', 'syringepumps')
 
         # registering features
