@@ -40,8 +40,7 @@ import uuid         # used for observables
 import grpc         # used for type hinting only
 
 # import qmixsdk
-from qmixsdk import qmixbus
-from qmixsdk import qmixpump
+from qmixsdk import qmixbus, qmixpump
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
@@ -146,7 +145,7 @@ class PumpFluidDosingServiceReal:
             yield silaFW_pb2.ExecutionInfo(
                 commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedWithError
             )
-            logging.error("An unexpected error occured: %s", self.pump.read_last_error())
+            logging.error("An unexpected error occurred: %s", self.pump.read_last_error())
 
     def SetFillLevel(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.CommandConfirmation:
@@ -360,7 +359,7 @@ class PumpFluidDosingServiceReal:
             -> silaFW_pb2.CommandConfirmation:
         """
         Executes the observable command "Generate Flow"
-            Generate a continous flow with the given flow rate. Dosing continues until it gets stopped manually by calling StopDosage or until the pusher reached one of its limits.
+            Generate a continuous flow with the given flow rate. Dosing continues until it gets stopped manually by calling StopDosage or until the pusher reached one of its limits.
 
         :param request: gRPC request containing the parameters passed:
             request.FlowRate (Flow Rate):
@@ -374,7 +373,7 @@ class PumpFluidDosingServiceReal:
 
         requested_flow_rate = request.FlowRate.value
 
-        # requested_flow_rate is neagtive to indicate aspiration of fluid.
+        # requested_flow_rate is negative to indicate aspiration of fluid.
         # Since the pre dosage checks test against 0 and the max flow rate of
         # the pump, we pass the absolute value of the requested_flow_rate.
         self._check_pre_dosage(flow_rate=abs(requested_flow_rate))
