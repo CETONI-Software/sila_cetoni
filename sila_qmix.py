@@ -187,9 +187,13 @@ if __name__ == '__main__':
     for pump in pumps:
         args.port += 1
         args.server_name = pump.get_device_name().replace("_", " ")
-        args.description = "Allows to control a neMESYS syringe pump"
+        args.description = "Allows to control a {contiflow_descr} neMESYS syringe pump".format(
+            contiflow_descr="contiflow pump made up of two" if isinstance(pump, qmixpump.ContiFlowPump) else ""
+        )
 
-        server = neMESYSServer(cmd_args=args, qmix_pump=pump, simulation_mode=False)
+        PumpServer = ContiflowServer if isinstance(pump, qmixpump.ContiFlowPump) else neMESYSServer
+
+        server = PumpServer(cmd_args=args, qmix_pump=pump, simulation_mode=False)
         server.run(block=False)
         servers += [server]
     for channel in controllers:
