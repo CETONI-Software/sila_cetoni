@@ -43,6 +43,7 @@ sys.path.append("C:/QmixSDK/lib/python")
 
 # import Qmix servers
 from pumps.syringepumps.neMESYS_server import neMESYSServer
+from pumps.contiflowpumps.Contiflow_server import ContiflowServer
 from controllers.QmixControl_server import QmixControlServer
 
 # import qmixsdk
@@ -86,6 +87,12 @@ def get_availabe_pumps() -> List[qmixpump.Pump]:
         pump = qmixpump.Pump()
         pump.lookup_by_device_index(i)
         logging.debug("Found pump %d named %s", i, pump.get_device_name())
+        try:
+            pump.get_device_property(qmixpump.ContiFlowProperty.SWITCHING_MODE)
+            pump = qmixpump.ContiFlowPump(pump.handle)
+            logging.debug("Pump %s i contiflow pump", pump.get_device_name())
+        except qmixbus.DeviceError as err:
+            pass
         pumps.append(pump)
 
     return pumps
@@ -178,7 +185,7 @@ if __name__ == '__main__':
     # generate SiLA2Server processes
     servers = []
     for pump in pumps:
-        args.port = args.port + len(servers)
+        args.port += 1
         args.server_name = pump.get_device_name().replace("_", " ")
         args.description = "Allows to control a neMESYS syringe pump"
 
@@ -186,7 +193,7 @@ if __name__ == '__main__':
         server.run(block=False)
         servers += [server]
     for channel in controllers:
-        args.port = args.port + len(servers)
+        args.port += 1
         args.server_name = channel.get_name().replace("_", " ")
         args.description = "Allows to control a Qmix Controller Channel"
 
