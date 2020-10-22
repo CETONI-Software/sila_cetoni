@@ -82,6 +82,7 @@ class ContiflowServer(neMESYSServer):
         self.ContinuousFlowConfigurationService_servicer = \
             ContinuousFlowConfigurationService(
                 pump=qmix_pump,
+                sila2_conf=self.sila2_config,
                 simulation_mode=self.simulation_mode
             )
         ContinuousFlowConfigurationService_pb2_grpc.add_ContinuousFlowConfigurationServiceServicer_to_server(

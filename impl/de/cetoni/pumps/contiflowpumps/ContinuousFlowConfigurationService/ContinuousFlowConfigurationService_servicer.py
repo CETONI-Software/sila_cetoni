@@ -60,15 +60,17 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
     implementation: Union[ContinuousFlowConfigurationServiceSimulation, ContinuousFlowConfigurationServiceReal]
     simulation_mode: bool
 
-    def __init__(self, pump: qmixpump.ContiFlowPump, simulation_mode: bool = True):
+    def __init__(self, pump: qmixpump.ContiFlowPump, sila2_conf, simulation_mode: bool = True):
         """
         Class initialiser.
 
         :param pump: A valid `qxmixpump.ContiFlowPump` for this service to use
+        :param sila2_conf: The config of the server
         :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode.
         """
 
         self.pump = pump
+        self.sila2_conf = sila2_conf
 
         self.simulation_mode = simulation_mode
         if simulation_mode:
@@ -98,7 +100,8 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
     def switch_to_real_mode(self):
         """Method that will automatically be called by the server when the real mode is requested."""
         self.simulation_mode = False
-        self._inject_implementation(ContinuousFlowConfigurationServiceReal(self.pump))
+        self._inject_implementation(
+            ContinuousFlowConfigurationServiceReal(self.pump, self.sila2_conf))
 
     def SetSwitchingMode(self, request, context: grpc.ServicerContext) \
             -> ContinuousFlowConfigurationService_pb2.SetSwitchingMode_Responses:

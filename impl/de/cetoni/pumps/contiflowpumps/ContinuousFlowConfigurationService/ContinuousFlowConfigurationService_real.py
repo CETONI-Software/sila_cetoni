@@ -35,6 +35,8 @@ import uuid         # used for observables
 import grpc
 from sila2lib.error_handling.server_err import SiLAValidationError         # used for type hinting only
 
+from configparser import ConfigParser, NoSectionError, NoOptionError
+
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
@@ -59,15 +61,16 @@ class ContinuousFlowConfigurationServiceReal:
         Allows to control a continuous flow pumps that is made up of two syringe pumps
     """
 
-    def __init__(self, pump: ContiFlowPump, simulation_mode: bool = True):
+    def __init__(self, pump: ContiFlowPump, sila2_conf):
         """
         Class initialiser.
 
         :param pump: A valid `qxmixpump.ContiFlowPump` for this service to use
-        :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode.
+        :param sila2_conf: The config of the server
         """
 
         self.pump = pump
+        self.sila2_conf = sila2_conf
 
         self.ALLOWED_SWITCHING_MODES = {
             'SwitchingCrossFlow': ContiFlowSwitchingMode.CROSS_FLOW
@@ -75,6 +78,61 @@ class ContinuousFlowConfigurationServiceReal:
         }
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
+
+        try:
+            self._restore_last_drive_position_counters()
+            self._restore_last_contiflow_params()
+        except NoSectionError as err:
+            logging.error("No section for %s in SiLA2 config file: %s", pump_name, err)
+        except (NoOptionError, KeyError) as err:
+            logging.error("Cannot read config file option in %s", err)
+            logging.error("Couldn't restore drive position counters and contiflow parameters. You'll need to re-configure the contiflow!")
+
+    def _restore_last_drive_position_counters(self):
+        """
+        Reads the last drive position counters for the individual syringe pumps
+        from the server's config file.
+        """
+        for i in range(2):
+            pump = self.pump.get_syringe_pump(i)
+            pump_name = pump.get_pump_name()
+            drive_pos_counter = int(self.sila2_conf[pump_name]["drive_pos_counter"])
+            logging.debug("Restoring drive position counter (%d) for %s",
+                drive_pos_counter,
+                pump_name
+            )
+            pump.restore_position_counter_value(drive_pos_counter)
+
+    def _restore_last_contiflow_params(self):
+        """
+        Restore the last contiflow params from the server's config file.
+        """
+        pump_name = self.pump.get_pump_name()
+        msg = "Restored {param} ({value}) for {pump_name}"
+        crossflow_duration = float(self.sila2_conf[pump_name]["crossflow_duration"])
+        self.pump.set_device_property(ContiFlowProperty.CROSSFLOW_DURATION_S,
+                                      crossflow_duration)
+        logging.debug(msg.format(param='crossflow_duration',
+                                 value=crossflow_duration,
+                                 pump_name=pump_name))
+        overlap_duration = float(self.sila2_conf[pump_name]["overlap_duration"])
+        self.pump.set_device_property(ContiFlowProperty.OVERLAP_DURATION_S,
+                                      overlap_duration)
+        logging.debug(msg.format(param='overlap_duration',
+                                 value=overlap_duration,
+                                 pump_name=pump_name))
+        refill_flow = float(self.sila2_conf[pump_name]["refill_flow"])
+        self.pump.set_device_property(ContiFlowProperty.REFILL_FLOW,
+                                      refill_flow)
+        logging.debug(msg.format(param='refill_flow',
+                                 value=refill_flow,
+                                 pump_name=pump_name))
+        switching_mode = int(float(self.sila2_conf[pump_name]["switching_mode"]))
+        self.pump.set_device_property(ContiFlowProperty.SWITCHING_MODE,
+                                      switching_mode)
+        logging.debug(msg.format(param='switching_mode',
+                                 value=switching_mode,
+                                 pump_name=pump_name))
 
     def SetSwitchingMode(self, request, context: grpc.ServicerContext) \
             -> ContinuousFlowConfigurationService_pb2.SetSwitchingMode_Responses:
