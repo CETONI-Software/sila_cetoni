@@ -1,19 +1,18 @@
-#!/usr/bin/env python3
 """
 ________________________________________________________________________
 
-:PROJECT: sila_qmix
+:PROJECT: SiLA2_neMESYS
 
-*SiLA Qmix*
+*SiLA neMESYS Server*
 
-:details: SiLA Qmix:
+:details: SiLA neMESYS:
     A wrapper script that starts as many individual SiLA2 servers as there are devices in the given configuration.
 
-:file:    sila_qmix.py
+:file:    SiLA_neMESYS.py
 :authors: Florian Meinicke
 
-:date: (creation)          2020-10-08
-:date: (last modification) 2020-10-08
+:date: (creation)          2019-07-17
+:date: (last modification) 2020-05-07
 
 ________________________________________________________________________
 
@@ -27,7 +26,7 @@ ________________________________________________________________________
 
 __version__ = "0.0.1"
 
-import sys
+from sys import stderr
 import time
 import argparse
 import logging
@@ -36,17 +35,15 @@ try:
 except ModuleNotFoundError:
     print("Cannot find coloredlogs! Please install coloredlogs, if you'd like to have nicer logging output:")
     print("`pip install coloredlogs`")
-from typing import List
 
-# adjust PATH to point to QmixSDK
-sys.path.append("C:/QmixSDK/lib/python")
+print("This file is about to be deprecated! It might not work as expected and is not guaranteed to work at all.", file=stderr)
 
-# import Qmix servers
-from pumps.syringepumps.neMESYS_server import neMESYSServer
-from controllers.QmixControl_server import QmixControlServer
+# import neMESYS server
+from .neMESYS_server import neMESYSServer
 
 # import qmixsdk
-from qmixsdk import qmixbus, qmixpump, qmixcontroller
+from qmixsdk import qmixbus
+from qmixsdk import qmixpump
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -69,7 +66,7 @@ def open_bus(config_path: str) -> qmixbus.Bus:
     else:
         return bus
 
-def get_availabe_pumps() -> List[qmixpump.Pump]:
+def get_availabe_pumps() -> [qmixpump.Pump]:
     """
     Looks up all pumps from the current configuration and constructs a list of
     all found pumps
@@ -77,12 +74,14 @@ def get_availabe_pumps() -> List[qmixpump.Pump]:
         :return: A list of all found pumps connected to the bus
         :rtype: [qmixpump.Pump]
     """
-    pump_count = qmixpump.Pump.get_no_of_pumps()
-    logging.debug("Number of pumps: %s", pump_count)
+    logging.debug("Looking up devices...")
+
+    pumpcount = qmixpump.Pump.get_no_of_pumps()
+    logging.debug("Number of pumps: %s", pumpcount)
 
     pumps = []
 
-    for i in range(pump_count):
+    for i in range(pumpcount):
         pump = qmixpump.Pump()
         pump.lookup_by_device_index(i)
         logging.debug("Found pump %d named %s", i, pump.get_device_name())
@@ -90,39 +89,22 @@ def get_availabe_pumps() -> List[qmixpump.Pump]:
 
     return pumps
 
-def enable_pumps(pumps: List[qmixpump.Pump]):
+def start_bus_and_enable_pumps(bus: qmixbus.Bus, pumps: [qmixpump.Pump]):
     """
-    Enables all given pumps
+    Starts the bus communication and enables all given pumps
 
+        :param bus: The bus to start
+        :type bus: qmixbus.Bus
         :param pumps: A list of pumps to enable
         :type pumps: list(qmixpump.Pump)
     """
+    bus.start()
+
     for pump in pumps:
         if pump.is_in_fault_state():
             pump.clear_fault()
         if not pump.is_enabled():
             pump.enable(True)
-
-def get_availabe_controllers() -> List[qmixcontroller.ControllerChannel]:
-    """
-    Looks up all controller channels from the current configuration and constructs
-    a list of all found channels
-
-        :return: A list of all found controller channels connected to the bus
-        :rtype: [qmixcontroller.ControllerChannel]
-    """
-    channel_count = qmixcontroller.ControllerChannel.get_no_of_channels()
-    logging.debug("Number of controller channels: %s", channel_count)
-
-    channels = []
-
-    for i in range(channel_count):
-        channel = qmixcontroller.ControllerChannel()
-        channel.lookup_channel_by_index(i)
-        logging.debug("Found channel %d named %s", i, channel.get_name())
-        channels.append(channel)
-
-    return channels
 
 def stop_and_close_bus(bus: qmixbus.Bus):
     """
@@ -137,10 +119,10 @@ def stop_and_close_bus(bus: qmixbus.Bus):
 
 def parse_command_line():
     """
-    Just looking for command line arguments
+    Just looking for commandline arguments
     """
     parser = argparse.ArgumentParser(
-        description="Launches as many SiLA 2 servers as there are Qmix devices in the configuration")
+        description="Launches as many SiLA2 neMESYS servers as there are pumps in the configuration")
     parser.add_argument('config_path', metavar='configuration_path', type=str,
                         help="""a path to a valid Qmix configuration folder
                              (If you don't have a configuration yet,
@@ -150,7 +132,7 @@ def parse_command_line():
 
 
 if __name__ == '__main__':
-    logging_level = logging.DEBUG # or use logging.ERROR for less output
+    logging_level = logging.INFO # or use logging.ERROR for less output
     try:
         coloredlogs.install(fmt='%(asctime)s %(levelname)s| %(module)s.%(funcName)s: %(message)s',
                             level=logging_level)
@@ -159,50 +141,33 @@ if __name__ == '__main__':
 
     parsed_args = parse_command_line()
 
-    logging.debug("Starting bus...")
     bus = open_bus(parsed_args.config_path)
-    logging.debug("Looking up devices...")
     pumps = get_availabe_pumps()
-    controllers = get_availabe_controllers()
-    # TODO get more devices ...
-    bus.start()
-    enable_pumps(pumps)
+    start_bus_and_enable_pumps(bus, pumps)
 
-    # common args for all servers
-    args = argparse.Namespace(
-        port=50051, # base port
-        server_type="TestServer",
-        encryption_key=None,
-        encryption_cert=None
-    )
     # generate SiLA2Server processes
+    BASE_PORT = 50051
     servers = []
     for pump in pumps:
-        args.port = args.port + len(servers)
-        args.server_name = pump.get_device_name().replace("_", " ")
-        args.description = "Allows to control a neMESYS syringe pump"
-
+        args = argparse.Namespace(
+            port=BASE_PORT + pumps.index(pump),
+            server_name=pump.get_device_name().replace("_", " "),
+            server_type="TestServer",
+            description="This is a sample service for controlling neMESYS syringe pumps via SiLA2",
+            encryption_key=None,
+            encryption_cert=None
+        )
         server = neMESYSServer(cmd_args=args, qmix_pump=pump, simulation_mode=False)
         server.run(block=False)
         servers += [server]
-    for channel in controllers:
-        args.port = args.port + len(servers)
-        args.server_name = channel.get_name().replace("_", " ")
-        args.description = "Allows to control a Qmix Controller Channel"
 
-        server = QmixControlServer(cmd_args=args, qmix_controller=channel, simulation_mode=False)
-        server.run(block=False)
-        servers += [server]
-
-    logging.info("All servers started!")
-    print("Press Ctrl-C to stop...")
     try:
         while True:
             time.sleep(_ONE_DAY_IN_SECONDS)
     except KeyboardInterrupt:
         print()
-        logging.debug("Shutting down servers...")
+        logging.debug("shutting down servers...")
         for server in servers:
             server.stop_grpc_server()
 
-    stop_and_close_bus(bus)
+        stop_and_close_bus(bus)
