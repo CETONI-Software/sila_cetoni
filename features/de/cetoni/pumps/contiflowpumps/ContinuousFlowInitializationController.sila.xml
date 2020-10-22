@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="pumps.contiflowpumps" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>ContinuousFlowInitializationController</Identifier>
+    <DisplayName>Continuous Flow Initialization Controller</DisplayName>
+    <Description>Allows to initialize a contiflow pump before starting the continuous flow.</Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>InitializeContiflow</Identifier>
+        <DisplayName>Initialize Contiflow</DisplayName>
+        <Description>Initialize the continuous flow pump.
+Call this command after all parameters have been set, to prepare the conti flow pump for the start of the continuous flow. The initialization procedure ensures, that the syringes are sufficiently filled to start the continuous flow. So calling this command may cause a syringe refill if the syringes are not sufficiently filled. So before calling this command you should ensure, that syringe refilling properly works an can be executed. If you have a certain syringe refill procedure, you can also manually refill the syringes with the normal syringe pump functions. If the syringes are sufficiently filled if you call this function, no refilling will take place.
+        </Description>
+        <Observable>Yes</Observable>
+    </Command>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>IsInitialized</Identifier>
+        <DisplayName>Is Initialized</DisplayName>
+        <Description>Returns true, if the conti fow pump is initialized and ready for continuous flow start.
+Use this function to check if the pump is initialized before you start a continuous flow. If you change and continuous flow parameter, like valve settings, cross flow duration and so on, the pump will leave the initialized state. That means, after each parameter change, an initialization is required. Changing the flow rate or the dosing volume does not require and initialization.
+        </Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Boolean</Basic>
+        </DataType>
+    </Property>
+</Feature>
