@@ -11,7 +11,7 @@
         <Description>Sets the switching mode for syringe pump switchover if one syringe pump runs empty.</Description>
         <Observable>No</Observable>
         <Parameter>
-            <Identifier>SwtichingMode</Identifier>
+            <Identifier>SwitchingMode</Identifier>
             <DisplayName>Switching Mode</DisplayName>
             <Description>The new switching mode to set</Description>
             <DataType>
@@ -133,7 +133,7 @@
     <Property>
         <Identifier>MinFlowRate</Identifier>
         <DisplayName>Min Flow Rate</DisplayName>
-        <Description>Get the minimum flow rate that is theoretically posible with the continuous flow pump.</Description>
+        <Description>Get the minimum flow rate that is theoretically possible with the continuous flow pump.</Description>
         <Observable>Yes</Observable>
         <DataType>
             <Basic>Real</Basic>

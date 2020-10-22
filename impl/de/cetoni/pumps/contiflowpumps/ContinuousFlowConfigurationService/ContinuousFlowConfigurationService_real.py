@@ -92,7 +92,7 @@ class ContinuousFlowConfigurationServiceReal:
 
         try:
             self.pump.set_device_property(ContiFlowProperty.SWITCHING_MODE,
-                                        self.ALLOWED_SWITCHING_MODES.get(request.value.value))
+                                        self.ALLOWED_SWITCHING_MODES.get(request.SwitchingMode.value))
         except KeyError:
             raise SiLAValidationError(
                 'SwitchingMode',
@@ -118,7 +118,7 @@ class ContinuousFlowConfigurationServiceReal:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        self.pump.set_device_property(ContiFlowProperty.REFILL_FLOW, request.value.value)
+        self.pump.set_device_property(ContiFlowProperty.REFILL_FLOW, request.RefillFlowRate.value)
 
         return ContinuousFlowConfigurationService_pb2.SetRefillFlowRate_Responses()
 
@@ -137,7 +137,7 @@ class ContinuousFlowConfigurationServiceReal:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        self.pump.set_device_property(ContiFlowProperty.CROSSFLOW_DURATION_S, request.value.value)
+        self.pump.set_device_property(ContiFlowProperty.CROSSFLOW_DURATION_S, request.CrossFlowDuration.value)
 
         return ContinuousFlowConfigurationService_pb2.SetCrossFlowDuration_Responses()
 
@@ -156,7 +156,7 @@ class ContinuousFlowConfigurationServiceReal:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        self.pump.set_device_property(ContiFlowProperty.OVERLAP_DURATION_S, request.value.value)
+        self.pump.set_device_property(ContiFlowProperty.OVERLAP_DURATION_S, request.OverlapDuration.value)
 
         return ContinuousFlowConfigurationService_pb2.SetOverlapDuration_Responses()
 

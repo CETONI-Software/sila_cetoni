@@ -135,7 +135,7 @@ class ContinuousFlowConfigurationServiceServicer(object):
 
     def Subscribe_MinFlowRate(self, request, context):
         """Min Flow Rate
-        Get the minimum flow rate that is theoretically posible with the continuous flow pump.
+        Get the minimum flow rate that is theoretically possible with the continuous flow pump.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')

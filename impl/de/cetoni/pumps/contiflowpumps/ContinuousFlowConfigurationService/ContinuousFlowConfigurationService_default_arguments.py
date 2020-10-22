@@ -16,7 +16,7 @@ default_dict = dict()
 
 
 default_dict['SetSwitchingMode_Parameters'] = {
-    'SwtichingMode': silaFW_pb2.String(value='default string')
+    'SwitchingMode': silaFW_pb2.String(value='default string')
 }
 
 default_dict['SetSwitchingMode_Responses'] = {
