@@ -36,8 +36,8 @@ import argparse
 from qmixsdk import qmixbus
 from qmixsdk import qmixpump
 
-# Import the main SiLA library
-from sila2lib.sila_server import SiLA2Server
+# Import the base server
+from pumps.syringepumps.neMESYS_server import neMESYSServer
 
 # Import gRPC libraries of features
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService.gRPC import ContinuousFlowConfigurationService_pb2
@@ -55,29 +55,14 @@ from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.
 
 from local_ip import LOCAL_IP
 
-class ContiflowServer(SiLA2Server):
+class ContiflowServer(neMESYSServer):
     """
     Allows to control a continuous flow pumps that is made up of two syringe pumps
     """
 
     def __init__(self, cmd_args, qmix_pump, simulation_mode: bool = True):
         """Class initialiser"""
-        super().__init__(
-            name=cmd_args.server_name,
-            description=cmd_args.description,
-            server_type=cmd_args.server_type,
-            server_uuid=None,
-            version=__version__,
-            vendor_url="cetoni.de",
-            ip=LOCAL_IP, port=int(cmd_args.port),
-            key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert
-        )
-
-        logging.info(
-            "Starting SiLA2 server with server name: {server_name}".format(
-                server_name=cmd_args.server_name
-            )
-        )
+        super().__init__(cmd_args, qmix_pump)
 
         data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                  'features', 'de', 'cetoni', 'pumps', 'contiflowpumps')
