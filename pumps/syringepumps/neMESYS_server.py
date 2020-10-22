@@ -41,8 +41,7 @@ except ModuleNotFoundError:
 
 
 # import qmixsdk
-from qmixsdk import qmixbus
-from qmixsdk import qmixpump
+from qmixsdk import qmixbus, qmixpump
 
 # Import the main SiLA library
 from sila2lib.sila_server import SiLA2Server
@@ -157,16 +156,21 @@ class neMESYSServer(SiLA2Server):
                          servicer=self.SyringeConfigurationController_servicer,
                          data_path=data_path)
         #  Register ValvePositionController
-        self.ValvePositionController_servicer = ValvePositionController(
-            pump=qmix_pump,
-            simulation_mode=simulation_mode)
-        ValvePositionController_pb2_grpc.add_ValvePositionControllerServicer_to_server(
-            self.ValvePositionController_servicer,
-            self.grpc_server
-        )
-        self.add_feature(feature_id='ValvePositionController',
-                         servicer=self.ValvePositionController_servicer,
-                         data_path=data_path)
+        try:
+            qmix_pump.get_valve() # test if the pump supports valve functionalities
+
+            self.ValvePositionController_servicer = ValvePositionController(
+                pump=qmix_pump,
+                simulation_mode=simulation_mode)
+            ValvePositionController_pb2_grpc.add_ValvePositionControllerServicer_to_server(
+                self.ValvePositionController_servicer,
+                self.grpc_server
+            )
+            self.add_feature(feature_id='ValvePositionController',
+                             servicer=self.ValvePositionController_servicer,
+                             data_path=data_path)
+        except qmixbus.DeviceError:
+            pass
         #  Register ShutdownController
         self.ShutdownController_servicer = ShutdownController(
             pump=qmix_pump,
