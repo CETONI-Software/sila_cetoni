@@ -109,7 +109,7 @@ class neMESYSServer(SiLA2Server):
         data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                  'features', 'de', 'cetoni', 'pumps', 'syringepumps')
 
-        # registering features
+        # registering common pump features
         #  Register PumpDriveControlService
         self.PumpDriveControlService_servicer = PumpDriveControlService(
             pump=qmix_pump,
@@ -133,32 +133,32 @@ class neMESYSServer(SiLA2Server):
         self.add_feature(feature_id='PumpUnitController',
                          servicer=self.PumpUnitController_servicer,
                          data_path=data_path)
-        #  Register PumpFluidDosingService
-        self.PumpFluidDosingService_servicer = PumpFluidDosingService(
-            pump=qmix_pump,
-            simulation_mode=simulation_mode)
-        PumpFluidDosingService_pb2_grpc.add_PumpFluidDosingServiceServicer_to_server(
-            self.PumpFluidDosingService_servicer,
-            self.grpc_server
-        )
-        self.add_feature(feature_id='PumpFluidDosingService',
-                         servicer=self.PumpFluidDosingService_servicer,
-                         data_path=data_path)
-        #  Register SyringeConfigurationController
-        self.SyringeConfigurationController_servicer = SyringeConfigurationController(
-            pump=qmix_pump,
-            simulation_mode=simulation_mode)
-        SyringeConfigurationController_pb2_grpc.add_SyringeConfigurationControllerServicer_to_server(
-            self.SyringeConfigurationController_servicer,
-            self.grpc_server
-        )
-        self.add_feature(feature_id='SyringeConfigurationController',
-                         servicer=self.SyringeConfigurationController_servicer,
-                         data_path=data_path)
-        #  Register ValvePositionController
-        try:
-            qmix_pump.get_valve() # test if the pump supports valve functionalities
 
+        if not isinstance(qmix_pump, qmixpump.ContiFlowPump):
+            # registering features not for contiflow pumps
+            #  Register PumpFluidDosingService
+            self.PumpFluidDosingService_servicer = PumpFluidDosingService(
+                pump=qmix_pump,
+                simulation_mode=simulation_mode)
+            PumpFluidDosingService_pb2_grpc.add_PumpFluidDosingServiceServicer_to_server(
+                self.PumpFluidDosingService_servicer,
+                self.grpc_server
+            )
+            self.add_feature(feature_id='PumpFluidDosingService',
+                             servicer=self.PumpFluidDosingService_servicer,
+                             data_path=data_path)
+            #  Register SyringeConfigurationController
+            self.SyringeConfigurationController_servicer = SyringeConfigurationController(
+                pump=qmix_pump,
+                simulation_mode=simulation_mode)
+            SyringeConfigurationController_pb2_grpc.add_SyringeConfigurationControllerServicer_to_server(
+                self.SyringeConfigurationController_servicer,
+                self.grpc_server
+            )
+            self.add_feature(feature_id='SyringeConfigurationController',
+                             servicer=self.SyringeConfigurationController_servicer,
+                             data_path=data_path)
+            #  Register ValvePositionController
             self.ValvePositionController_servicer = ValvePositionController(
                 pump=qmix_pump,
                 simulation_mode=simulation_mode)
@@ -169,22 +169,20 @@ class neMESYSServer(SiLA2Server):
             self.add_feature(feature_id='ValvePositionController',
                              servicer=self.ValvePositionController_servicer,
                              data_path=data_path)
-        except qmixbus.DeviceError:
-            pass
-        #  Register ShutdownController
-        self.ShutdownController_servicer = ShutdownController(
-            pump=qmix_pump,
-            server_name=self.server_name,
-            sila2_conf=self.sila2_config,
-            simulation_mode=simulation_mode
-        )
-        ShutdownController_pb2_grpc.add_ShutdownControllerServicer_to_server(
-            self.ShutdownController_servicer,
-            self.grpc_server
-        )
-        self.add_feature(feature_id='ShutdownController',
-                         servicer=self.ShutdownController_servicer,
-                         data_path=data_path)
+            #  Register ShutdownController
+            self.ShutdownController_servicer = ShutdownController(
+                pump=qmix_pump,
+                server_name=self.server_name,
+                sila2_conf=self.sila2_config,
+                simulation_mode=simulation_mode
+            )
+            ShutdownController_pb2_grpc.add_ShutdownControllerServicer_to_server(
+                self.ShutdownController_servicer,
+                self.grpc_server
+            )
+            self.add_feature(feature_id='ShutdownController',
+                             servicer=self.ShutdownController_servicer,
+                             data_path=data_path)
 
         self.simulation_mode = simulation_mode
 

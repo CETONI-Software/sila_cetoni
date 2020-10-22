@@ -48,10 +48,20 @@ from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.gRPC import ContinuousFlowInitializationController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.ContinuousFlowInitializationController_default_arguments import default_dict as ContinuousFlowInitializationController_default_dict
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService.gRPC import ContinuousFlowDosingService_pb2
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService.gRPC import ContinuousFlowDosingService_pb2_grpc
+# import default arguments for this feature
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService.ContinuousFlowDosingService_default_arguments import default_dict as ContinuousFlowDosingService_default_dict
+from impl.de.cetoni.pumps.contiflowpumps.ShutdownController.gRPC import ShutdownController_pb2
+from impl.de.cetoni.pumps.contiflowpumps.ShutdownController.gRPC import ShutdownController_pb2_grpc
+# import default arguments for this feature
+from impl.de.cetoni.pumps.contiflowpumps.ShutdownController.ShutdownController_default_arguments import default_dict as ShutdownController_default_dict
 
 # Import the servicer modules for each feature
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService.ContinuousFlowConfigurationService_servicer import ContinuousFlowConfigurationService
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.ContinuousFlowInitializationController_servicer import ContinuousFlowInitializationController
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService.ContinuousFlowDosingService_servicer import ContinuousFlowDosingService
+from impl.de.cetoni.pumps.contiflowpumps.ShutdownController.ShutdownController_servicer import ShutdownController
 
 from local_ip import LOCAL_IP
 
@@ -81,6 +91,18 @@ class ContiflowServer(neMESYSServer):
         self.add_feature(feature_id='ContinuousFlowConfigurationService',
                          servicer=self.ContinuousFlowConfigurationService_servicer,
                          data_path=data_path)
+        #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService
+        self.ContinuousFlowDosingService_servicer = ContinuousFlowDosingService(
+                pump=qmix_pump,
+                simulation_mode=self.simulation_mode
+            )
+        ContinuousFlowDosingService_pb2_grpc.add_ContinuousFlowDosingServiceServicer_to_server(
+            self.ContinuousFlowDosingService_servicer,
+            self.grpc_server
+        )
+        self.add_feature(feature_id='ContinuousFlowDosingService',
+                         servicer=self.ContinuousFlowDosingService_servicer,
+                         data_path=data_path)
         #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController
         self.ContinuousFlowInitializationController_servicer = \
             ContinuousFlowInitializationController(
@@ -94,6 +116,20 @@ class ContiflowServer(neMESYSServer):
         self.add_feature(feature_id='ContinuousFlowInitializationController',
                          servicer=self.ContinuousFlowInitializationController_servicer,
                          data_path=data_path)
+        #  Register de.cetoni.pumps.syringepumps.ShutdownController
+        self.ShutdownController_servicer = ShutdownController(
+            pump=qmix_pump,
+            server_name=self.server_name,
+            sila2_conf=self.sila2_config,
+            simulation_mode=simulation_mode
+        )
+        ShutdownController_pb2_grpc.add_ShutdownControllerServicer_to_server(
+            self.ShutdownController_servicer,
+            self.grpc_server
+        )
+        self.add_feature(feature_id='ShutdownController',
+                            servicer=self.ShutdownController_servicer,
+                            data_path=data_path.replace('contiflow', 'syringe'))
 
         self.simulation_mode = simulation_mode
 

@@ -1,6 +1,6 @@
 {
   "service_name": "Contiflow",
-  "service_description": "Allows to control a continuous flow pumps that is made up of two syringe pumps",
+  "service_description": "Allows to control a continuous flow pump that is made up of two syringe pumps",
   "authors": "Florian Meinicke",
   "creation_date": "2020-10-22",
   "version": "0.1.0",
@@ -11,7 +11,9 @@
   ],
   "SiLA_feature_list": [
     "de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService",
-    "de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController"
+    "de/cetoni/pumps/contiflowpumps/ContinuousFlowDosingService",
+    "de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController",
+    "de/cetoni/pumps/syringepumps/ShutdownController"
   ],
   "communication_port": "50053",
   "IP_address": "127.0.0.1",

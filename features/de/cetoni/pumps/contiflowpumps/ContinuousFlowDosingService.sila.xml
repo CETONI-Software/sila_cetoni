@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="pumps.contiflowpumps" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>ContinuousFlowDosingService</Identifier>
+    <DisplayName>Continuous Flow Dosing Service</DisplayName>
+    <Description>
+        Allows to continuously dose a specified fluid.
+The continuous flow mode is meant for dispensing volumes or generating flows and works only in one direction. That means using negative flow rates or negative volumes for aspiration is not possible.
+    </Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>GenerateFlow</Identifier>
+        <DisplayName>Generate Flow</DisplayName>
+        <Description>Generate a continuous flow with the given flow rate. Dosing continues until it gets stopped manually by calling StopDosage.
+        </Description>
+        <Observable>Yes</Observable>
+        <Parameter>
+            <Identifier>FlowRate</Identifier>
+            <DisplayName>Flow Rate</DisplayName>
+            <Description>The flow rate at which the pump should dose the fluid. This value cannot be negative since dosing is meant to only work in one direction.
+            </Description>
+            <DataType>
+                <Basic>Real</Basic>
+            </DataType>
+        </Parameter>
+    </Command>
+    <Command>
+        <Identifier>StopDosage</Identifier>
+        <DisplayName>Stop Dosage</DisplayName>
+        <Description>Stops a currently running dosage immediately.</Description>
+        <Observable>No</Observable>
+    </Command>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>MaxFlowRate</Identifier>
+        <DisplayName>Maximum Flow Rate</DisplayName>
+        <Description>The maximum value of the flow rate at which this pump can dose a fluid.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>FlowRate</Identifier>
+        <DisplayName>Flow Rate</DisplayName>
+        <Description>The current value of the flow rate. It is 0 if the pump does not dose any fluid.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+</Feature>
