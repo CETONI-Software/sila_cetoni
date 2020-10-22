@@ -7,7 +7,7 @@ ________________________________________________________________________
 
 :details: ContinuousFlowInitializationController:
     Allows to initialize a contiflow pump before starting the continuous flow.
-           
+
 :file:    ContinuousFlowInitializationController_servicer.py
 :authors: Florian Meinicke
 
@@ -47,6 +47,11 @@ from .gRPC import ContinuousFlowInitializationController_pb2_grpc as ContinuousF
 from .ContinuousFlowInitializationController_simulation import ContinuousFlowInitializationControllerSimulation
 from .ContinuousFlowInitializationController_real import ContinuousFlowInitializationControllerReal
 
+# import SiLA errors
+from impl.common.neMESYS_errors import SiLAFrameworkError, QmixSDKError, DeviceError
+
+# import qmixsdk
+from qmixsdk.qmixpump import *
 
 class ContinuousFlowInitializationController(ContinuousFlowInitializationController_pb2_grpc.ContinuousFlowInitializationControllerServicer):
     """
@@ -55,18 +60,21 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
     implementation: Union[ContinuousFlowInitializationControllerSimulation, ContinuousFlowInitializationControllerReal]
     simulation_mode: bool
 
-    def __init__(self, simulation_mode: bool = True):
+    def __init__(self, pump: ContiFlowPump, simulation_mode: bool = True):
         """
         Class initialiser.
 
+        :param pump: A valid `qxmixpump.ContiFlowPump` for this service to use
         :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode.
         """
 
+        self.pump = pump
+
         self.simulation_mode = simulation_mode
         if simulation_mode:
-            self._inject_implementation(ContinuousFlowInitializationControllerSimulation())
+            self.switch_to_simulation_mode()
         else:
-            self._inject_implementation(ContinuousFlowInitializationControllerReal())
+            self.switch_to_real_mode()
 
     def _inject_implementation(self,
                                implementation: Union[ContinuousFlowInitializationControllerSimulation,
@@ -90,7 +98,7 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
     def switch_to_real_mode(self):
         """Method that will automatically be called by the server when the real mode is requested."""
         self.simulation_mode = False
-        self._inject_implementation(ContinuousFlowInitializationControllerReal())
+        self._inject_implementation(ContinuousFlowInitializationControllerReal(self.pump))
 
     def InitializeContiflow(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.CommandConfirmation:
@@ -98,16 +106,16 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
         Executes the observable command "Initialize Contiflow"
             Initialize the continuous flow pump.
             Call this command after all parameters have been set, to prepare the conti flow pump for the start of the continuous flow. The initialization procedure ensures, that the syringes are sufficiently filled to start the continuous flow. So calling this command may cause a syringe refill if the syringes are not sufficiently filled. So before calling this command you should ensure, that syringe refilling properly works an can be executed. If you have a certain syringe refill procedure, you can also manually refill the syringes with the normal syringe pump functions. If the syringes are sufficiently filled if you call this function, no refilling will take place.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A command confirmation object with the following information:
             commandId: A command id with which this observable command can be referenced in future calls
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
-    
+
         logging.debug(
             "InitializeContiflow called in {current_mode} mode".format(
                 current_mode=('simulation' if self.simulation_mode else 'real')
@@ -115,25 +123,26 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
         )
         try:
             return self.implementation.InitializeContiflow(request, context)
-        except SiLAError as err:
+        except DeviceError as err:
+            err = QmixSDKError(err)
             err.raise_rpc_error(context=context)
-    
+
     def InitializeContiflow_Info(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.ExecutionInfo:
         """
         Returns execution information regarding the command call :meth:`~.InitializeContiflow`.
-    
+
         :param request: A request object with the following properties
             CommandExecutionUUID: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: An ExecutionInfo response stream for the command with the following fields:
             commandStatus: Status of the command (enumeration)
             progressInfo: Information on the progress of the command (0 to 1)
             estimatedRemainingTime: Estimate of the remaining time required to run the command
             updatedLifetimeOfExecution: An update on the execution lifetime
         """
-    
+
         logging.debug(
             "InitializeContiflow_Info called in {current_mode} mode".format(
                 current_mode=('simulation' if self.simulation_mode else 'real')
@@ -141,22 +150,24 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
         )
         try:
             return self.implementation.InitializeContiflow_Info(request, context)
-        except SiLAError as err:
+        except (SiLAFrameworkError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKError(err)
             err.raise_rpc_error(context=context)
-    
+
     def InitializeContiflow_Result(self, request, context: grpc.ServicerContext) \
             -> ContinuousFlowInitializationController_pb2.InitializeContiflow_Responses:
         """
         Returns the final result of the command call :meth:`~.InitializeContiflow`.
-    
+
         :param request: A request object with the following properties
             CommandExecutionUUID: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         logging.debug(
             "InitializeContiflow_Result called in {current_mode} mode".format(
                 current_mode=('simulation' if self.simulation_mode else 'real')
@@ -164,9 +175,11 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
         )
         try:
             return self.implementation.InitializeContiflow_Result(request, context)
-        except SiLAError as err:
+        except (SiLAFrameworkError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKError(err)
             err.raise_rpc_error(context=context)
-    
+
 
     def Subscribe_IsInitialized(self, request, context: grpc.ServicerContext) \
             -> ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses:
@@ -174,16 +187,16 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
         Requests the observable property Is Initialized
             Returns true, if the conti fow pump is initialized and ready for continuous flow start.
             Use this function to check if the pump is initialized before you start a continuous flow. If you change and continuous flow parameter, like valve settings, cross flow duration and so on, the pump will leave the initialized state. That means, after each parameter change, an initialization is required. Changing the flow rate or the dosing volume does not require and initialization.
-                    
-    
+
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response stream with the following fields:
             request.IsInitialized (Is Initialized): Returns true, if the conti fow pump is initialized and ready for continuous flow start.
             Use this function to check if the pump is initialized before you start a continuous flow. If you change and continuous flow parameter, like valve settings, cross flow duration and so on, the pump will leave the initialized state. That means, after each parameter change, an initialization is required. Changing the flow rate or the dosing volume does not require and initialization.
         """
-    
+
         logging.debug(
             "Property IsInitialized requested in {current_mode} mode".format(
                 current_mode=('simulation' if self.simulation_mode else 'real')
@@ -191,6 +204,7 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
         )
         try:
             return self.implementation.Subscribe_IsInitialized(request, context)
-        except SiLAError as err:
+        except DeviceError as err:
+            err = QmixSDKError(err)
             err.raise_rpc_error(context=context)
-    
+

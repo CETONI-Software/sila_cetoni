@@ -32,7 +32,9 @@ __version__ = "0.1.0"
 import logging
 import time         # used for observables
 import uuid         # used for observables
-import grpc         # used for type hinting only
+import grpc
+from grpc import ServicerContext, secure_channel
+from sila2lib.error_handling.server_err import SiLAFrameworkError, SiLAFrameworkErrorType         # used for type hinting only
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
@@ -44,6 +46,10 @@ from .gRPC import ContinuousFlowInitializationController_pb2 as ContinuousFlowIn
 # import default arguments
 from .ContinuousFlowInitializationController_default_arguments import default_dict
 
+# import qmixsdk
+from qmixsdk.qmixbus import PollingTimer
+from qmixsdk.qmixpump import *
+
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class ContinuousFlowInitializationControllerReal:
@@ -52,42 +58,44 @@ class ContinuousFlowInitializationControllerReal:
         Allows to control a continuous flow pumps that is made up of two syringe pumps
     """
 
-    def __init__(self):
-        """Class initialiser"""
+    def __init__(self, pump: ContiFlowPump, simulation_mode: bool = True):
+        """
+        Class initialiser.
+
+        :param pump: A valid `qxmixpump.ContiFlowPump` for this service to use
+        :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode.
+        """
+
+        self.pump = pump
+        self.timer = PollingTimer(30000)
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
-    def _get_command_state(self, command_uuid: str) -> silaFW_pb2.ExecutionInfo:
+    def _get_initialization_state(self) -> silaFW_pb2.ExecutionInfo:
         """
-        Method to fill an ExecutionInfo message from the SiLA server for observable commands
-
-        :param command_uuid: The uuid of the command for which to return the current state
+        Method to fill an ExecutionInfo message from the SiLA server for the InitializeContiflow observable command
 
         :return: An execution info object with the current command state
         """
 
         #: Enumeration of silaFW_pb2.ExecutionInfo.CommandStatus
         command_status = silaFW_pb2.ExecutionInfo.CommandStatus.waiting
-        #: Real silaFW_pb2.Real(0...1)
-        command_progress = None
+        if self.pump.is_initializing() and not self.timer.is_expired():
+            command_status = silaFW_pb2.ExecutionInfo.CommandStatus.running
+        elif self.pump.is_initialized():
+            command_status = silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully
+        else:
+            command_status = silaFW_pb2.ExecutionInfo.CommandStatus.finishedWithError
         #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
-        command_estimated_remaining = None
-        #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
-        command_lifetime_of_execution = None
+        command_estimated_remaining = self.timer.get_msecs_to_expiration() / 1000
 
-        # TODO: check the state of the command with the given uuid and return the correct information
-
-        # just return a default in this example
         return silaFW_pb2.ExecutionInfo(
             commandStatus=command_status,
-            progressInfo=(
-                command_progress if command_progress is not None else None
+            estimatedRemainingTime=silaFW_pb2.Duration(
+                seconds=int(command_estimated_remaining)
             ),
-            estimatedRemainingTime=(
-                command_estimated_remaining if command_estimated_remaining is not None else None
-            ),
-            updatedLifetimeOfExecution=(
-                command_lifetime_of_execution if command_lifetime_of_execution is not None else None
+            updatedLifetimeOfExecution=silaFW_pb2.Duration(
+                seconds=int(self.timer.period_ms / 1000)
             )
         )
 
@@ -97,131 +105,78 @@ class ContinuousFlowInitializationControllerReal:
         Executes the observable command "Initialize Contiflow"
             Initialize the continuous flow pump.
             Call this command after all parameters have been set, to prepare the conti flow pump for the start of the continuous flow. The initialization procedure ensures, that the syringes are sufficiently filled to start the continuous flow. So calling this command may cause a syringe refill if the syringes are not sufficiently filled. So before calling this command you should ensure, that syringe refilling properly works an can be executed. If you have a certain syringe refill procedure, you can also manually refill the syringes with the normal syringe pump functions. If the syringes are sufficiently filled if you call this function, no refilling will take place.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A command confirmation object with the following information:
             commandId: A command id with which this observable command can be referenced in future calls
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
-    
-        # initialise default values
-        #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
-        lifetime_of_execution: silaFW_pb2.Duration = None
-    
-        # TODO:
-        #   Execute the actual command
-        #   Optional: Generate a lifetime_of_execution
-    
+
+        self.pump.initialize()
+        self.timer.restart()
+
         # respond with UUID and lifetime of execution
-        command_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
-        if lifetime_of_execution is not None:
-            return silaFW_pb2.CommandConfirmation(
-                commandExecutionUUID=command_uuid,
-                lifetimeOfExecution=lifetime_of_execution
-            )
-        else:
-            return silaFW_pb2.CommandConfirmation(
-                commandExecutionUUID=command_uuid
-            )
-    
+        self.command_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
+        return silaFW_pb2.CommandConfirmation(
+            commandExecutionUUID=self.command_uuid,
+            lifetimeOfExecution=silaFW_pb2.Duration(seconds=int(self.timer.period_ms / 1000))
+        )
+
     def InitializeContiflow_Info(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.ExecutionInfo:
         """
         Returns execution information regarding the command call :meth:`~.InitializeContiflow`.
-    
+
         :param request: A request object with the following properties
             commandId: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: An ExecutionInfo response stream for the command with the following fields:
             commandStatus: Status of the command (enumeration)
             progressInfo: Information on the progress of the command (0 to 1)
             estimatedRemainingTime: Estimate of the remaining time required to run the command
             updatedLifetimeOfExecution: An update on the execution lifetime
         """
-        # Get the UUID of the command
-        command_uuid = request.value
-    
+        if request != self.command_uuid:
+            raise SiLAFrameworkError(SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID)
+
         # Get the current state
-        execution_info = self._get_command_state(command_uuid=command_uuid)
-    
-        # construct the initial return dictionary in case while is not executed
-        return_values = {'commandStatus': execution_info.commandStatus}
-        if execution_info.HasField('progressInfo'):
-            return_values['progressInfo'] = execution_info.progressInfo
-        if execution_info.HasField('estimatedRemainingTime'):
-            return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
-        if execution_info.HasField('updatedLifetimeOfExecution'):
-            return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
-    
+        execution_info = self._get_initialization_state()
+
         # we loop only as long as the command is running
         while execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.waiting \
                 or execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.running:
-            # TODO:
-            #   Evaluate the command status --> command_status. Options:
-            #       command_stats = silaFW_pb2.ExecutionInfo.CommandStatus.waiting
-            #       command_stats = silaFW_pb2.ExecutionInfo.CommandStatus.running
-            #       command_stats = silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully
-            #       command_stats = silaFW_pb2.ExecutionInfo.CommandStatus.finishedWithError
-            #   Optional:
-            #       * Determine the progress (progressInfo)
-            #       * Determine the estimated remaining time
-            #       * Update the Lifetime of execution
-    
             # Update all values
-            execution_info = self._get_command_state(command_uuid=command_uuid)
-    
-            # construct the return dictionary
-            return_values = {'commandStatus': execution_info.commandStatus}
-            if execution_info.HasField('progressInfo'):
-                return_values['progressInfo'] = execution_info.progressInfo
-            if execution_info.HasField('estimatedRemainingTime'):
-                return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
-            if execution_info.HasField('updatedLifetimeOfExecution'):
-                return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
-    
-            yield silaFW_pb2.ExecutionInfo(**return_values)
-    
+            execution_info = self._get_initialization_state()
+
+            yield execution_info
+
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
         else:
             # one last time yield the status
-            yield silaFW_pb2.ExecutionInfo(**return_values)
-    
+            yield execution_info
+
     def InitializeContiflow_Result(self, request, context: grpc.ServicerContext) \
             -> ContinuousFlowInitializationController_pb2.InitializeContiflow_Responses:
         """
         Returns the final result of the command call :meth:`~.InitializeContiflow`.
-    
+
         :param request: A request object with the following properties
             CommandExecutionUUID: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
-        # initialise the return value
-        return_value: ContinuousFlowInitializationController_pb2.InitializeContiflow_Responses = None
-    
-        # Get the UUID of the command
-        command_uuid = request.value
-    
-        # TODO:
-        #   Add implementation of Real for command InitializeContiflow here and write the resulting response
-        #   in return_value
-    
-        # fallback to default
-        if return_value is None:
-            return_value = ContinuousFlowInitializationController_pb2.InitializeContiflow_Responses(
-                **default_dict['InitializeContiflow_Responses']
-            )
-    
-        return return_value
-    
+        if request != self.command_uuid:
+            raise SiLAFrameworkError(SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID)
+
+        return ContinuousFlowInitializationController_pb2.InitializeContiflow_Responses()
+
 
     def Subscribe_IsInitialized(self, request, context: grpc.ServicerContext) \
             -> ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses:
@@ -229,31 +184,20 @@ class ContinuousFlowInitializationControllerReal:
         Requests the observable property Is Initialized
             Returns true, if the conti fow pump is initialized and ready for continuous flow start.
             Use this function to check if the pump is initialized before you start a continuous flow. If you change and continuous flow parameter, like valve settings, cross flow duration and so on, the pump will leave the initialized state. That means, after each parameter change, an initialization is required. Changing the flow rate or the dosing volume does not require and initialization.
-                    
-    
+
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.IsInitialized (Is Initialized): Returns true, if the conti fow pump is initialized and ready for continuous flow start.
             Use this function to check if the pump is initialized before you start a continuous flow. If you change and continuous flow parameter, like valve settings, cross flow duration and so on, the pump will leave the initialized state. That means, after each parameter change, an initialization is required. Changing the flow rate or the dosing volume does not require and initialization.
         """
-    
-        # initialise the return value
-        return_value: ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses = None
-    
-        # we could use a timeout here if we wanted
+
         while True:
-            # TODO:
-            #   Add implementation of Real for property IsInitialized here and write the resulting
-            #   response in return_value
-    
-            # create the default value
-            if return_value is None:
-                return_value = ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses(
-                    **default_dict['Subscribe_IsInitialized_Responses']
-                )
-    
-    
-            yield return_value
-    
+            yield ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses(
+                IsInitialized=silaFW_pb2.Boolean(value=self.pump.is_initialized())
+            )
+
+            time.sleep(0.5) # give client a chance to keep up
+

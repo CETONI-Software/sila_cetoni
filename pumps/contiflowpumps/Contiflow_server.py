@@ -8,7 +8,7 @@ ________________________________________________________________________
 
 :details: Contiflow:
     Allows to control a continuous flow pumps that is made up of two syringe pumps
-           
+
 :file:    Contiflow_server.py
 :authors: Florian Meinicke
 
@@ -28,40 +28,48 @@ ________________________________________________________________________
 """
 __version__ = "0.1.0"
 
+import os
 import logging
 import argparse
+
+# import qmixsdk
+from qmixsdk import qmixbus
+from qmixsdk import qmixpump
 
 # Import the main SiLA library
 from sila2lib.sila_server import SiLA2Server
 
 # Import gRPC libraries of features
-from de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService.gRPC import de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2
-from de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService.gRPC import de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2_grpc
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService.gRPC import ContinuousFlowConfigurationService_pb2
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService.gRPC import ContinuousFlowConfigurationService_pb2_grpc
 # import default arguments for this feature
-from de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_default_arguments import default_dict as de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_default_dict
-from de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController.gRPC import de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_pb2
-from de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController.gRPC import de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_pb2_grpc
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService.ContinuousFlowConfigurationService_default_arguments import default_dict as ContinuousFlowConfigurationService_default_dict
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.gRPC import ContinuousFlowInitializationController_pb2
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.gRPC import ContinuousFlowInitializationController_pb2_grpc
 # import default arguments for this feature
-from de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController.de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_default_arguments import default_dict as de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_default_dict
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.ContinuousFlowInitializationController_default_arguments import default_dict as ContinuousFlowInitializationController_default_dict
 
 # Import the servicer modules for each feature
-from de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_servicer import de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService
-from de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController.de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_servicer import de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService.ContinuousFlowConfigurationService_servicer import ContinuousFlowConfigurationService
+from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.ContinuousFlowInitializationController_servicer import ContinuousFlowInitializationController
 
+from local_ip import LOCAL_IP
 
 class ContiflowServer(SiLA2Server):
     """
     Allows to control a continuous flow pumps that is made up of two syringe pumps
     """
 
-    def __init__(self, cmd_args, simulation_mode: bool = True):
+    def __init__(self, cmd_args, qmix_pump, simulation_mode: bool = True):
         """Class initialiser"""
         super().__init__(
-            name=cmd_args.server_name, description=cmd_args.description,
-            server_type=cmd_args.server_type, server_uuid=None,
+            name=cmd_args.server_name,
+            description=cmd_args.description,
+            server_type=cmd_args.server_type,
+            server_uuid=None,
             version=__version__,
             vendor_url="cetoni.de",
-            ip="127.0.0.1", port=50053,
+            ip=LOCAL_IP, port=int(cmd_args.port),
             key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert
         )
 
@@ -71,30 +79,38 @@ class ContiflowServer(SiLA2Server):
             )
         )
 
+        data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..',
+                                 'features', 'de', 'cetoni', 'pumps', 'contiflowpumps')
+
         # registering features
-        #  Register de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService
-        self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_servicer = de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService(simulation_mode=self.simulation_mode)
-        de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2_grpc.add_de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationServiceServicer_to_server(
-            self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_servicer,
+        #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService
+        self.ContinuousFlowConfigurationService_servicer = \
+            ContinuousFlowConfigurationService(
+                pump=qmix_pump,
+                simulation_mode=self.simulation_mode
+            )
+        ContinuousFlowConfigurationService_pb2_grpc.add_ContinuousFlowConfigurationServiceServicer_to_server(
+            self.ContinuousFlowConfigurationService_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService',
-                         servicer=self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_servicer,
-                         data_path='meta')
-        #  Register de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController
-        self.de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_servicer = de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController(simulation_mode=self.simulation_mode)
-        de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_pb2_grpc.add_de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationControllerServicer_to_server(
-            self.de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_servicer,
+        self.add_feature(feature_id='de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService',
+                         servicer=self.ContinuousFlowConfigurationService_servicer,
+                         data_path=data_path)
+        #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController
+        self.ContinuousFlowInitializationController_servicer = \
+            ContinuousFlowInitializationController(
+                pump=qmix_pump,
+                simulation_mode=self.simulation_mode
+            )
+        ContinuousFlowInitializationController_pb2_grpc.add_ContinuousFlowInitializationControllerServicer_to_server(
+            self.ContinuousFlowInitializationController_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController',
-                         servicer=self.de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_servicer,
-                         data_path='meta')
+        self.add_feature(feature_id='de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController',
+                         servicer=self.ContinuousFlowInitializationController_servicer,
+                         data_path=data_path)
 
         self.simulation_mode = simulation_mode
-
-        # starting and running the gRPC/SiLA2 server
-        self.run()
 
 
 def parse_command_line():
@@ -135,12 +151,12 @@ def parse_command_line():
             parsed_args.encryption_cert = parsed_args.encryption + '.cert'
 
     return parsed_args
-    
-        
+
+
 if __name__ == '__main__':
     # or use logging.ERROR for less output
     logging.basicConfig(format='%(levelname)-8s| %(module)s.%(funcName)s: %(message)s', level=logging.DEBUG)
-    
+
     args = parse_command_line()
 
     # generate SiLA2Server

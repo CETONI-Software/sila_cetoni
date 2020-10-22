@@ -26,7 +26,7 @@ ________________________________________________________________________
   For further Information see LICENSE file that comes with this distribution.
 ________________________________________________________________________
 """
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 import os
 import argparse
