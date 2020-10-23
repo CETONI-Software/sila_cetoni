@@ -92,18 +92,6 @@ class ContiflowServer(neMESYSServer):
         self.add_feature(feature_id='ContinuousFlowConfigurationService',
                          servicer=self.ContinuousFlowConfigurationService_servicer,
                          data_path=data_path)
-        #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService
-        self.ContinuousFlowDosingService_servicer = ContinuousFlowDosingService(
-                pump=qmix_pump,
-                simulation_mode=self.simulation_mode
-            )
-        ContinuousFlowDosingService_pb2_grpc.add_ContinuousFlowDosingServiceServicer_to_server(
-            self.ContinuousFlowDosingService_servicer,
-            self.grpc_server
-        )
-        self.add_feature(feature_id='ContinuousFlowDosingService',
-                         servicer=self.ContinuousFlowDosingService_servicer,
-                         data_path=data_path)
         #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController
         self.ContinuousFlowInitializationController_servicer = \
             ContinuousFlowInitializationController(
@@ -116,6 +104,18 @@ class ContiflowServer(neMESYSServer):
         )
         self.add_feature(feature_id='ContinuousFlowInitializationController',
                          servicer=self.ContinuousFlowInitializationController_servicer,
+                         data_path=data_path)
+        #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService
+        self.ContinuousFlowDosingService_servicer = ContinuousFlowDosingService(
+                pump=qmix_pump,
+                simulation_mode=self.simulation_mode
+            )
+        ContinuousFlowDosingService_pb2_grpc.add_ContinuousFlowDosingServiceServicer_to_server(
+            self.ContinuousFlowDosingService_servicer,
+            self.grpc_server
+        )
+        self.add_feature(feature_id='ContinuousFlowDosingService',
+                         servicer=self.ContinuousFlowDosingService_servicer,
                          data_path=data_path)
         #  Register de.cetoni.pumps.syringepumps.ShutdownController
         self.ShutdownController_servicer = ShutdownController(
