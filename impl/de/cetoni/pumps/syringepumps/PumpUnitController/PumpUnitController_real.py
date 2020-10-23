@@ -36,6 +36,8 @@ import grpc         # used for type hinting only
 
 # import qmixsdk
 from qmixsdk import qmixpump
+from qmixsdk.qmixbus import TimeUnit
+from qmixsdk.qmixpump import VolumeUnit
 
 from . import unit_conversion as uc
 
@@ -74,15 +76,31 @@ class PumpUnitControllerReal:
             Sets the flow unit for the pump. The flow unit defines the unit to be used for all flow values passed to or retrieved from the pump.
 
         :param request: gRPC request containing the parameters passed:
-            request.FlowUnit (FlowUnit): The flow unit to set. It has to something like "ml/s" or "µl/s", for instance.
+            request.FlowUnit (Flow Unit): The flow unit to be set.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
+        """
+        FlowUnit {
+            VolumeUnit {
+                VolumeUnit {
+                    value: "l"
+                }
+            }
+            TimeUnit {
+                TimeUnit {
+                    value: "h"
+                }
+            }
+        }
+        """
         try:
-            requested_volume_unit, requested_time_unit = request.FlowUnit.value.split("/")
+            flow_unit = request.FlowUnit
+            requested_volume_unit = flow_unit.VolumeUnit.VolumeUnit.value
+            requested_time_unit = flow_unit.TimeUnit.TimeUnit.value
             prefix, volume_unit, time_unit = uc.evaluate_units(requested_volume_unit,
                                                                requested_time_unit)
         except ValueError:
@@ -102,14 +120,22 @@ class PumpUnitControllerReal:
             Sets the default volume unit. The volume unit defines the unit to be used for all volume values passed to or retrieved from the pump.
 
         :param request: gRPC request containing the parameters passed:
-            request.VolumeUnit (Volume Unit): The volume unit to set. It has to be something like "ml" or "µl", for instance.
+            request.VolumeUnit (Volume Unit): The volume unit for the flow rate.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        prefix, volume_unit = uc.evaluate_units(request.VolumeUnit.value)
+        """
+        VolumeUnit {
+            VolumeUnit {
+                value: "ml"
+            }
+        }
+        """
+
+        prefix, volume_unit = uc.evaluate_units(request.VolumeUnit.VolumeUnit.value)
         self.pump.set_volume_unit(prefix, volume_unit)
 
         return PumpUnitController_pb2.SetVolumeUnit_Responses()
@@ -127,9 +153,24 @@ class PumpUnitControllerReal:
             request.FlowUnit (Flow Unit): The currently used flow unit.
         """
 
-        yield PumpUnitController_pb2.Subscribe_FlowUnit_Responses(FlowUnit=silaFW_pb2.String(
-            value=uc.flow_unit_to_string(self.pump.get_flow_unit())
-        ))
+        while True:
+            volume_unit, time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
+            yield PumpUnitController_pb2.Subscribe_FlowUnit_Responses(
+                FlowUnit=PumpUnitController_pb2.Subscribe_FlowUnit_Responses.FlowUnit_Struct(
+                    VolumeUnit=PumpUnitController_pb2.DataType_VolumeUnit(
+                        VolumeUnit=silaFW_pb2.String(
+                            value=volume_unit
+                        )
+                    ),
+                    TimeUnit=PumpUnitController_pb2.DataType_TimeUnit(
+                        TimeUnit=silaFW_pb2.String(
+                            value=time_unit
+                        )
+                    )
+                )
+            )
+            # we add a small delay to give the client a chance to keep up.
+            time.sleep(0.5)
 
     def Subscribe_VolumeUnit(self, request, context: grpc.ServicerContext) \
             -> PumpUnitController_pb2.Subscribe_VolumeUnit_Responses:
@@ -145,9 +186,12 @@ class PumpUnitControllerReal:
         """
 
         while True:
-            yield PumpUnitController_pb2.Subscribe_VolumeUnit_Responses(VolumeUnit=silaFW_pb2.String(
-                value=uc.volume_unit_to_string(self.pump.get_volume_unit())
-            ))
-
+            yield PumpUnitController_pb2.Subscribe_VolumeUnit_Responses(
+                VolumeUnit=PumpUnitController_pb2.DataType_VolumeUnit(
+                    VolumeUnit=silaFW_pb2.String(
+                        value=uc.volume_unit_to_string(self.pump.get_volume_unit())
+                    )
+                )
+            )
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
