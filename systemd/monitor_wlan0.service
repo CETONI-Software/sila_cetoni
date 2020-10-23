@@ -1,0 +1,13 @@
+[Unit]
+Description=Monitor wlan0
+Wants=default.target multi-user.target
+After=default.target multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/home/pi/sila_qmix/monitor_wlan0.sh
+WorkingDirectory=/home/pi/sila_qmix
+User=pi
+
+[Install]
+WantedBy=default.target multi-user.target
