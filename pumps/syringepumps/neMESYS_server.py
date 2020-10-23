@@ -67,10 +67,10 @@ from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import Valve
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
-from impl.de.cetoni.pumps.syringepumps.ShutdownController.gRPC import ShutdownController_pb2
-from impl.de.cetoni.pumps.syringepumps.ShutdownController.gRPC import ShutdownController_pb2_grpc
+from impl.de.cetoni.core.ShutdownController.gRPC import ShutdownController_pb2
+from impl.de.cetoni.core.ShutdownController.gRPC import ShutdownController_pb2_grpc
 # import default arguments for this feature
-from impl.de.cetoni.pumps.syringepumps.ShutdownController.ShutdownController_default_arguments import default_dict as ShutdownController_default_dict
+from impl.de.cetoni.core.ShutdownController.ShutdownController_default_arguments import default_dict as ShutdownController_default_dict
 
 # Import the servicer modules for each feature
 from impl.de.cetoni.pumps.syringepumps.PumpDriveControlService.PumpDriveControlService_servicer import PumpDriveControlService
@@ -78,7 +78,7 @@ from impl.de.cetoni.pumps.syringepumps.PumpUnitController.PumpUnitController_ser
 from impl.de.cetoni.pumps.syringepumps.PumpFluidDosingService.PumpFluidDosingService_servicer import PumpFluidDosingService
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.SyringeConfigurationController_servicer import SyringeConfigurationController
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_servicer import ValvePositionController
-from impl.de.cetoni.pumps.syringepumps.ShutdownController.ShutdownController_servicer import ShutdownController
+from impl.de.cetoni.core.ShutdownController.ShutdownController_servicer import ShutdownController
 
 from local_ip import LOCAL_IP
 
@@ -182,7 +182,7 @@ class neMESYSServer(SiLA2Server):
             )
             self.add_feature(feature_id='ShutdownController',
                              servicer=self.ShutdownController_servicer,
-                             data_path=data_path)
+                            data_path=data_path.replace('pumps.syringepumps', 'core'))
 
         self.simulation_mode = simulation_mode
 

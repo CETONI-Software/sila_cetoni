@@ -15,7 +15,7 @@
     "de/cetoni/pumps/syringepumps/PumpFluidDosingService",
     "de/cetoni/pumps/syringepumps/SyringeConfigurationController",
     "de/cetoni/pumps/syringepumps/ValvePositionController",
-    "de/cetoni/pumps/syringepumps/ShutdownController"
+    "de/cetoni/core/ShutdownController"
   ],
   "communication_port": "50053",
   "IP_address": "127.0.0.1",
