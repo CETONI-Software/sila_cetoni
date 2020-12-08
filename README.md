@@ -14,3 +14,16 @@ SiLA 2 drivers for CETONI Qmix devices
    ```
 3. After that move the directories that contain the implementation classes for each feature into the correct directory in `impl/de/cetoni/`
 4. Fix the import paths and implement the features
+
+## Running:
+Make sure to have `sila2lib` installed (`pip install sila2lib`) and activated the correct virtualenv (if applicable).
+
+### Windows:
+```cmd
+> python sila_qmix.py <path-to-qmix-config>
+```
+
+### Linux:
+```console
+$ ./sila_qmix.sh <path-to-qmix-config>
+```
