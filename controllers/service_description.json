@@ -1,5 +1,5 @@
 {
-    "service_name": "Qmix Control",
+    "service_name": "QmixControl",
     "service_description": "The SiLA 2 driver for Qmix Control Devices",
     "authors": "Florian Meinicke",
     "creation_date": "2020-10-08",
