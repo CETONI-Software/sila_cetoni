@@ -10,7 +10,7 @@
       "SimulationController"
     ],
     "SiLA_feature_list": [
-      "de/cetoni/controllersControlLoopService"
+      "de/cetoni/controllers/ControlLoopService"
     ],
     "communication_port": "50052",
     "IP_address": "127.0.0.1",
