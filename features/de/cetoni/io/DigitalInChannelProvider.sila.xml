@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="io" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>DigitalInChannelProvider</Identifier>
+    <DisplayName>Digital In Channel Provider</DisplayName>
+    <Description>Allows to control one digital in channel of an I/O module</Description>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>State</Identifier>
+        <DisplayName>State</DisplayName>
+        <Description>The state of the channel.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <DataTypeIdentifier>State</DataTypeIdentifier>
+        </DataType>
+    </Property>
+
+    <!-- Data Types -->
+    <DataTypeDefinition>
+        <Identifier>State</Identifier>
+        <DisplayName>State</DisplayName>
+        <Description>The state of a digital I/O channel. Can be either 'On' or 'Off'.</Description>
+        <DataType>
+            <Constrained>
+                <DataType>
+                    <Basic>String</Basic>
+                </DataType>
+                <Constraints>
+                    <Set>
+                        <Value>On</Value>
+                        <Value>Off</Value>
+                    </Set>
+                </Constraints>
+            </Constrained>
+        </DataType>
+    </DataTypeDefinition>
+</Feature>
