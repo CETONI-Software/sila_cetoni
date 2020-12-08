@@ -36,7 +36,7 @@ try:
 except ModuleNotFoundError:
     print("Cannot find coloredlogs! Please install coloredlogs, if you'd like to have nicer logging output:")
     print("`pip install coloredlogs`")
-from typing import List
+from typing import List, Union
 
 # adjust PATH to point to QmixSDK
 sys.path.append("C:/QmixSDK/lib/python")
@@ -45,9 +45,10 @@ sys.path.append("C:/QmixSDK/lib/python")
 from pumps.syringepumps.neMESYS_server import neMESYSServer
 from pumps.contiflowpumps.Contiflow_server import ContiflowServer
 from controllers.QmixControl_server import QmixControlServer
+from qmixio.QmixIO_server import QmixIOServer
 
 # import qmixsdk
-from qmixsdk import qmixbus, qmixpump, qmixcontroller
+from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -76,7 +77,7 @@ def get_availabe_pumps() -> List[qmixpump.Pump]:
     all found pumps
 
         :return: A list of all found pumps connected to the bus
-        :rtype: [qmixpump.Pump]
+        :rtype: List[qmixpump.Pump]
     """
     pump_count = qmixpump.Pump.get_no_of_pumps()
     logging.debug("Number of pumps: %s", pump_count)
@@ -102,7 +103,7 @@ def enable_pumps(pumps: List[qmixpump.Pump]):
     Enables all given pumps
 
         :param pumps: A list of pumps to enable
-        :type pumps: list(qmixpump.Pump)
+        :type pumps: List[qmixpump.Pump]
     """
     for pump in pumps:
         if pump.is_in_fault_state():
@@ -116,7 +117,7 @@ def get_availabe_controllers() -> List[qmixcontroller.ControllerChannel]:
     a list of all found channels
 
         :return: A list of all found controller channels connected to the bus
-        :rtype: [qmixcontroller.ControllerChannel]
+        :rtype: List[qmixcontroller.ControllerChannel]
     """
     channel_count = qmixcontroller.ControllerChannel.get_no_of_channels()
     logging.debug("Number of controller channels: %s", channel_count)
@@ -128,6 +129,35 @@ def get_availabe_controllers() -> List[qmixcontroller.ControllerChannel]:
         channel.lookup_channel_by_index(i)
         logging.debug("Found channel %d named %s", i, channel.get_name())
         channels.append(channel)
+
+    return channels
+
+def get_availabe_io_channels() \
+    -> List[Union[qmixanalogio.AnalogChannel, qmixdigio.DigitalChannel]]:
+    """
+    Looks up all analog and digital I/O channels from the current configuration
+    and constructs a list of all found channels
+
+        :return: A list of all found I/O channels connected to the bus
+        :rtype: List[Union[qmixanalogio.AnalogChannel, qmixdigio.DigitalChannel]]
+    """
+
+    channels = []
+
+    for (description, ChannelType) in {
+        'analog in': qmixanalogio.AnalogInChannel,
+        'analog out': qmixanalogio.AnalogOutChannel,
+        'digital in': qmixdigio.DigitalInChannel,
+        'digital out': qmixdigio.DigitalOutChannel}.items():
+
+        channel_count = ChannelType.get_no_of_channels()
+        logging.debug("Number of %s channels: %s", description, channel_count)
+
+        for i in range(channel_count):
+            channel = ChannelType()
+            channel.lookup_channel_by_index(i)
+            logging.debug("Found %s channel %d named %s", description, i, channel.get_name())
+            channels.append(channel)
 
     return channels
 
@@ -171,6 +201,7 @@ if __name__ == '__main__':
     logging.debug("Looking up devices...")
     pumps = get_availabe_pumps()
     controllers = get_availabe_controllers()
+    io_channels = get_availabe_io_channels()
     # TODO get more devices ...
     bus.start()
     enable_pumps(pumps)
@@ -204,6 +235,15 @@ if __name__ == '__main__':
         server = QmixControlServer(cmd_args=args, qmix_controller=channel, simulation_mode=False)
         server.run(block=False)
         servers += [server]
+    for channel in io_channels:
+        args.port += 1
+        args.server_name = channel.get_name().replace("_", " ")
+        args.description = "Allows to control a Qmix I/O Channel"
+
+        if args.server_name in ("QmixIO 1 DI0", "QmixIO 1 DO0"):
+            server = QmixIOServer(cmd_args=args, io_channel=channel, simulation_mode=False)
+            server.run(block=False)
+            servers += [server]
 
     logging.info("All servers started!")
     print("Press Ctrl-C to stop...")
