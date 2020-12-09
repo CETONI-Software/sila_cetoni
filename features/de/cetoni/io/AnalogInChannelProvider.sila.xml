@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="io" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>AnalogInChannelProvider</Identifier>
+    <DisplayName>Analog In Channel Provider</DisplayName>
+    <Description>Allows to control one analog in channel of an I/O module</Description>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>Value</Identifier>
+        <DisplayName>Value</DisplayName>
+        <Description>The value of the analog I/O channel.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+</Feature>

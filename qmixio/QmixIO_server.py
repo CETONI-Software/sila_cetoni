@@ -45,12 +45,22 @@ from impl.de.cetoni.io.DigitalOutChannelController.gRPC import DigitalOutChannel
 from impl.de.cetoni.io.DigitalOutChannelController.gRPC import DigitalOutChannelController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.io.DigitalOutChannelController.DigitalOutChannelController_default_arguments import default_dict as DigitalOutChannelController_default_dict
+from impl.de.cetoni.io.AnalogInChannelProvider.gRPC import AnalogInChannelProvider_pb2
+from impl.de.cetoni.io.AnalogInChannelProvider.gRPC import AnalogInChannelProvider_pb2_grpc
+# import default arguments for this feature
+from impl.de.cetoni.io.AnalogInChannelProvider.AnalogInChannelProvider_default_arguments import default_dict as DigitalInChannelProvider_default_dict
+from impl.de.cetoni.io.AnalogOutChannelController.gRPC import AnalogOutChannelController_pb2
+from impl.de.cetoni.io.AnalogOutChannelController.gRPC import AnalogOutChannelController_pb2_grpc
+# import default arguments for this feature
+from impl.de.cetoni.io.AnalogOutChannelController.AnalogOutChannelController_default_arguments import default_dict as AnalogOutChannelController_default_dict
 
 # Import the servicer modules for each feature
 from impl.de.cetoni.io.DigitalInChannelProvider.DigitalInChannelProvider_servicer import DigitalInChannelProvider
 from impl.de.cetoni.io.DigitalOutChannelController.DigitalOutChannelController_servicer import DigitalOutChannelController
+from impl.de.cetoni.io.AnalogInChannelProvider.AnalogInChannelProvider_servicer import AnalogInChannelProvider
+from impl.de.cetoni.io.AnalogOutChannelController.AnalogOutChannelController_servicer import AnalogOutChannelController
 
-# from qmixsdk.qmixanalogio import AnalogInChannel, AnalogOutChannel
+from qmixsdk.qmixanalogio import AnalogInChannel, AnalogOutChannel
 from qmixsdk.qmixdigio import DigitalInChannel, DigitalOutChannel
 
 from local_ip import LOCAL_IP
@@ -91,7 +101,37 @@ class QmixIOServer(SiLA2Server):
                                  'features', 'de', 'cetoni', 'io')
 
         # registering features
-        if isinstance(io_channel, DigitalInChannel):
+        if isinstance(io_channel, AnalogInChannel):
+            logging.warning(f"{cmd_args.server_name}: SW Scaling: {io_channel.get_scaling_param()}")
+
+            #  Register de.cetoni.io.AnalogInChannelProvider
+            self.AnalogInChannelProvider_servicer = AnalogInChannelProvider(
+                channel=io_channel,
+                simulation_mode=self.simulation_mode
+            )
+            AnalogInChannelProvider_pb2_grpc.add_AnalogInChannelProviderServicer_to_server(
+                self.AnalogInChannelProvider_servicer,
+                self.grpc_server
+            )
+            self.add_feature(feature_id='AnalogInChannelProvider',
+                             servicer=self.AnalogInChannelProvider_servicer,
+                             data_path=meta_path)
+        elif isinstance(io_channel, AnalogOutChannel):
+            logging.warning(f"{cmd_args.server_name}: SW Scaling: {io_channel.get_scaling_param()}")
+
+            #  Register de.cetoni.io.AnalogOutChannelController
+            self.AnalogOutChannelController_servicer = AnalogOutChannelController(
+                channel=io_channel,
+                simulation_mode=self.simulation_mode
+            )
+            AnalogOutChannelController_pb2_grpc.add_AnalogOutChannelControllerServicer_to_server(
+                self.AnalogOutChannelController_servicer,
+                self.grpc_server
+            )
+            self.add_feature(feature_id='AnalogOutChannelController',
+                             servicer=self.AnalogOutChannelController_servicer,
+                             data_path=meta_path)
+        elif isinstance(io_channel, DigitalInChannel):
             #  Register de.cetoni.io.DigitalInChannelProvider
             self.DigitalInChannelProvider_servicer = DigitalInChannelProvider(
                 channel=io_channel,

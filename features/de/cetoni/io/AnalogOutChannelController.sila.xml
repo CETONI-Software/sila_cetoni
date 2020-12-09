@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="io" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>AnalogOutChannelController</Identifier>
+    <DisplayName>Analog Out Channel Controller</DisplayName>
+    <Description>Allows to control one analog out channel of an I/O module</Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>SetOutputValue</Identifier>
+        <DisplayName>Set Output Value</DisplayName>
+        <Description>Set the value of the analog output channel.</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>Value</Identifier>
+            <DisplayName>Value</DisplayName>
+            <Description>The value to set.</Description>
+            <DataType>
+                <Basic>Real</Basic>
+            </DataType>
+        </Parameter>
+    </Command>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>Value</Identifier>
+        <DisplayName>Value</DisplayName>
+        <Description>The value of the analog I/O channel.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+</Feature>

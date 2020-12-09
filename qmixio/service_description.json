@@ -10,6 +10,8 @@
       "SimulationController"
     ],
     "SiLA_feature_list": [
+      "de/cetoni/io/AnalogInChannelProvider",
+      "de/cetoni/io/AnalogOutChannelController",
       "de/cetoni/io/DigitalInChannelProvider",
       "de/cetoni/io/DigitalOutChannelController"
     ],
