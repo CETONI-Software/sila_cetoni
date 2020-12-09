@@ -72,7 +72,7 @@ class QmixIOServer(SiLA2Server):
 
     def __init__(self,
                  cmd_args,
-                 io_channel: Union[DigitalInChannel, DigitalOutChannel],
+                 io_channel: Union[AnalogInChannel, AnalogOutChannel, DigitalInChannel, DigitalOutChannel],
                  simulation_mode: bool = True
         ):
         """

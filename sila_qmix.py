@@ -189,10 +189,10 @@ def parse_command_line():
 if __name__ == '__main__':
     logging_level = logging.DEBUG # or use logging.ERROR for less output
     try:
-        coloredlogs.install(fmt='%(asctime)s %(levelname)s| %(module)s.%(funcName)s: %(message)s',
+        coloredlogs.install(fmt='%(asctime)s %(levelname)-8s| %(module)s.%(funcName)s: %(message)s',
                             level=logging_level)
     except NameError:
-        logging.basicConfig(format='%(levelname)s| %(module)s.%(funcName)s: %(message)s', level=logging_level)
+        logging.basicConfig(format='%(levelname)-8s| %(module)s.%(funcName)s: %(message)s', level=logging_level)
 
     parsed_args = parse_command_line()
 
@@ -240,10 +240,9 @@ if __name__ == '__main__':
         args.server_name = channel.get_name().replace("_", " ")
         args.description = "Allows to control a Qmix I/O Channel"
 
-        if args.server_name in ("QmixIO 1 DI0", "QmixIO 1 DO0"):
-            server = QmixIOServer(cmd_args=args, io_channel=channel, simulation_mode=False)
-            server.run(block=False)
-            servers += [server]
+        server = QmixIOServer(cmd_args=args, io_channel=channel, simulation_mode=False)
+        server.run(block=False)
+        servers += [server]
 
     logging.info("All servers started!")
     print("Press Ctrl-C to stop...")
