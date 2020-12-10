@@ -87,8 +87,13 @@ class neMESYSServer(SiLA2Server):
     This is a sample service for controlling neMESYS syringe pumps via SiLA2
     """
 
-    def __init__(self, cmd_args, qmix_pump, simulation_mode: bool = True):
-        """Class initialiser"""
+        """
+        Class initialiser
+
+            :param cmd_args: Arguments that were given on the command line
+            :param qmix_pump: The qmixpump.Pump object that this server shall use
+            :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode
+        """
         super().__init__(
             name=cmd_args.server_name,
             description=cmd_args.description,
@@ -97,7 +102,8 @@ class neMESYSServer(SiLA2Server):
             version=__version__,
             vendor_url="cetoni.de",
             ip=LOCAL_IP, port=int(cmd_args.port),
-            key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert
+            key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert,
+            simulation_mode=simulation_mode
         )
 
         logging.info(
