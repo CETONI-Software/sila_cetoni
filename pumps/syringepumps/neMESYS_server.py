@@ -188,7 +188,7 @@ class neMESYSServer(SiLA2Server):
             )
             self.add_feature(feature_id='ShutdownController',
                              servicer=self.ShutdownController_servicer,
-                            data_path=data_path.replace('pumps.syringepumps', 'core'))
+                             data_path='core'.join(data_path.rsplit(os.path.join('pumps', 'syringepumps'), 1)))
 
         self.simulation_mode = simulation_mode
 
