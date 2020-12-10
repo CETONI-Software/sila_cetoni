@@ -40,7 +40,7 @@ import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 from sila2lib.error_handling.server_err import SiLAError
 
 # import SiLA errors
-from impl.common.qmix_error import QmixSDKError, DeviceError, SiLAFrameworkError, SiLAValidationError
+from impl.common.qmix_errors import QmixSDKSiLAError, DeviceError, SiLAFrameworkError, SiLAValidationError
 
 # import gRPC modules for this feature
 from .gRPC import DigitalOutChannelController_pb2 as DigitalOutChannelController_pb2
@@ -120,7 +120,7 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
         try:
             return self.implementation.SetOutput(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def Subscribe_State(self, request, context: grpc.ServicerContext) \
@@ -144,6 +144,6 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
         try:
             return self.implementation.Subscribe_State(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 

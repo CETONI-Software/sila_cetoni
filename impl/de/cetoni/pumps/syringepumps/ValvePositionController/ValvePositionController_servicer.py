@@ -122,7 +122,7 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
             return self.implementation.SwitchToPosition(request, context)
         except (neMESYS_errors.ValvePositionOutOfRangeError, neMESYS_errors.DeviceError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKError(err)
+                err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -151,7 +151,7 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
             return self.implementation.TogglePosition(request, context)
         except (neMESYS_errors.ValveNotToggleableError, neMESYS_errors.DeviceError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKError(err)
+                err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -196,6 +196,6 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
         try:
             return self.implementation.Subscribe_Position(request, context)
         except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKError(err)
+            err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None

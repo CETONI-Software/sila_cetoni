@@ -50,7 +50,7 @@ from .ContinuousFlowDosingService_simulation import ContinuousFlowDosingServiceS
 from .ContinuousFlowDosingService_real import ContinuousFlowDosingServiceReal
 
 # import SiLA errors
-from impl.common.neMESYS_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKError, DeviceError
+from impl.common.neMESYS_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKSiLAError, DeviceError
 
 
 class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.ContinuousFlowDosingServiceServicer):
@@ -126,7 +126,7 @@ class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.Continuou
         except (SiLAValidationError, DeviceError) as err:
             self.implementation.StopDosage(None, None)
             if isinstance(err, DeviceError):
-                err = QmixSDKError(err)
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -208,7 +208,7 @@ class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.Continuou
             return self.implementation.StopDosage(request, context)
         except DeviceError as err:
             self.implementation.StopDosage(None, None)
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -235,7 +235,7 @@ class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.Continuou
             return self.implementation.Subscribe_MaxFlowRate(request, context)
         except DeviceError as err:
             self.implementation.StopDosage(None, None)
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -262,7 +262,7 @@ class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.Continuou
             return self.implementation.Subscribe_FlowRate(request, context)
         except DeviceError as err:
             self.implementation.StopDosage(None, None)
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 

@@ -40,7 +40,7 @@ import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 from sila2lib.error_handling.server_err import SiLAError
 
 # import SiLA errors
-from impl.common.qmix_error import QmixSDKError, DeviceError, SiLAFrameworkError, SiLAValidationError
+from impl.common.qmix_errors import QmixSDKSiLAError, DeviceError, SiLAFrameworkError, SiLAValidationError
 
 # import gRPC modules for this feature
 from .gRPC import AnalogInChannelProvider_pb2 as AnalogInChannelProvider_pb2
@@ -120,6 +120,6 @@ class AnalogInChannelProvider(AnalogInChannelProvider_pb2_grpc.AnalogInChannelPr
         try:
             return self.implementation.Subscribe_Value(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 

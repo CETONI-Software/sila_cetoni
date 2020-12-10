@@ -48,7 +48,7 @@ from .gRPC import PumpFluidDosingService_pb2 as PumpFluidDosingService_pb2
 from .gRPC import PumpFluidDosingService_pb2_grpc as PumpFluidDosingService_pb2_grpc
 
 # import SiLA errors
-from impl.common.neMESYS_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKError, DeviceError
+from impl.common.neMESYS_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKSiLAError, DeviceError
 
 # import simulation and real implementation
 from .PumpFluidDosingService_simulation import PumpFluidDosingServiceSimulation
@@ -132,7 +132,7 @@ class PumpFluidDosingService(PumpFluidDosingService_pb2_grpc.PumpFluidDosingServ
         except (SiLAValidationError, DeviceError) as err:
             self.implementation.StopDosage(None, None)
             if isinstance(err, DeviceError):
-                err = QmixSDKError(err)
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -218,7 +218,7 @@ class PumpFluidDosingService(PumpFluidDosingService_pb2_grpc.PumpFluidDosingServ
         except (SiLAValidationError, DeviceError) as err:
             self.implementation.StopDosage(None, None)
             if isinstance(err, DeviceError):
-                err = QmixSDKError(err)
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -303,7 +303,7 @@ class PumpFluidDosingService(PumpFluidDosingService_pb2_grpc.PumpFluidDosingServ
         except (SiLAValidationError, DeviceError) as err:
             self.implementation.StopDosage(None, None)
             if isinstance(err, DeviceError):
-                err = QmixSDKError(err)
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -385,7 +385,7 @@ class PumpFluidDosingService(PumpFluidDosingService_pb2_grpc.PumpFluidDosingServ
             return self.implementation.StopDosage(request, context)
         except DeviceError as err:
             self.implementation.StopDosage(None, None)
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -412,7 +412,7 @@ class PumpFluidDosingService(PumpFluidDosingService_pb2_grpc.PumpFluidDosingServ
             return self.implementation.Subscribe_MaxSyringeFillLevel(request, context)
         except DeviceError as err:
             self.implementation.StopDosage(None, None)
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -439,7 +439,7 @@ class PumpFluidDosingService(PumpFluidDosingService_pb2_grpc.PumpFluidDosingServ
             return self.implementation.Subscribe_SyringeFillLevel(request, context)
         except DeviceError as err:
             self.implementation.StopDosage(None, None)
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -466,7 +466,7 @@ class PumpFluidDosingService(PumpFluidDosingService_pb2_grpc.PumpFluidDosingServ
             return self.implementation.Subscribe_MaxFlowRate(request, context)
         except DeviceError as err:
             self.implementation.StopDosage(None, None)
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -493,6 +493,6 @@ class PumpFluidDosingService(PumpFluidDosingService_pb2_grpc.PumpFluidDosingServ
             return self.implementation.Subscribe_FlowRate(request, context)
         except DeviceError as err:
             self.implementation.StopDosage(None, None)
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None

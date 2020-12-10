@@ -126,7 +126,7 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
         try:
             return self.implementation.InitializePumpDrive(request, context)
         except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKError(err)
+            err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def EnablePumpDrive(self, request, context: grpc.ServicerContext) \
@@ -152,7 +152,7 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
         try:
             return self.implementation.EnablePumpDrive(request, context)
         except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKError(err)
+            err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def DisablePumpDrive(self, request, context: grpc.ServicerContext) \
@@ -178,7 +178,7 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
         try:
             return self.implementation.DisablePumpDrive(request, context)
         except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKError(err)
+            err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def Subscribe_PumpDriveState(self, request, context: grpc.ServicerContext) \
@@ -203,7 +203,7 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
         try:
             return self.implementation.Subscribe_PumpDriveState(request, context)
         except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKError(err)
+            err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
 
@@ -229,5 +229,5 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
         try:
             return self.implementation.Subscribe_FaultState(request, context)
         except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKError(err)
+            err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)

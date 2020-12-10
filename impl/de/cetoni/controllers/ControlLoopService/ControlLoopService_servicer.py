@@ -39,7 +39,7 @@ from typing import Union
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
 # import SiLA errors
-from impl.common.qmix_error import QmixSDKError, DeviceError, SiLAFrameworkError, SiLAValidationError
+from impl.common.qmix_errors import QmixSDKSiLAError, DeviceError, SiLAFrameworkError, SiLAValidationError
 
 # import gRPC modules for this feature
 from .gRPC import ControlLoopService_pb2 as ControlLoopService_pb2
@@ -119,8 +119,8 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
         try:
             return self.implementation.WriteSetPoint(request, context)
         except (SiLAValidationError, DeviceError) as err:
-            if isinstance(err, QmixSDKError):
-                err = QmixSDKError(err)
+            if isinstance(err, QmixSDKSiLAError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def RunControlLoop(self, request, context: grpc.ServicerContext) \
@@ -147,7 +147,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             return self.implementation.RunControlLoop(request, context)
         except (SiLAFrameworkError, DeviceError) as err:
             if isinstance(err, DeviceError):
-                err = QmixSDKError(err)
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def RunControlLoop_Info(self, request, context: grpc.ServicerContext) \
@@ -175,7 +175,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             return self.implementation.RunControlLoop_Info(request, context)
         except (SiLAFrameworkError, DeviceError) as err:
             if isinstance(err, DeviceError):
-                err = QmixSDKError(err)
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def RunControlLoop_Result(self, request, context: grpc.ServicerContext) \
@@ -199,7 +199,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
         try:
             return self.implementation.RunControlLoop_Result(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
 
@@ -226,7 +226,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
         try:
             return self.implementation.StopControlLoop(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def Subscribe_ControllerValue(self, request, context: grpc.ServicerContext) \
@@ -250,7 +250,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
         try:
             return self.implementation.Subscribe_ControllerValue(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
 
@@ -275,5 +275,5 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
         try:
             return self.implementation.Subscribe_SetPointValue(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)

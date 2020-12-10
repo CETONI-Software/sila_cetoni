@@ -123,7 +123,7 @@ class SyringeConfigurationController(SyringeConfigurationController_pb2_grpc.Syr
             return self.implementation.SetSyringeParameters(request, context)
         except (neMESYS_errors.DeviceError, neMESYS_errors.SiLAValidationError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKError(err)
+                err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -149,7 +149,7 @@ class SyringeConfigurationController(SyringeConfigurationController_pb2_grpc.Syr
         try:
             return self.implementation.Subscribe_InnerDiameter(request, context)
         except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKError(err)
+            err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -176,7 +176,7 @@ class SyringeConfigurationController(SyringeConfigurationController_pb2_grpc.Syr
         try:
             return self.implementation.Subscribe_MaxPistonStroke(request, context)
         except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKError(err)
+            err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 

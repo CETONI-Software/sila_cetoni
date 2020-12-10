@@ -121,7 +121,7 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
             return self.implementation.SetFlowUnit(request, context)
         except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKError(err)
+                err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -149,7 +149,7 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
             return self.implementation.SetVolumeUnit(request, context)
         except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKError(err)
+                err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -176,7 +176,7 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
             return self.implementation.Subscribe_FlowUnit(request, context)
         except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKError(err)
+                err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -203,7 +203,7 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
             return self.implementation.Subscribe_VolumeUnit(request, context)
         except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKError(err)
+                err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 

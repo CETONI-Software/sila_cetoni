@@ -152,7 +152,7 @@ class ContinuousFlowDosingServiceReal:
             yield silaFW_pb2.ExecutionInfo(
                 commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedWithError
             )
-            raise neMESYS_errors.QmixSDKError(self.pump.read_last_error())
+            raise neMESYS_errors.QmixSDKSiLAError(self.pump.read_last_error())
 
 
     def GenerateFlow_Result(self, request, context: grpc.ServicerContext) \

@@ -48,7 +48,7 @@ from .ContinuousFlowInitializationController_simulation import ContinuousFlowIni
 from .ContinuousFlowInitializationController_real import ContinuousFlowInitializationControllerReal
 
 # import SiLA errors
-from impl.common.neMESYS_errors import SiLAFrameworkError, QmixSDKError, DeviceError
+from impl.common.neMESYS_errors import SiLAFrameworkError, QmixSDKSiLAError, DeviceError
 
 # import qmixsdk
 from qmixsdk.qmixpump import *
@@ -124,7 +124,7 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
         try:
             return self.implementation.InitializeContiflow(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def InitializeContiflow_Info(self, request, context: grpc.ServicerContext) \
@@ -152,7 +152,7 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
             return self.implementation.InitializeContiflow_Info(request, context)
         except (SiLAFrameworkError, DeviceError) as err:
             if isinstance(err, DeviceError):
-                err = QmixSDKError(err)
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def InitializeContiflow_Result(self, request, context: grpc.ServicerContext) \
@@ -177,7 +177,7 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
             return self.implementation.InitializeContiflow_Result(request, context)
         except (SiLAFrameworkError, DeviceError) as err:
             if isinstance(err, DeviceError):
-                err = QmixSDKError(err)
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
 
@@ -205,6 +205,6 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
         try:
             return self.implementation.Subscribe_IsInitialized(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 

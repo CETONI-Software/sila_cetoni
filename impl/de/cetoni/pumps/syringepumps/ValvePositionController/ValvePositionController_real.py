@@ -116,7 +116,7 @@ class ValvePositionControllerReal:
 
             return ValvePositionController_pb2.TogglePosition_Responses()
         except qmixbus.DeviceError as err:
-            raise neMESYS_errors.QmixSDKError(err)
+            raise neMESYS_errors.QmixSDKSiLAError(err)
 
     def Get_NumberOfPositions(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.Get_NumberOfPositions_Responses:
@@ -157,4 +157,4 @@ class ValvePositionControllerReal:
                 # we add a small delay to give the client a chance to keep up.
                 time.sleep(0.5)
             except qmixbus.DeviceError as err:
-                raise neMESYS_errors.QmixSDKError(err)
+                raise neMESYS_errors.QmixSDKSiLAError(err)

@@ -48,7 +48,7 @@ from .ContinuousFlowConfigurationService_simulation import ContinuousFlowConfigu
 from .ContinuousFlowConfigurationService_real import ContinuousFlowConfigurationServiceReal
 
 # import SiLA errors
-from impl.common.neMESYS_errors import SiLAValidationError, QmixSDKError, DeviceError
+from impl.common.neMESYS_errors import SiLAValidationError, QmixSDKSiLAError, DeviceError
 
 # import qmixsdk
 from qmixsdk import qmixpump
@@ -127,7 +127,7 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
             return self.implementation.SetSwitchingMode(request, context)
         except (SiLAValidationError, DeviceError) as err:
             if isinstance(err, DeviceError):
-                err = QmixSDKError(err)
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 
@@ -154,7 +154,7 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
         try:
             return self.implementation.SetRefillFlowRate(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def SetCrossFlowDuration(self, request, context: grpc.ServicerContext) \
@@ -180,7 +180,7 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
         try:
             return self.implementation.SetCrossFlowDuration(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def SetOverlapDuration(self, request, context: grpc.ServicerContext) \
@@ -206,7 +206,7 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
         try:
             return self.implementation.SetOverlapDuration(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def Subscribe_SwitchingMode(self, request, context: grpc.ServicerContext) \
@@ -230,7 +230,7 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
         try:
             return self.implementation.Subscribe_SwitchingMode(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
 
@@ -255,7 +255,7 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
         try:
             return self.implementation.Subscribe_MaxRefillFlowRate(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
 
@@ -280,7 +280,7 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
         try:
             return self.implementation.Subscribe_RefillFlowRate(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
 
@@ -305,7 +305,7 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
         try:
             return self.implementation.Subscribe_MinFlowRate(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
 
@@ -330,7 +330,7 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
         try:
             return self.implementation.Subscribe_CrossFlowDuration(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
 
@@ -355,6 +355,6 @@ class ContinuousFlowConfigurationService(ContinuousFlowConfigurationService_pb2_
         try:
             return self.implementation.Subscribe_OverlapDuration(request, context)
         except DeviceError as err:
-            err = QmixSDKError(err)
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 

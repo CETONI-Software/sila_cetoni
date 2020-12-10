@@ -20,9 +20,10 @@ from sila2lib.error_handling.server_err import *
 from qmixsdk.qmixbus import DeviceError
 
 
-class QmixSDKError(SiLAExecutionError):
+class QmixSDKSiLAError(SiLAExecutionError):
     """
     An unexpected error that was thrown by the QmixSDK during the execution of a command.
+    Basically maps an error from QmixSDK to a SiLA Undefined Execution Error.
     """
 
     def __init__(self, qmixsdk_error: DeviceError = None):

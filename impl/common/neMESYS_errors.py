@@ -18,7 +18,7 @@ ________________________________________________________________________
 from sila2lib.error_handling.server_err import SiLAExecutionError, \
 SiLAValidationError, SiLAFrameworkError, SiLAFrameworkErrorType
 
-from impl.common.qmix_error import QmixSDKError, DeviceError
+from impl.common.qmix_errors import QmixSDKSiLAError, DeviceError
 
 
 class FlowRateOutOfRangeError(SiLAValidationError):
