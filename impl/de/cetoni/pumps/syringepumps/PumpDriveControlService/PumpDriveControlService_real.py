@@ -47,6 +47,9 @@ from qmixsdk import qmixpump
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
+# import SiLA errors
+from impl.common.neMESYS_errors import DeviceError, SiLAExecutionError
+
 # import gRPC modules for this feature
 from .gRPC import PumpDriveControlService_pb2 as PumpDriveControlService_pb2
 # from .gRPC import PumpDriveControlService_pb2_grpc as PumpDriveControlService_pb2_grpc
@@ -117,8 +120,18 @@ class PumpDriveControlServiceReal:
 
         self.pump.calibrate()
         time.sleep(0.2)
-        calibration_finished = self._wait_calibration_finished(30)
+        try:
+            calibration_finished = self._wait_calibration_finished(30)
+        except DeviceError as err:
+            raise SiLAExecutionError('InitializationFailed',
+                                     f'QmixSDK returned the following error: {err}')
+
         logging.info("Pump calibrated: %s", calibration_finished)
+        if not calibration_finished:
+            raise SiLAExecutionError(
+                'InitializationFailed',
+                f'The pump could not be initialized. The last error that occurred was {self.pump.read_last_error()}')
+
 
         return PumpDriveControlService_pb2.InitializePumpDrive_Responses()
 
