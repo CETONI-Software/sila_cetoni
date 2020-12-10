@@ -103,8 +103,6 @@ class QmixIOServer(SiLA2Server):
 
         # registering features
         if isinstance(io_channel, AnalogInChannel):
-            logging.warning(f"{cmd_args.server_name}: SW Scaling: {io_channel.get_scaling_param()}")
-
             #  Register de.cetoni.io.AnalogInChannelProvider
             self.AnalogInChannelProvider_servicer = AnalogInChannelProvider(
                 channel=io_channel,
@@ -118,8 +116,6 @@ class QmixIOServer(SiLA2Server):
                              servicer=self.AnalogInChannelProvider_servicer,
                              data_path=meta_path)
         elif isinstance(io_channel, AnalogOutChannel):
-            logging.warning(f"{cmd_args.server_name}: SW Scaling: {io_channel.get_scaling_param()}")
-
             #  Register de.cetoni.io.AnalogOutChannelController
             self.AnalogOutChannelController_servicer = AnalogOutChannelController(
                 channel=io_channel,
