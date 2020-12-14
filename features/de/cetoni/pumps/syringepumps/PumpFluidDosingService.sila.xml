@@ -38,9 +38,6 @@
                 <Basic>Real</Basic>
             </DataType>
         </Parameter>
-        <DefinedExecutionErrors>
-            <Identifier>DosageFinishedUnexpectedly</Identifier>
-        </DefinedExecutionErrors>
     </Command>
     <Command>
         <Identifier>DoseVolume</Identifier>
@@ -65,15 +62,12 @@
                 <Basic>Real</Basic>
             </DataType>
         </Parameter>
-        <DefinedExecutionErrors>
-            <Identifier>DosageFinishedUnexpectedly</Identifier>
-        </DefinedExecutionErrors>
     </Command>
     <Command>
         <Identifier>GenerateFlow</Identifier>
         <DisplayName>Generate Flow</DisplayName>
         <Description>
-            Generate a continous flow with the given flow rate. Dosing continues until it gets stopped manually by calling StopDosage or until the pusher reached one of its limits.
+            Generate a continuous flow with the given flow rate. Dosing continues until it gets stopped manually by calling StopDosage or until the pusher reached one of its limits.
         </Description>
         <Observable>Yes</Observable>
         <Parameter>
@@ -86,9 +80,6 @@
                 <Basic>Real</Basic>
             </DataType>
         </Parameter>
-        <DefinedExecutionErrors>
-            <Identifier>DosageFinishedUnexpectedly</Identifier>
-        </DefinedExecutionErrors>
     </Command>
     <Command>
         <Identifier>StopDosage</Identifier>
@@ -134,13 +125,6 @@
             <Basic>Real</Basic>
         </DataType>
     </Property>
-
-    <!-- Errors -->
-    <DefinedExecutionError>
-        <Identifier>DosageFinishedUnexpectedly</Identifier>
-        <DisplayName>Dosage Finished Unexpectedly</DisplayName>
-        <Description>The dosage could not be finished properly due to an error.</Description>
-    </DefinedExecutionError>
 
     <!-- Custom Data Types -->
     <!-- Possibility 1: Structure of a value (real) and a unit (string) -->

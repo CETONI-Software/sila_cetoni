@@ -21,7 +21,7 @@
     </Command>
     <Command>
         <Identifier>TogglePosition</Identifier>
-        <DisplayName>Toogle Position</DisplayName>
+        <DisplayName>Toggle Position</DisplayName>
         <Description>This command only applies for 2-way valves to toggle between its two different positions. If the command is called for any other valve type a ValveNotToggleable error is thrown.</Description>
         <Observable>No</Observable>
         <DefinedExecutionErrors>
