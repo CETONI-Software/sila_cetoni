@@ -37,7 +37,6 @@ from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
-from sila2lib.error_handling.server_err import SiLAError
 
 # import SiLA errors
 from impl.common.qmix_errors import QmixSDKSiLAError, DeviceError, SiLAFrameworkError, SiLAValidationError
@@ -58,15 +57,16 @@ class AnalogInChannelProvider(AnalogInChannelProvider_pb2_grpc.AnalogInChannelPr
     implementation: Union[AnalogInChannelProviderSimulation, AnalogInChannelProviderReal]
     simulation_mode: bool
 
-    def __init__(self, channel, simulation_mode: bool = True):
+    def __init__(self, channel_gateway, simulation_mode: bool = True):
         """
         Class initialiser.
 
-        :param channel: The Qmix I/O channel
+        :param channel_gateway: The ChannelGatewayService feature that provides
+                                the channels that this feature can operate on
         :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode.
         """
 
-        self.channel = channel
+        self.channel_gateway = channel_gateway
         self.simulation_mode = simulation_mode
         if simulation_mode:
             self.switch_to_simulation_mode()
@@ -95,7 +95,7 @@ class AnalogInChannelProvider(AnalogInChannelProvider_pb2_grpc.AnalogInChannelPr
     def switch_to_real_mode(self):
         """Method that will automatically be called by the server when the real mode is requested."""
         self.simulation_mode = False
-        self._inject_implementation(AnalogInChannelProviderReal(self.channel))
+        self._inject_implementation(AnalogInChannelProviderReal(self.channel_gateway))
 
 
 
@@ -118,8 +118,10 @@ class AnalogInChannelProvider(AnalogInChannelProvider_pb2_grpc.AnalogInChannelPr
             )
         )
         try:
-            return self.implementation.Subscribe_Value(request, context)
-        except DeviceError as err:
-            err = QmixSDKSiLAError(err)
+            for value in self.implementation.Subscribe_Value(request, context):
+                yield value
+        except (SiLAFrameworkError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 

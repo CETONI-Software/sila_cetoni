@@ -31,7 +31,7 @@ __version__ = "0.1.0"
 import os
 import argparse
 from configparser import ConfigParser
-from typing import Tuple
+from typing import Union, Tuple
 import logging
 try:
     import coloredlogs
@@ -43,8 +43,8 @@ except ModuleNotFoundError:
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump
 
-# Import the main SiLA library
-from sila2lib.sila_server import SiLA2Server
+# Import our server base class
+from qmixio.QmixIO_server import QmixIOServer
 
 # Import gRPC libraries of features
 from impl.de.cetoni.pumps.syringepumps.PumpDriveControlService.gRPC import PumpDriveControlService_pb2
@@ -80,31 +80,26 @@ from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.SyringeCon
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_servicer import ValvePositionController
 from impl.de.cetoni.core.ShutdownController.ShutdownController_servicer import ShutdownController
 
-from local_ip import LOCAL_IP
-
-class neMESYSServer(SiLA2Server):
+class neMESYSServer(QmixIOServer):
     """
     This is a sample service for controlling neMESYS syringe pumps via SiLA2
     """
 
+    def __init__(
+        self,
+        cmd_args,
+        qmix_pump: Union[qmixpump.Pump, qmixpump.ContiFlowPump],
+        io_channels,
+        simulation_mode: bool = True):
         """
         Class initialiser
 
             :param cmd_args: Arguments that were given on the command line
             :param qmix_pump: The qmixpump.Pump object that this server shall use
+            :param io_channels: (optional) I/O channels of the pump
             :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode
         """
-        super().__init__(
-            name=cmd_args.server_name,
-            description=cmd_args.description,
-            server_type=cmd_args.server_type,
-            server_uuid=None,
-            version=__version__,
-            vendor_url="cetoni.de",
-            ip=LOCAL_IP, port=int(cmd_args.port),
-            key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert,
-            simulation_mode=simulation_mode
-        )
+        super().__init__(cmd_args, io_channels, simulation_mode=simulation_mode)
 
         logging.info(
             "Starting SiLA2 server with server name: {server_name}".format(
@@ -112,11 +107,11 @@ class neMESYSServer(SiLA2Server):
             )
         )
 
-        data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
-                                 'features', 'de', 'cetoni', 'pumps', 'syringepumps')
+        data_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
+                                                 'features', 'de', 'cetoni', 'pumps', 'syringepumps'))
 
         # registering common pump features
-        #  Register PumpDriveControlService
+        #  Register de.cetoni.pumps.syringepumps.PumpDriveControlService
         self.PumpDriveControlService_servicer = PumpDriveControlService(
             pump=qmix_pump,
             sila2_conf=self.sila2_config,
@@ -128,7 +123,7 @@ class neMESYSServer(SiLA2Server):
         self.add_feature(feature_id='PumpDriveControlService',
                          servicer=self.PumpDriveControlService_servicer,
                          data_path=data_path)
-        #  Register PumpUnitController
+        #  Register de.cetoni.pumps.syringepumps.PumpUnitController
         self.PumpUnitController_servicer = PumpUnitController(
             pump=qmix_pump,
             simulation_mode=simulation_mode)
@@ -142,7 +137,7 @@ class neMESYSServer(SiLA2Server):
 
         if not isinstance(qmix_pump, qmixpump.ContiFlowPump):
             # registering features not for contiflow pumps
-            #  Register SyringeConfigurationController
+            #  Register de.cetoni.pumps.syringepumps.SyringeConfigurationController
             self.SyringeConfigurationController_servicer = SyringeConfigurationController(
                 pump=qmix_pump,
                 simulation_mode=simulation_mode)
@@ -153,7 +148,7 @@ class neMESYSServer(SiLA2Server):
             self.add_feature(feature_id='SyringeConfigurationController',
                              servicer=self.SyringeConfigurationController_servicer,
                              data_path=data_path)
-            #  Register PumpFluidDosingService
+            #  Register de.cetoni.pumps.syringepumps.PumpFluidDosingService
             self.PumpFluidDosingService_servicer = PumpFluidDosingService(
                 pump=qmix_pump,
                 simulation_mode=simulation_mode)
@@ -164,7 +159,7 @@ class neMESYSServer(SiLA2Server):
             self.add_feature(feature_id='PumpFluidDosingService',
                              servicer=self.PumpFluidDosingService_servicer,
                              data_path=data_path)
-            #  Register ValvePositionController
+            #  Register de.cetoni.pumps.syringepumps.ValvePositionController
             self.ValvePositionController_servicer = ValvePositionController(
                 pump=qmix_pump,
                 simulation_mode=simulation_mode)
@@ -175,20 +170,21 @@ class neMESYSServer(SiLA2Server):
             self.add_feature(feature_id='ValvePositionController',
                              servicer=self.ValvePositionController_servicer,
                              data_path=data_path)
-            #  Register ShutdownController
-            self.ShutdownController_servicer = ShutdownController(
-                pump=qmix_pump,
-                server_name=self.server_name,
-                sila2_conf=self.sila2_config,
-                simulation_mode=simulation_mode
-            )
-            ShutdownController_pb2_grpc.add_ShutdownControllerServicer_to_server(
-                self.ShutdownController_servicer,
-                self.grpc_server
-            )
-            self.add_feature(feature_id='ShutdownController',
-                             servicer=self.ShutdownController_servicer,
-                             data_path='core'.join(data_path.rsplit(os.path.join('pumps', 'syringepumps'), 1)))
+
+        #  Register de.cetoni.core.ShutdownController
+        self.ShutdownController_servicer = ShutdownController(
+            pump=qmix_pump,
+            server_name=self.server_name,
+            sila2_conf=self.sila2_config,
+            simulation_mode=simulation_mode
+        )
+        ShutdownController_pb2_grpc.add_ShutdownControllerServicer_to_server(
+            self.ShutdownController_servicer,
+            self.grpc_server
+        )
+        self.add_feature(feature_id='ShutdownController',
+                            servicer=self.ShutdownController_servicer,
+                            data_path=data_path.replace(os.path.join('pumps', 'syringepumps'), 'core'))
 
         self.simulation_mode = simulation_mode
 

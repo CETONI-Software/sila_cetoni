@@ -40,10 +40,14 @@ from impl.de.cetoni.controllers.ControlLoopService.gRPC import ControlLoopServic
 from impl.de.cetoni.controllers.ControlLoopService.gRPC import ControlLoopService_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.controllers.ControlLoopService.ControlLoopService_default_arguments import default_dict as ControlLoopService_default_dict
+from impl.de.cetoni.core.ChannelGatewayService.gRPC import ChannelGatewayService_pb2
+from impl.de.cetoni.core.ChannelGatewayService.gRPC import ChannelGatewayService_pb2_grpc
+# import default arguments for this feature
+from impl.de.cetoni.core.ChannelGatewayService.ChannelGatewayService_default_arguments import default_dict as ChannelGatewayService_default_dict
 
 # Import the servicer modules for each feature
 from impl.de.cetoni.controllers.ControlLoopService.ControlLoopService_servicer import ControlLoopService
-
+from impl.de.cetoni.core.ChannelGatewayService.ChannelGatewayService_servicer import ChannelGatewayService
 from local_ip import LOCAL_IP
 
 class QmixControlServer(SiLA2Server):
@@ -51,12 +55,12 @@ class QmixControlServer(SiLA2Server):
     The SiLA 2 driver for Qmix Control Devices
     """
 
-    def __init__(self, cmd_args, qmix_controller, simulation_mode: bool = True):
+    def __init__(self, cmd_args, controller_channels, simulation_mode: bool = True):
         """
         Class initialiser
 
             :param cmd_args: Arguments that were given on the command line
-            :param qmix_controller: The qmixcontroller.Controller object that this server shall use
+            :param controller_channels: The qmixcontroller.Controller objects that this server shall use
             :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode
         """
         super().__init__(
@@ -75,14 +79,27 @@ class QmixControlServer(SiLA2Server):
             )
         )
 
-        meta_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..',
-                                 'features', 'de', 'cetoni', 'controllers')
+        meta_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..',
+                                                 'features', 'de', 'cetoni', 'controllers'))
 
         # registering features
-        #  Register ControlLoopService
+        #  Register de.cetoni.core.ChannelGatewayService
+        self.ChannelGatewayService_servicer = ChannelGatewayService(
+            channels=controller_channels,
+            simulation_mode=self.simulation_mode
+        )
+        ChannelGatewayService_pb2_grpc.add_ChannelGatewayServiceServicer_to_server(
+            self.ChannelGatewayService_servicer,
+            self.grpc_server
+        )
+        self.add_feature(feature_id='ChannelGatewayService',
+                         servicer=self.ChannelGatewayService_servicer,
+                         data_path=meta_path.replace('controllers', 'core'))
+        #  Register de.cetoni.controllers.ControlLoopService
         self.ControlLoopService_servicer = ControlLoopService(
-            controller=qmix_controller,
-            simulation_mode=self.simulation_mode)
+            channel_gateway=self.ChannelGatewayService_servicer,
+            simulation_mode=self.simulation_mode
+        )
         ControlLoopService_pb2_grpc.add_ControlLoopServiceServicer_to_server(
             self.ControlLoopService_servicer,
             self.grpc_server

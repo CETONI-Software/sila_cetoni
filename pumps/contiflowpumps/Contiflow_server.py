@@ -74,8 +74,8 @@ class ContiflowServer(neMESYSServer):
         """Class initialiser"""
         super().__init__(cmd_args, qmix_pump)
 
-        data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
-                                 'features', 'de', 'cetoni', 'pumps', 'contiflowpumps')
+        data_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
+                                                 'features', 'de', 'cetoni', 'pumps', 'contiflowpumps'))
 
         # registering features
         #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService
@@ -117,20 +117,6 @@ class ContiflowServer(neMESYSServer):
         self.add_feature(feature_id='ContinuousFlowDosingService',
                          servicer=self.ContinuousFlowDosingService_servicer,
                          data_path=data_path)
-        #  Register de.cetoni.core.ShutdownController
-        self.ShutdownController_servicer = ShutdownController(
-            pump=qmix_pump,
-            server_name=self.server_name,
-            sila2_conf=self.sila2_config,
-            simulation_mode=simulation_mode
-        )
-        ShutdownController_pb2_grpc.add_ShutdownControllerServicer_to_server(
-            self.ShutdownController_servicer,
-            self.grpc_server
-        )
-        self.add_feature(feature_id='ShutdownController',
-                            servicer=self.ShutdownController_servicer,
-                            data_path=data_path.replace('pumps.contiflowpumps', 'core'))
 
         self.simulation_mode = simulation_mode
 

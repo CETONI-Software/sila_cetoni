@@ -44,7 +44,8 @@ from .gRPC import DigitalOutChannelController_pb2 as DigitalOutChannelController
 # import default arguments
 from .DigitalOutChannelController_default_arguments import default_dict
 
-from qmixsdk.qmixdigio import DigitalOutChannel
+# import channel gateway feature
+from impl.de.cetoni.core.ChannelGatewayService import ChannelGatewayService_servicer as ChannelGatewayService
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class DigitalOutChannelControllerReal:
@@ -53,17 +54,18 @@ class DigitalOutChannelControllerReal:
         The SiLA 2 driver for Qmix I/O Devices
     """
 
-    def __init__(self, channel: DigitalOutChannel):
+    def __init__(self, channel_gateway: ChannelGatewayService):
         """
         Class initialiser
 
-        :param channel: The Qmix I/O channel
+        :param channel_gateway: The ChannelGatewayService feature that provides
+                                the channels that this feature can operate on
         """
 
-        logging.debug('Started server in mode: {mode}'.format(mode='Real'))
-
-        self.channel = channel
+        self.channel_gateway = channel_gateway
         self.states = {True: 'On', False: 'Off'}
+
+        logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
     def SetOutput(self, request, context: grpc.ServicerContext) \
             -> DigitalOutChannelController_pb2.SetOutput_Responses:
@@ -81,7 +83,7 @@ class DigitalOutChannelControllerReal:
 
         state = request.State.State.value
         logging.info(f"Setting output state to {state}")
-        self.channel.write_on(state == 'On')
+        self.channel_gateway.get_channel(context.invocation_metadata()).write_on(state == 'On')
 
         return DigitalOutChannelController_pb2.SetOutput_Responses()
 
@@ -99,10 +101,12 @@ class DigitalOutChannelControllerReal:
             request.State (State): The state of the channel.
         """
 
+        channel = self.channel_gateway.get_channel(context.invocation_metadata())
+
         while True:
             yield DigitalOutChannelController_pb2.Subscribe_State_Responses(
                 State=DigitalOutChannelController_pb2.DataType_State(
-                    State=silaFW_pb2.String(value=self.states[self.channel.is_output_on()])
+                    State=silaFW_pb2.String(value=self.states[channel.is_output_on()])
                 )
             )
             time.sleep(0.5) # give client some time to catch up

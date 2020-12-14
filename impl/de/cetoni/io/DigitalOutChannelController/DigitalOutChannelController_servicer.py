@@ -58,15 +58,16 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
     implementation: Union[DigitalOutChannelControllerSimulation, DigitalOutChannelControllerReal]
     simulation_mode: bool
 
-    def __init__(self, channel, simulation_mode: bool = True):
+    def __init__(self, channel_gateway, simulation_mode: bool = True):
         """
-        Class initialiser
+        Class initialiser.
 
-        :param channel: The Qmix I/O channel
+        :param channel_gateway: The ChannelGatewayService feature that provides
+                                the channels that this feature can operate on
         :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode.
         """
 
-        self.channel = channel
+        self.channel_gateway = channel_gateway
         self.simulation_mode = simulation_mode
         if simulation_mode:
             self.switch_to_simulation_mode()
@@ -95,7 +96,7 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
     def switch_to_real_mode(self):
         """Method that will automatically be called by the server when the real mode is requested."""
         self.simulation_mode = False
-        self._inject_implementation(DigitalOutChannelControllerReal(self.channel))
+        self._inject_implementation(DigitalOutChannelControllerReal(self.channel_gateway))
 
     def SetOutput(self, request, context: grpc.ServicerContext) \
             -> DigitalOutChannelController_pb2.SetOutput_Responses:
@@ -119,8 +120,9 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
 
         try:
             return self.implementation.SetOutput(request, context)
-        except DeviceError as err:
-            err = QmixSDKSiLAError(err)
+        except (SiLAFrameworkError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 
     def Subscribe_State(self, request, context: grpc.ServicerContext) \
@@ -142,8 +144,10 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
             )
         )
         try:
-            return self.implementation.Subscribe_State(request, context)
-        except DeviceError as err:
-            err = QmixSDKSiLAError(err)
+            for value in self.implementation.Subscribe_State(request, context):
+                yield value
+        except (SiLAFrameworkError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
 

@@ -44,7 +44,8 @@ from .gRPC import AnalogOutChannelController_pb2 as AnalogOutChannelController_p
 # import default arguments
 from .AnalogOutChannelController_default_arguments import default_dict
 
-from qmixsdk.qmixanalogio import AnalogOutChannel
+# import channel gateway feature
+from impl.de.cetoni.core.ChannelGatewayService import ChannelGatewayService_servicer as ChannelGatewayService
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class AnalogOutChannelControllerReal:
@@ -53,16 +54,17 @@ class AnalogOutChannelControllerReal:
         The SiLA 2 driver for Qmix I/O Devices
     """
 
-    def __init__(self, channel: AnalogOutChannel):
+    def __init__(self, channel_gateway: ChannelGatewayService):
         """
         Class initialiser
 
-        :param channel: The Qmix I/O channel
+        :param channel_gateway: The ChannelGatewayService feature that provides
+                                the channels that this feature can operate on
         """
 
-        logging.debug('Started server in mode: {mode}'.format(mode='Real'))
+        self.channel_gateway = channel_gateway
 
-        self.channel = channel
+        logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
     def SetOutputValue(self, request, context: grpc.ServicerContext) \
             -> AnalogOutChannelController_pb2.SetOutputValue_Responses:
@@ -80,7 +82,7 @@ class AnalogOutChannelControllerReal:
 
         value = request.Value.value
         logging.info(f"Setting output value to {value}")
-        self.channel.write_output(value)
+        self.channel_gateway.get_channel(context.invocation_metadata()).write_output(value)
 
         return AnalogOutChannelController_pb2.SetOutputValue_Responses()
 
@@ -98,8 +100,10 @@ class AnalogOutChannelControllerReal:
             request.Value (Value): The value of the analog I/O channel.
         """
 
+        channel = self.channel_gateway.get_channel(context.invocation_metadata())
+
         while True:
             yield AnalogOutChannelController_pb2.Subscribe_Value_Responses(
-                Value=silaFW_pb2.Real(value=self.channel.get_output_vaue())
+                Value=silaFW_pb2.Real(value=channel.get_output_value())
             )
             time.sleep(0.5) # give client some time to catch up

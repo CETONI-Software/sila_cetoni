@@ -44,7 +44,8 @@ from .gRPC import AnalogInChannelProvider_pb2 as AnalogInChannelProvider_pb2
 # import default arguments
 from .AnalogInChannelProvider_default_arguments import default_dict
 
-from qmixsdk.qmixanalogio import AnalogInChannel
+# import channel gateway feature
+from impl.de.cetoni.core.ChannelGatewayService import ChannelGatewayService_servicer as ChannelGatewayService
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class AnalogInChannelProviderReal:
@@ -53,16 +54,17 @@ class AnalogInChannelProviderReal:
         The SiLA 2 driver for Qmix I/O Devices
     """
 
-    def __init__(self, channel: AnalogInChannel):
+    def __init__(self, channel_gateway: ChannelGatewayService):
         """
         Class initialiser
 
-        :param channel: The Qmix I/O channel
+        :param channel_gateway: The ChannelGatewayService feature that provides
+                                the channels that this feature can operate on
         """
 
-        logging.debug('Started server in mode: {mode}'.format(mode='Real'))
+        self.channel_gateway = channel_gateway
 
-        self.channel = channel
+        logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
     def Subscribe_Value(self, request, context: grpc.ServicerContext) \
             -> AnalogInChannelProvider_pb2.Subscribe_Value_Responses:
@@ -77,8 +79,10 @@ class AnalogInChannelProviderReal:
             request.Value (Value): The value of the analog I/O channel.
         """
 
+        channel = self.channel_gateway.get_channel(context.invocation_metadata())
+
         while True:
             yield AnalogInChannelProvider_pb2.Subscribe_Value_Responses(
-                Value=silaFW_pb2.Real(value=self.channel.read_input())
+                Value=silaFW_pb2.Real(value=channel.read_input())
             )
             time.sleep(0.5) # give client some time to catch up

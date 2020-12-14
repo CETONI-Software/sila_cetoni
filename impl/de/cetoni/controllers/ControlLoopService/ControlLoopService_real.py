@@ -47,7 +47,8 @@ from .gRPC import ControlLoopService_pb2 as ControlLoopService_pb2
 # import default arguments
 from .ControlLoopService_default_arguments import default_dict
 
-from qmixsdk.qmixcontroller import ControllerChannel
+# import channel gateway feature
+from impl.de.cetoni.core.ChannelGatewayService import ChannelGatewayService_servicer as ChannelGatewayService
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class ControlLoopServiceReal:
@@ -56,17 +57,15 @@ class ControlLoopServiceReal:
         The SiLA 2 driver for Qmix Control Devices
     """
 
-    def __init__(self, controller: ControllerChannel):
+    def __init__(self, channel_gateway: ChannelGatewayService):
         """
         Class initialiser
-
-        :param controller: The Qmix Control Channel device
         """
 
-        logging.debug('Started server in mode: {mode}'.format(mode='Real'))
-
-        self.controller = controller
+        self.channel_gateway = channel_gateway
         self.loop_run_uuid: silaFW_pb2.CommandExecutionUUID = None
+
+        logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
     def WriteSetPoint(self, request, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.WriteSetPoint_Responses:
@@ -87,7 +86,7 @@ class ControlLoopServiceReal:
         # TODO validate SetPoint!!
 
         logging.info(f"Writing SetPoint {setpoint} to device")
-        self.controller.write_setpoint(setpoint)
+        self.channel_gateway.get_channel(context.invocation_metadata()).write_setpoint(setpoint)
 
         return ControlLoopService_pb2.WriteSetPoint_Responses()
 
@@ -113,9 +112,11 @@ class ControlLoopServiceReal:
                 msg="There is a running control loop already. Cannot start a new loop!"
             )
 
-        self.controller.enable_control_loop(True)
-        result = ('' if self.controller.is_control_loop_enabled() else 'not ') + 'successful'
-        logging.debug(f"Starting control loop with set point {self.controller.get_setpoint()} was {result}")
+        controller = self.channel_gateway.get_channel(context.invocation_metadata())
+
+        controller.enable_control_loop(True)
+        result = ('' if controller.is_control_loop_enabled() else 'not ') + 'successful'
+        logging.debug(f"Starting control loop with set point {controller.get_setpoint()} was {result}")
 
         # respond with UUID and lifetime of execution
         self.loop_run_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
@@ -151,14 +152,16 @@ class ControlLoopServiceReal:
             commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.waiting
         )
 
+        controller = self.channel_gateway.get_channel(context.invocation_metadata())
+
         # we loop only as long as the command is running
-        while self.controller.is_control_loop_enabled():
+        while controller.is_control_loop_enabled():
             yield silaFW_pb2.ExecutionInfo(
                 commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.running
             )
 
-            logging.debug(f"Current controller value: {self.controller.read_actual_value()}")
-            logging.debug(f"Device status: {self.controller.read_status()}")
+            logging.debug(f"Current controller value: {controller.read_actual_value()}")
+            logging.debug(f"Device status: {controller.read_status()}")
             # we add a small delay to give the client a chance to keep up.
             time.sleep(1)
         else:
@@ -196,7 +199,7 @@ class ControlLoopServiceReal:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        self.controller.enable_control_loop(False)
+        self.channel_gateway.get_channel(context.invocation_metadata()).enable_control_loop(False)
         self.loop_run_uuid = None
 
         return ControlLoopService_pb2.StopControlLoop_Responses()
@@ -213,9 +216,12 @@ class ControlLoopServiceReal:
         :returns: A response object with the following fields:
             request.ControllerValue (Controller Value): The actual value from the Device
         """
+
+        controller = self.channel_gateway.get_channel(context.invocation_metadata())
+
         while True:
             yield ControlLoopService_pb2.Subscribe_ControllerValue_Responses(
-                ControllerValue=silaFW_pb2.Real(value=self.controller.read_actual_value())
+                ControllerValue=silaFW_pb2.Real(value=controller.read_actual_value())
             )
             time.sleep(0.5) # give client some time to catch up
 
@@ -232,9 +238,12 @@ class ControlLoopServiceReal:
         :returns: A response object with the following fields:
             request.SetPointValue (Set Point Value): The current SetPoint value of the Device
         """
+
+        controller = self.channel_gateway.get_channel(context.invocation_metadata())
+
         while True:
             yield ControlLoopService_pb2.Subscribe_SetPointValue_Responses(
-                SetPointValue=silaFW_pb2.Real(value=self.controller.get_setpoint())
+                SetPointValue=silaFW_pb2.Real(value=controller.get_setpoint())
             )
             time.sleep(0.5) # give client some time to catch up
 
