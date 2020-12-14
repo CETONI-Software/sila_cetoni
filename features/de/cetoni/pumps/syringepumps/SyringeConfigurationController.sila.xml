@@ -20,8 +20,22 @@
             <DisplayName>Inner Diameter</DisplayName>
             <Description>Inner diameter of the syringe tube in millimetres.</Description>
             <DataType>
-                <!-- Unit Constraint (mm)!! -->
-                <Basic>Real</Basic>
+                <Constrained>
+                    <DataType>
+                        <Basic>Real</Basic>
+                    </DataType>
+                    <Constraints>
+                        <Unit>
+                            <Label>mm</Label>
+                            <Factor>0.001</Factor>
+                            <Offset>0</Offset>
+                            <UnitComponent>
+                                <SIUnit>Meter</SIUnit>
+                                <Exponent>1</Exponent>
+                            </UnitComponent>
+                        </Unit>
+                    </Constraints>
+                </Constrained>
             </DataType>
         </Parameter>
         <Parameter>
@@ -29,8 +43,22 @@
             <DisplayName>Max Piston Stroke</DisplayName>
             <Description>The maximum piston stroke defines the maximum position the piston can be moved to before it slips out of the syringe tube. The maximum piston stroke limits the maximum travel range of the syringe pump pusher.</Description>
             <DataType>
-                <!-- Unit Constraint (mm)!! -->
-                <Basic>Real</Basic>
+                <Constrained>
+                    <DataType>
+                        <Basic>Real</Basic>
+                    </DataType>
+                    <Constraints>
+                        <Unit>
+                            <Label>mm</Label>
+                            <Factor>0.001</Factor>
+                            <Offset>0</Offset>
+                            <UnitComponent>
+                                <SIUnit>Meter</SIUnit>
+                                <Exponent>1</Exponent>
+                            </UnitComponent>
+                        </Unit>
+                    </Constraints>
+                </Constrained>
             </DataType>
         </Parameter>
     </Command>
@@ -42,8 +70,22 @@
         <Description>Inner diameter of the syringe tube in millimetres.</Description>
         <Observable>Yes</Observable>
         <DataType>
-            <!-- Unit Constraint (mm)!! -->
-            <Basic>Real</Basic>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>mm</Label>
+                        <Factor>0.001</Factor>
+                        <Offset>0</Offset>
+                        <UnitComponent>
+                            <SIUnit>Meter</SIUnit>
+                            <Exponent>1</Exponent>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
         </DataType>
     </Property>
     <Property>
@@ -52,8 +94,22 @@
         <Description>The maximum piston stroke defines the maximum position the piston can be moved to before it slips out of the syringe tube. The maximum piston stroke limits the maximum travel range of the syringe pump pusher.</Description>
         <Observable>Yes</Observable>
         <DataType>
-            <!-- Unit Constraint (mm)!! -->
-            <Basic>Real</Basic>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>mm</Label>
+                        <Factor>0.001</Factor>
+                        <Offset>0</Offset>
+                        <UnitComponent>
+                            <SIUnit>Meter</SIUnit>
+                            <Exponent>1</Exponent>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
         </DataType>
     </Property>
 </Feature>
