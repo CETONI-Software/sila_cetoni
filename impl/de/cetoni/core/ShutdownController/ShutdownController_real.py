@@ -36,7 +36,10 @@ import logging
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
+
 from configparser import ConfigParser
+
+from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
@@ -53,8 +56,8 @@ from impl.common import neMESYS_errors
 from .ShutdownController_default_arguments import default_dict
 
 # import qmixsdk
-from qmixsdk import qmixbus
-from qmixsdk import qmixpump
+from qmixsdk.qmixpump import Pump
+from qmixsdk.qmixmotion import Axis, AxisSystem
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class ShutdownControllerReal:
@@ -63,12 +66,12 @@ class ShutdownControllerReal:
         This is a sample service for controlling neMESYS syringe pumps via SiLA2
     """
 
-    def __init__(self, pump, server_name, sila2_conf: ConfigParser):
+    def __init__(self, device: Union[Pump, AxisSystem], server_name, sila2_conf: ConfigParser):
         """Class initialiser"""
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
-        self.pump = pump
+        self.device = device
         self.server_name = server_name
         self.sila2_config = sila2_conf
 
@@ -81,12 +84,23 @@ class ShutdownControllerReal:
         config_dir = sila_get_config_dir(subdir=self.server_name)
         config_filename = os.path.join(config_dir, self.server_name + '.conf')
 
-        pump_name = self.pump.get_pump_name()
-        drive_pos_counter = self.pump.get_position_counter_value()
-        self.sila2_config[pump_name] = {}
-        self.sila2_config[pump_name]["drive_pos_counter"] = str(drive_pos_counter)
-        logging.debug("Saving drive position counter (%d) to file: %s",
-                    drive_pos_counter, config_filename)
+        if isinstance(self.device, Pump):
+            pump_name = self.device.get_pump_name()
+            drive_pos_counter = self.device.get_position_counter_value()
+            self.sila2_config[pump_name] = {}
+            self.sila2_config[pump_name]["drive_pos_counter"] = str(drive_pos_counter)
+            logging.debug("Saving drive position counter (%d) for %s to file: %s",
+                        drive_pos_counter, pump_name, config_filename)
+        elif isinstance(self.device, AxisSystem):
+            for i in range(self.device.get_axes_count()):
+                axis = self.device.get_axis_device(i)
+                axis_name = axis.get_device_name()
+                drive_pos_counter = axis.get_position_counter()
+                self.sila2_config[axis_name] = {}
+                self.sila2_config[axis_name]["drive_pos_counter"] = str(drive_pos_counter)
+                logging.debug("Saving drive position counter (%d) for %s to file: %s",
+                            drive_pos_counter, axis_name, config_filename)
+
 
         with open(config_filename, "w") as config_file:
             self.sila2_config.write(config_file)

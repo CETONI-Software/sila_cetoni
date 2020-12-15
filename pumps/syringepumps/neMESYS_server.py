@@ -167,7 +167,7 @@ class neMESYSServer(QmixIOServer):
 
         #  Register de.cetoni.core.ShutdownController
         self.ShutdownController_servicer = ShutdownController(
-            pump=qmix_pump,
+            device=qmix_pump,
             server_name=self.server_name,
             sila2_conf=self.sila2_config,
             simulation_mode=simulation_mode
