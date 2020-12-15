@@ -49,9 +49,10 @@ from pumps.syringepumps.neMESYS_server import neMESYSServer
 from pumps.contiflowpumps.Contiflow_server import ContiflowServer
 from controllers.QmixControl_server import QmixControlServer
 from qmixio.QmixIO_server import QmixIOServer
+from motioncontrol.MotionControl_server import MotionControlServer
 
 # import qmixsdk
-from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio
+from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -262,6 +263,32 @@ def get_availabe_io_channels(devices: List[str]) \
 
     return devices_to_channels(devices, channels)
 
+#-----------------------------------------------------------------------------
+# Motion Control
+def get_availabe_axis_systems() -> List[qmixmotion.AxisSystem]:
+    """
+    Looks up all axis systems connected to the bus
+
+        :param devices: A list of all devices connected to the bus
+        :return: A dictionary of all devices with their corresponding I/O channels
+        :rtype: Dict[str, Union[qmixanalogio.AnalogChannel, qmixdigio.DigitalChannel]]
+    """
+
+    system_count = qmixmotion.AxisSystem.get_axis_system_count()
+    logging.debug("Number of axis systems: %s", system_count)
+
+    systems = []
+
+    for i in range(system_count):
+        system = qmixmotion.AxisSystem()
+        system.lookup_by_device_index(i)
+        logging.debug("Found axis system %d named %s", i, system.get_device_name())
+        systems.append(system)
+
+    return systems
+
+#-----------------------------------------------------------------------------
+# main program
 def parse_command_line():
     """
     Just looking for command line arguments
@@ -294,9 +321,11 @@ if __name__ == '__main__':
     pumps = get_availabe_pumps()
     device_to_controllers = get_availabe_controllers(qmix_devices)
     device_to_io_channels = get_availabe_io_channels(qmix_devices)
+    axis_systems = get_availabe_axis_systems()
     # TODO get more devices ...
     bus.start()
     enable_pumps(pumps)
+    [axis_system.enable(True) for axis_system in axis_systems]
 
     # common args for all servers
     args = argparse.Namespace(
@@ -341,6 +370,22 @@ if __name__ == '__main__':
         args.server_name = device.replace("_", " ")
         args.description = "Allows to control Qmix I/O Channels"
         server = QmixIOServer(cmd_args=args, io_channels=channels, simulation_mode=False)
+        server.run(block=False)
+        servers += [server]
+
+    for system in axis_systems:
+        args.port += 1
+        system_name = system.get_device_name()
+        args.server_name = system_name.replace("_", " ")
+        args.description = "Allows to control motion systems like axis systems"
+
+        # an axis system can have built in I/O channels
+        io_channels = []
+        if system_name in device_to_io_channels:
+            io_channels = device_to_io_channels[system_name]
+            del device_to_io_channels[system_name]
+
+        server = MotionControlServer(cmd_args=args, axis_system=system, io_channels=io_channels, simulation_mode=False)
         server.run(block=False)
         servers += [server]
 
