@@ -42,11 +42,8 @@
     <Command>
         <Identifier>MoveToHomePosition</Identifier>
         <DisplayName>Move To Home Position</DisplayName>
-        <Description>Move the axis system to its home position. The axis system should manage the order of the movement and should know how to move all axis into a home state.</Description>
-        <Observable>Yes</Observable>
-        <DefinedExecutionErrors>
-            <Identifier>MovementBlocked</Identifier>
-        </DefinedExecutionErrors>
+        <Description>Move the axis system to its home position. The axis system should manage the order of the movement and should know how to move all axes into a home state.</Description>
+        <Observable>No</Observable>
     </Command>
 
     <Command>

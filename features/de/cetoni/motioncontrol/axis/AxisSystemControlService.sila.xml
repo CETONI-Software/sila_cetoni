@@ -10,18 +10,7 @@
         <DisplayName>Axis Identifier</DisplayName>
         <Description>The identifier of a single axis of an axis system</Description>
         <DataType>
-            <Constrained>
-                <DataType>
-                    <Basic>String</Basic>
-                </DataType>
-                <Constraints>
-                    <Set>
-                        <Value>X</Value>
-                        <Value>Y</Value>
-                        <Value>Z</Value>
-                    </Set>
-                </Constraints>
-            </Constrained>
+            <Basic>String</Basic>
         </DataType>
     </Metadata>
 
@@ -47,9 +36,22 @@
 
     <!-- Properties -->
     <Property>
+        <Identifier>AvailableAxes</Identifier>
+        <DisplayName>Available Axes</DisplayName>
+        <Description>The names of the individual axes of the axis system.</Description>
+        <Observable>No</Observable>
+        <DataType>
+            <List>
+                <DataType>
+                    <Basic>String</Basic>
+                </DataType>
+            </List>
+        </DataType>
+    </Property>
+    <Property>
         <Identifier>AxisSystemState</Identifier>
         <DisplayName>Axis System State</DisplayName>
-        <Description>The current state of the axis system. This is either 'Enabled' or 'Disabled'. Only if the sate is 'Enabled', the axis system can move.</Description>
+        <Description>The current state of the axis system. This is either 'Enabled' or 'Disabled'. Only if the state is 'Enabled', the axis system can move.</Description>
         <Observable>Yes</Observable>
         <DataType>
             <Constrained>
