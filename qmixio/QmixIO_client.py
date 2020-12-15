@@ -398,6 +398,27 @@ class QmixIOClient(SiLA2Client):
 
         return response
 
+    def Get_FCPAffectedByMetadata_ChannelIdentifier(self) \
+            -> ChannelGatewayService_pb2.Get_FCPAffectedByMetadata_ChannelIdentifier_Responses:
+        """Wrapper to get property FCPAffectedByMetadata_ChannelIdentifier from the server."""
+        # noinspection PyUnusedLocal - type definition, just for convenience
+        grpc_err: grpc.Call
+
+        logging.debug("Reading unobservable property FCPAffectedByMetadata_ChannelIdentifier:")
+        try:
+            response = self.ChannelGatewayService_stub.Get_FCPAffectedByMetadata_ChannelIdentifier(
+                ChannelGatewayService_pb2.Get_FCPAffectedByMetadata_ChannelIdentifier_Parameters()
+            )
+            logging.debug(
+                'Get_FCPAffectedByMetadata_ChannelIdentifier response: {response}'.format(
+                    response=response
+                )
+            )
+        except grpc.RpcError as grpc_err:
+            self.grpc_error_handling(grpc_err)
+            return None
+
+        return response
 
     @staticmethod
     def grpc_error_handling(error_object: grpc.Call) -> None:
