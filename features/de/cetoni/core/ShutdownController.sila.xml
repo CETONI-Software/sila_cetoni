@@ -11,7 +11,7 @@
         <Identifier>Shutdown</Identifier>
         <DisplayName>Shutdown</DisplayName>
         <Description>
-            Initiates the shutdown routine. If no errors occured during the shutdown process the server should be considered ready to be physically shutdown (i.e. the device can be shut down/powered off).
+            Initiates the shutdown routine. If no errors occurred during the shutdown process the server should be considered ready to be physically shutdown (i.e. the device can be shut down/powered off).
         </Description>
         <Observable>Yes</Observable>
         <DefinedExecutionErrors>
