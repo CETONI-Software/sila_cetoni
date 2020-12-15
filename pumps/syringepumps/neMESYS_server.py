@@ -101,12 +101,6 @@ class neMESYSServer(QmixIOServer):
         """
         super().__init__(cmd_args, io_channels, simulation_mode=simulation_mode)
 
-        logging.info(
-            "Starting SiLA2 server with server name: {server_name}".format(
-                server_name=cmd_args.server_name
-            )
-        )
-
         data_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                                  'features', 'de', 'cetoni', 'pumps', 'syringepumps'))
 
