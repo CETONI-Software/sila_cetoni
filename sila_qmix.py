@@ -207,7 +207,7 @@ def enable_pumps(pumps: List[qmixpump.Pump]):
 
 #-----------------------------------------------------------------------------
 # Controllers
-def get_availabe_controllers(devices: List[str]) -> List[qmixcontroller.ControllerChannel]:
+def get_availabe_controllers(devices: List[str]) -> Dict[str, qmixcontroller.ControllerChannel]:
     """
     Looks up all controller channels from the current configuration and maps them
     to their corresponding device
@@ -319,9 +319,9 @@ if __name__ == '__main__':
     bus = open_bus(parsed_args.config_path)
     logging.debug("Looking up devices...")
     pumps = get_availabe_pumps()
+    axis_systems = get_availabe_axis_systems()
     device_to_controllers = get_availabe_controllers(qmix_devices)
     device_to_io_channels = get_availabe_io_channels(qmix_devices)
-    axis_systems = get_availabe_axis_systems()
     # TODO get more devices ...
     bus.start()
     enable_pumps(pumps)
@@ -357,22 +357,6 @@ if __name__ == '__main__':
         server.run(block=False)
         servers += [server]
 
-    for device, channels in device_to_controllers.items():
-        args.port += 1
-        args.server_name = device.replace("_", " ")
-        args.description = "Allows to control Qmix Controller Channels"
-        server = QmixControlServer(cmd_args=args, controller_channels=channels, simulation_mode=False)
-        server.run(block=False)
-        servers += [server]
-
-    for device, channels in device_to_io_channels.items():
-        args.port += 1
-        args.server_name = device.replace("_", " ")
-        args.description = "Allows to control Qmix I/O Channels"
-        server = QmixIOServer(cmd_args=args, io_channels=channels, simulation_mode=False)
-        server.run(block=False)
-        servers += [server]
-
     for system in axis_systems:
         args.port += 1
         system_name = system.get_device_name()
@@ -386,6 +370,22 @@ if __name__ == '__main__':
             del device_to_io_channels[system_name]
 
         server = MotionControlServer(cmd_args=args, axis_system=system, io_channels=io_channels, simulation_mode=False)
+        server.run(block=False)
+        servers += [server]
+
+    for device, channels in device_to_controllers.items():
+        args.port += 1
+        args.server_name = device.replace("_", " ")
+        args.description = "Allows to control Qmix Controller Channels"
+        server = QmixControlServer(cmd_args=args, controller_channels=channels, simulation_mode=False)
+        server.run(block=False)
+        servers += [server]
+
+    for device, channels in device_to_io_channels.items():
+        args.port += 1
+        args.server_name = device.replace("_", " ")
+        args.description = "Allows to control Qmix I/O Channels"
+        server = QmixIOServer(cmd_args=args, io_channels=channels, simulation_mode=False)
         server.run(block=False)
         servers += [server]
 
