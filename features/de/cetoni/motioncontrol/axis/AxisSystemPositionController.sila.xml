@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="motioncontrol.axis" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
-    <Identifier>PositionController</Identifier>
-    <DisplayName>Position Controller</DisplayName>
+    <Identifier>AxisSystemPositionController</Identifier>
+    <DisplayName>Axis System Position Controller</DisplayName>
     <Description>Allows to control the position of an axis system</Description>
 
     <!-- Commands -->
