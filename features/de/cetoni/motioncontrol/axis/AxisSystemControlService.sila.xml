@@ -4,16 +4,6 @@
     <DisplayName>Axis System Control Service</DisplayName>
     <Description>Provides functionality to observe and control the state of an axis system</Description>
 
-    <!-- Metadata -->
-    <Metadata>
-        <Identifier>AxisIdentifier</Identifier>
-        <DisplayName>Axis Identifier</DisplayName>
-        <Description>The identifier of a single axis of an axis system</Description>
-        <DataType>
-            <Basic>String</Basic>
-        </DataType>
-    </Metadata>
-
     <!-- Commands -->
     <Command>
         <Identifier>EnableAxisSystem</Identifier>
@@ -28,9 +18,9 @@
         <Observable>No</Observable>
     </Command>
     <Command>
-        <Identifier>ClearAxisFaultState</Identifier>
-        <DisplayName>Clear Axis Fault State</DisplayName>
-        <Description>Clears the fault condition of a single axis. This is some kind of error acknowledge that clears the last fault and sets the device in an error-free state.</Description>
+        <Identifier>ClearFaultState</Identifier>
+        <DisplayName>Clear Fault State</DisplayName>
+        <Description>Clears the fault condition of all axes. This is some kind of error acknowledge that clears the last fault and sets the device in an error-free state.</Description>
         <Observable>No</Observable>
     </Command>
 
@@ -68,12 +58,16 @@
         </DataType>
     </Property>
     <Property>
-        <Identifier>AxisFaultState</Identifier>
-        <DisplayName>Axis Fault State</DisplayName>
-        <Description>Returns if a single axis of the system is in fault state. If the value is true (i.e. the axis is in fault state), it can be cleared by calling ClearAxisFaultState.</Description>
+        <Identifier>AxesInFaultState</Identifier>
+        <DisplayName>Axes In Fault State</DisplayName>
+        <Description>Returns all axes of the system that are currently in fault state. The fault state of all axes can be cleared by calling ClearFaultState.</Description>
         <Observable>Yes</Observable>
         <DataType>
-            <Basic>Boolean</Basic>
+            <List>
+                <DataType>
+                    <Basic>String</Basic>
+                </DataType>
+            </List>
         </DataType>
     </Property>
 </Feature>
