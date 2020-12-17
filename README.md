@@ -1,6 +1,12 @@
 # SiLA Qmix
 SiLA 2 drivers for CETONI Qmix devices
 
+## Installation
+Install the requirements for SiLA Qmix from PyPI with
+```console
+$ pip install -r requirements.txt
+```
+
 ## Generate the prototype code from the FDL
 1. Create a `service_description.json` file in the desired target directory
 2. Then run the code generator from the root directory with the following command
