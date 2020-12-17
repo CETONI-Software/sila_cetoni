@@ -37,7 +37,7 @@ try:
 except ModuleNotFoundError:
     print("Cannot find coloredlogs! Please install coloredlogs, if you'd like to have nicer logging output:")
     print("`pip install coloredlogs`")
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Tuple, Union
 
 from lxml import etree, objectify
 
@@ -58,17 +58,19 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 #-----------------------------------------------------------------------------
 # Devices
-def parse_device_config(config_path: str) -> List[str]:
+def parse_device_config(config_path: str) -> Tuple[List[str], Dict[str, Dict[str, Any]]]:
     """
     Parses the device configuration files located in the folder given by the config_path
     parameter.
 
         :param config_path: Path to a valid Qmix device configuration
-        :return: A list with the names of all devices
-        :rtype: List[str]
+        :return: A tuple of a list with the names of all devices and a dict that
+                 maps the device names to device properties
+        :rtype: Tuple[List[str], Dict[str, Dict[str, ]]]
     """
     logging.debug("Parsing device configuration")
     device_list: List[str] = []
+    device_properties: Dict[str, Dict[str, Any]] = {}
 
     tree: etree.ElementTree
     with open(os.path.join(config_path, 'device_properties.xml')) as f:
@@ -94,6 +96,11 @@ def parse_device_config(config_path: str) -> List[str]:
             except AttributeError:
                 pass
 
+            if plugin.text == 'rotaxys': # TODO: probably also 'nemaxys'
+                # no possibility to find the jib length elsewhere
+                for device in plugin_root.DeviceList.iterchildren():
+                    device_properties[device.get('Name')] = {'jib_length': abs(int(device.JibLength.text))}
+
     # Filter the device_list as it contains more than the actual physical modules that we're after
     def unneeded_devices(device_name):
         for e in ('Epos', 'Valve'):
@@ -106,7 +113,7 @@ def parse_device_config(config_path: str) -> List[str]:
 
     logging.debug(f"Found the following devices: {device_list}")
 
-    return device_list
+    return device_list, device_properties
 
 def devices_to_channels(devices: List[str], channels: List) -> Dict:
     """
@@ -313,7 +320,7 @@ if __name__ == '__main__':
 
     parsed_args = parse_command_line()
 
-    qmix_devices = parse_device_config(parsed_args.config_path)
+    qmix_devices, device_properties = parse_device_config(parsed_args.config_path)
 
     logging.debug("Starting bus...")
     bus = open_bus(parsed_args.config_path)
@@ -369,7 +376,13 @@ if __name__ == '__main__':
             io_channels = device_to_io_channels[system_name]
             del device_to_io_channels[system_name]
 
-        server = MotionControlServer(cmd_args=args, axis_system=system, io_channels=io_channels, simulation_mode=False)
+        server = MotionControlServer(
+            cmd_args=args,
+            axis_system=system,
+            jib_length=device_properties[system.get_device_name()]['jib_length'],
+            io_channels=io_channels,
+            simulation_mode=False
+        )
         server.run(block=False)
         servers += [server]
 
