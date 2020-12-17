@@ -96,7 +96,7 @@ def parse_device_config(config_path: str) -> Tuple[List[str], Dict[str, Dict[str
             except AttributeError:
                 pass
 
-            if plugin.text == 'rotaxys': # TODO: probably also 'nemaxys'
+            if plugin.text == 'rotaxys':
                 # no possibility to find the jib length elsewhere
                 for device in plugin_root.DeviceList.iterchildren():
                     device_properties[device.get('Name')] = {'jib_length': abs(int(device.JibLength.text))}
@@ -379,8 +379,8 @@ if __name__ == '__main__':
         server = MotionControlServer(
             cmd_args=args,
             axis_system=system,
-            jib_length=device_properties[system.get_device_name()]['jib_length'],
             io_channels=io_channels,
+            device_properties=device_properties[system_name] if system_name in device_properties else {},
             simulation_mode=False
         )
         server.run(block=False)
