@@ -116,7 +116,11 @@ class PumpFluidDosingServiceReal:
         and target volume
         """
 
-        logging.debug(f"pump.is_pumping: {self.pump.is_pumping()}")
+        if not self.pump.is_pumping():
+            yield silaFW_pb2.ExecutionInfo(
+                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully
+            )
+            return
 
         flow_in_sec = self.pump.get_flow_is() / self.pump.get_flow_unit().time_unitid.value
         max_wait_time = self.pump.get_target_volume() / flow_in_sec + 2 # +2 sec buffer
