@@ -35,10 +35,20 @@
     <Property>
         <Identifier>PumpDriveState</Identifier>
         <DisplayName>Pump Drive State</DisplayName>
-        <Description>The current state of the pump. This is either enabled (true) or disabled (false). Only if the sate is enabled, the pump can dose fluids.</Description>
+        <Description>The current state of the pump. This is either 'Enabled' or 'Disabled'. Only if the sate is 'Enabled', the pump can dose fluids.</Description>
         <Observable>Yes</Observable>
         <DataType>
-            <Basic>Boolean</Basic>
+            <Constrained>
+                <DataType>
+                    <Basic>String</Basic>
+                </DataType>
+                <Constraints>
+                    <Set>
+                        <Value>Enabled</Value>
+                        <Value>Disabled</Value>
+                    </Set>
+                </Constraints>
+            </Constrained>
         </DataType>
     </Property>
     <Property>

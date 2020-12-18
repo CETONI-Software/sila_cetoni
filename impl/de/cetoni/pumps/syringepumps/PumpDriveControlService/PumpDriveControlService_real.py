@@ -190,7 +190,7 @@ class PumpDriveControlServiceReal:
 
         while True:
             yield PumpDriveControlService_pb2.Subscribe_PumpDriveState_Responses(
-                PumpDriveState=silaFW_pb2.Boolean(value=self.pump.is_enabled())
+                PumpDriveState=silaFW_pb2.String(value='Enabled' if self.pump.is_enabled() else 'Disabled')
             )
 
             # we add a small delay to give the client a chance to keep up.
