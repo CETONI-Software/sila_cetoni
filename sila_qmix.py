@@ -96,7 +96,7 @@ def parse_device_config(config_path: str) -> Tuple[List[str], Dict[str, Dict[str
             except AttributeError:
                 pass
 
-            if plugin.text == 'rotaxys':
+            if 'rotaxys' in plugin.text:
                 # no possibility to find the jib length elsewhere
                 for device in plugin_root.DeviceList.iterchildren():
                     device_properties[device.get('Name')] = {'jib_length': abs(int(device.JibLength.text))}
