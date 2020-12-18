@@ -41,7 +41,7 @@ except ModuleNotFoundError:
 
 
 # import qmixsdk
-from qmixsdk import qmixbus, qmixpump
+from qmixsdk import qmixbus, qmixpump, qmixvalve
 
 # Import our server base class
 from qmixio.QmixIO_server import QmixIOServer
@@ -89,13 +89,15 @@ class neMESYSServer(QmixIOServer):
         self,
         cmd_args,
         qmix_pump: Union[qmixpump.Pump, qmixpump.ContiFlowPump],
-        io_channels,
+        valve: qmixvalve.Valve = None,
+        io_channels = [],
         simulation_mode: bool = True):
         """
         Class initialiser
 
             :param cmd_args: Arguments that were given on the command line
             :param qmix_pump: The qmixpump.Pump object that this server shall use
+            :param valve: (optional) The valve of this pump
             :param io_channels: (optional) I/O channels of the pump
             :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode
         """
@@ -153,17 +155,18 @@ class neMESYSServer(QmixIOServer):
             self.add_feature(feature_id='PumpFluidDosingService',
                              servicer=self.PumpFluidDosingService_servicer,
                              data_path=data_path)
-            #  Register de.cetoni.pumps.syringepumps.ValvePositionController
-            self.ValvePositionController_servicer = ValvePositionController(
-                pump=qmix_pump,
-                simulation_mode=simulation_mode)
-            ValvePositionController_pb2_grpc.add_ValvePositionControllerServicer_to_server(
-                self.ValvePositionController_servicer,
-                self.grpc_server
-            )
-            self.add_feature(feature_id='ValvePositionController',
-                             servicer=self.ValvePositionController_servicer,
-                             data_path=data_path)
+            if valve:
+                #  Register de.cetoni.pumps.syringepumps.ValvePositionController
+                self.ValvePositionController_servicer = ValvePositionController(
+                    valve=valve,
+                    simulation_mode=simulation_mode)
+                ValvePositionController_pb2_grpc.add_ValvePositionControllerServicer_to_server(
+                    self.ValvePositionController_servicer,
+                    self.grpc_server
+                )
+                self.add_feature(feature_id='ValvePositionController',
+                                servicer=self.ValvePositionController_servicer,
+                                data_path=data_path)
 
         #  Register de.cetoni.core.ShutdownController
         self.ShutdownController_servicer = ShutdownController(

@@ -52,7 +52,7 @@ from qmixio.QmixIO_server import QmixIOServer
 from motioncontrol.MotionControl_server import MotionControlServer
 
 # import qmixsdk
-from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion
+from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion, qmixvalve
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -115,7 +115,12 @@ def parse_device_config(config_path: str) -> Tuple[List[str], Dict[str, Dict[str
 
     return device_list, device_properties
 
-def devices_to_channels(devices: List[str], channels: List) -> Dict:
+def devices_to_channels(
+    devices: List[str],
+    channels: List[Union[qmixcontroller.ControllerChannel,
+                         qmixanalogio.AnalogInChannel, qmixanalogio.AnalogOutChannel,
+                         qmixdigio.DigitalInChannel, qmixdigio.DigitalOutChannel]]
+    ) -> Dict:
     """
     Constructs the relationship device -> channel(s)
 
@@ -127,8 +132,8 @@ def devices_to_channels(devices: List[str], channels: List) -> Dict:
     device_to_channels = {}
 
     for channel in channels:
+        channel_name = channel.get_name()
         for device in devices:
-            channel_name = channel.get_name()
             if device.rsplit('_Pump', 1)[0] in channel_name:
                 logging.debug(f"Channel {channel_name} belongs to device {device}")
                 if device in device_to_channels:
@@ -277,8 +282,8 @@ def get_availabe_axis_systems() -> List[qmixmotion.AxisSystem]:
     Looks up all axis systems connected to the bus
 
         :param devices: A list of all devices connected to the bus
-        :return: A dictionary of all devices with their corresponding I/O channels
-        :rtype: Dict[str, Union[qmixanalogio.AnalogChannel, qmixdigio.DigitalChannel]]
+        :return: A list of all axis systems
+        :rtype: List[qmixmotion.AxisSystem]
     """
 
     system_count = qmixmotion.AxisSystem.get_axis_system_count()
@@ -293,6 +298,50 @@ def get_availabe_axis_systems() -> List[qmixmotion.AxisSystem]:
         systems.append(system)
 
     return systems
+
+#-----------------------------------------------------------------------------
+# Valves
+def get_availabe_valves(devices: List[str]) \
+    -> Dict[str, qmixvalve.Valve]:
+    """
+    Looks up all valves from the current configuration and maps them to their corresponding device
+
+        :param devices: A list of all devices connected to the bus
+        :return: A dictionary of all devices with their corresponding valves
+        :rtype: Dict[str, qmixvalve.Valve]
+    """
+    """
+    Looks up all valves from the current configuration and constructs a list of
+    all found valves
+
+        :return: A list of all found valves connected to the bus
+        :rtype: List[qmixvalve.Valve]
+    """
+    valve_count = qmixvalve.Valve.get_no_of_valves()
+    logging.debug("Number of valves: %s", valve_count)
+
+    device_to_valves = {}
+
+    for i in range(valve_count):
+        valve = qmixvalve.Valve()
+        valve.lookup_by_device_index(i)
+        valve_name = valve.get_device_name()
+        logging.debug("Found valve %d named %s", i, valve_name)
+
+        for device in devices:
+            if device.rsplit('_Pump', 1)[0] in valve_name:
+                logging.debug(f"Valve {valve_name} belongs to device {device}")
+                if 'QmixIO' in device:
+                    # These valve devices are actually just convenience devices
+                    # that operate on digital I/O channels. Hence, they can be
+                    # just used via their corresponding I/O channel.
+                    continue
+                if device in device_to_valves:
+                    device_to_valves[device] += [valve]
+                else:
+                    device_to_valves[device] = [valve]
+
+    return device_to_valves
 
 #-----------------------------------------------------------------------------
 # main program
@@ -324,12 +373,14 @@ if __name__ == '__main__':
 
     logging.debug("Starting bus...")
     bus = open_bus(parsed_args.config_path)
+
     logging.debug("Looking up devices...")
     pumps = get_availabe_pumps()
     axis_systems = get_availabe_axis_systems()
     device_to_controllers = get_availabe_controllers(qmix_devices)
     device_to_io_channels = get_availabe_io_channels(qmix_devices)
-    # TODO get more devices ...
+    device_to_valves = get_availabe_valves(qmix_devices)
+
     bus.start()
     enable_pumps(pumps)
     [axis_system.enable(True) for axis_system in axis_systems]
@@ -354,13 +405,25 @@ if __name__ == '__main__':
 
         PumpServer = ContiflowServer if isinstance(pump, qmixpump.ContiFlowPump) else neMESYSServer
 
+        # a pump most likely has a valve
+        valve = None
+        if pump_name in device_to_valves:
+            valve = device_to_valves[pump_name][0]
+            del device_to_valves[pump_name]
+
         # a pump can have built in I/O channels
         io_channels = []
         if pump_name in device_to_io_channels:
             io_channels = device_to_io_channels[pump_name]
             del device_to_io_channels[pump_name]
 
-        server = PumpServer(cmd_args=args, qmix_pump=pump, io_channels=io_channels, simulation_mode=False)
+        server = PumpServer(
+            cmd_args=args,
+            qmix_pump=pump,
+            valve=valve,
+            io_channels=io_channels,
+            simulation_mode=False
+        )
         server.run(block=False)
         servers += [server]
 

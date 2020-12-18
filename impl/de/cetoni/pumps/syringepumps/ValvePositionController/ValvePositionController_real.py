@@ -49,8 +49,7 @@ from impl.common import neMESYS_errors
 
 # import qmixsdk
 from qmixsdk import qmixbus
-from qmixsdk import qmixpump
-from qmixsdk import qmixvalve
+from qmixsdk.qmixvalve import Valve
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class ValvePositionControllerReal:
@@ -59,12 +58,12 @@ class ValvePositionControllerReal:
         This is a sample service for controlling neMESYS syringe pumps via SiLA2
     """
 
-    def __init__(self, pump: qmixpump.Pump):
+    def __init__(self, valve: Valve):
         """Class initialiser"""
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
-        self.valve = pump.get_valve()
+        self.valve = valve
         self.num_of_valve_pos = self.valve.number_of_valve_positions()
 
     def SwitchToPosition(self, request, context: grpc.ServicerContext) \
