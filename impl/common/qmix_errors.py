@@ -31,3 +31,23 @@ class QmixSDKSiLAError(SiLAExecutionError):
 
         super().__init__(msg=msg, error_identifier=None)
 
+class ValvePositionOutOfRangeError(SiLAValidationError):
+    """
+    The requested valve position is not in the valid range for this valve.
+    """
+
+    def __init__(self, msg: str = None):
+        super().__init__(
+            parameter="sila2.de.cetoni.pumps.syringepumps.valvepositioncontroller.v1.Position",
+            msg=msg
+        )
+
+class ValveNotToggleableError(SiLAExecutionError):
+    """
+    The current valve does not support toggling because it has more than only two possible positions.
+    """
+
+    def __init__(self):
+        msg = "The current valve does not support toggling because it has more than only two possible positions."
+        super().__init__(error_identifier="ValveNotToggleable", msg=msg)
+
