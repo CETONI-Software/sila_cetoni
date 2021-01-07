@@ -63,10 +63,10 @@ from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.gRPC impor
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.gRPC import SyringeConfigurationController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.SyringeConfigurationController_default_arguments import default_dict as SyringeConfigurationController_default_dict
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
+from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2
+from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
 # import default arguments for this feature
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
+from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
 from impl.de.cetoni.pumps.syringepumps.ShutdownController.gRPC import ShutdownController_pb2
 from impl.de.cetoni.pumps.syringepumps.ShutdownController.gRPC import ShutdownController_pb2_grpc
 # import default arguments for this feature

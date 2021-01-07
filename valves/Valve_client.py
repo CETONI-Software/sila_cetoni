@@ -47,10 +47,10 @@ from sila2lib.error_handling import client_err
 
 # import feature gRPC modules
 # Import gRPC libraries of features
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
+from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2
+from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
 # import default arguments for this feature
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
+from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
 from impl.de.cetoni.valves.ValveGatewayService.gRPC import ValveGatewayService_pb2
 from impl.de.cetoni.valves.ValveGatewayService.gRPC import ValveGatewayService_pb2_grpc
 # import default arguments for this feature

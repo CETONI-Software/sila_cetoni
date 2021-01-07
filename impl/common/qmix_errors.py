@@ -38,7 +38,7 @@ class ValvePositionOutOfRangeError(SiLAValidationError):
 
     def __init__(self, msg: str = None):
         super().__init__(
-            parameter="sila2.de.cetoni.pumps.syringepumps.valvepositioncontroller.v1.Position",
+            parameter="sila2.de.cetoni.valves.valvepositioncontroller.v1.Position",
             msg=msg
         )
 

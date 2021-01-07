@@ -10,7 +10,7 @@
       "SimulationController"
     ],
     "SiLA_feature_list": [
-      "de/cetoni/pumps/syringepumps/ValvePositionController",
+      "de/cetoni/valves/ValvePositionController",
       "de/cetoni/valves/ValveGatewayService"
     ],
     "communication_port": "50052",

@@ -63,10 +63,10 @@ from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.gRPC impor
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.gRPC import SyringeConfigurationController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.SyringeConfigurationController_default_arguments import default_dict as SyringeConfigurationController_default_dict
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
+from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2
+from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
 # import default arguments for this feature
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
+from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
 from impl.de.cetoni.core.ShutdownController.gRPC import ShutdownController_pb2
 from impl.de.cetoni.core.ShutdownController.gRPC import ShutdownController_pb2_grpc
 # import default arguments for this feature
@@ -77,7 +77,7 @@ from impl.de.cetoni.pumps.syringepumps.PumpDriveControlService.PumpDriveControlS
 from impl.de.cetoni.pumps.syringepumps.PumpUnitController.PumpUnitController_servicer import PumpUnitController
 from impl.de.cetoni.pumps.syringepumps.PumpFluidDosingService.PumpFluidDosingService_servicer import PumpFluidDosingService
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.SyringeConfigurationController_servicer import SyringeConfigurationController
-from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_servicer import ValvePositionController
+from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_servicer import ValvePositionController
 from impl.de.cetoni.core.ShutdownController.ShutdownController_servicer import ShutdownController
 
 class neMESYSServer(QmixIOServer):
@@ -156,7 +156,7 @@ class neMESYSServer(QmixIOServer):
                              servicer=self.PumpFluidDosingService_servicer,
                              data_path=data_path)
             if valve:
-                #  Register de.cetoni.pumps.syringepumps.ValvePositionController
+                #  Register de.cetoni.valves.ValvePositionController
                 self.ValvePositionController_servicer = ValvePositionController(
                     valve=valve,
                     simulation_mode=simulation_mode)
@@ -166,7 +166,7 @@ class neMESYSServer(QmixIOServer):
                 )
                 self.add_feature(feature_id='ValvePositionController',
                                 servicer=self.ValvePositionController_servicer,
-                                data_path=data_path)
+                                data_path=data_path.replace(os.path.join('pumps', 'syringepumps'), 'valves'))
 
         #  Register de.cetoni.core.ShutdownController
         self.ShutdownController_servicer = ShutdownController(
