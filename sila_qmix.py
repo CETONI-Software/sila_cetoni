@@ -50,6 +50,7 @@ from pumps.contiflowpumps.Contiflow_server import ContiflowServer
 from controllers.QmixControl_server import QmixControlServer
 from qmixio.QmixIO_server import QmixIOServer
 from motioncontrol.MotionControl_server import MotionControlServer
+from valves.Valve_server import ValveServer
 
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion, qmixvalve
@@ -302,20 +303,13 @@ def get_availabe_axis_systems() -> List[qmixmotion.AxisSystem]:
 #-----------------------------------------------------------------------------
 # Valves
 def get_availabe_valves(devices: List[str]) \
-    -> Dict[str, qmixvalve.Valve]:
+    -> Dict[str, List[qmixvalve.Valve]]:
     """
     Looks up all valves from the current configuration and maps them to their corresponding device
 
         :param devices: A list of all devices connected to the bus
         :return: A dictionary of all devices with their corresponding valves
-        :rtype: Dict[str, qmixvalve.Valve]
-    """
-    """
-    Looks up all valves from the current configuration and constructs a list of
-    all found valves
-
-        :return: A list of all found valves connected to the bus
-        :rtype: List[qmixvalve.Valve]
+        :rtype: Dict[str, List[qmixvalve.Valve]]
     """
     valve_count = qmixvalve.Valve.get_no_of_valves()
     logging.debug("Number of valves: %s", valve_count)
@@ -422,6 +416,25 @@ if __name__ == '__main__':
             qmix_pump=pump,
             valve=valve,
             io_channels=io_channels,
+            simulation_mode=False
+        )
+        server.run(block=False)
+        servers += [server]
+
+    for device, valves in device_to_valves.items():
+        args.port += 1
+        args.server_name = device.replace("_", " ")
+        args.description = "Allows to control valve devices"
+
+        # a valve might have I/O channels assigned to it but these are actually
+        # used by the valve internally already
+        if device in device_to_io_channels:
+            del device_to_io_channels[device]
+
+        server = ValveServer(
+            cmd_args=args,
+            valves=valves,
+            # io_channels=io_channels,
             simulation_mode=False
         )
         server.run(block=False)
