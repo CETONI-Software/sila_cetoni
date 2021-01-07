@@ -42,7 +42,7 @@ import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 from sila2lib.sila_server import SiLA2Server
 
 # import SiLA errors
-from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType
+from impl.common.qmix_errors import SiLAExecutionError, SiLAFrameworkError, SiLAFrameworkErrorType
 
 # import gRPC modules for this feature
 from .gRPC import ChannelGatewayService_pb2 as ChannelGatewayService_pb2
