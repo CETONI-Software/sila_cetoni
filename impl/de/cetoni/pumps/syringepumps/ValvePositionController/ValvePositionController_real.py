@@ -148,12 +148,9 @@ class ValvePositionControllerReal:
         """
 
         while True:
-            try:
-                yield ValvePositionController_pb2.Subscribe_Position_Responses(
-                    Position=silaFW_pb2.Integer(value=self.valve.actual_valve_position())
-                )
+            yield ValvePositionController_pb2.Subscribe_Position_Responses(
+                Position=silaFW_pb2.Integer(value=self.valve.actual_valve_position())
+            )
 
-                # we add a small delay to give the client a chance to keep up.
-                time.sleep(0.5)
-            except qmixbus.DeviceError as err:
-                raise neMESYS_errors.QmixSDKSiLAError(err)
+            # we add a small delay to give the client a chance to keep up.
+            time.sleep(0.5)

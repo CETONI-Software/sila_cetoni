@@ -124,13 +124,12 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
             if isinstance(err, neMESYS_errors.DeviceError):
                 err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 
 
     def TogglePosition(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.TogglePosition_Responses:
         """
-        Executes the unobservable command "Toogle Position"
+        Executes the unobservable command "Toggle Position"
             This command only applies for 2-way valves to toggle between its two different positions. If the command is called for any other valve type a ValveNotToggleable error is thrown.
 
         :param request: gRPC request containing the parameters passed:
@@ -153,7 +152,6 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
             if isinstance(err, neMESYS_errors.DeviceError):
                 err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 
     def Get_NumberOfPositions(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.Get_NumberOfPositions_Responses:
@@ -194,8 +192,8 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
             )
         )
         try:
-            return self.implementation.Subscribe_Position(request, context)
+            for value in self.implementation.Subscribe_Position(request, context):
+                yield value
         except neMESYS_errors.DeviceError as err:
             err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
