@@ -51,6 +51,10 @@ from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import Valve
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
+from impl.de.cetoni.valves.ValveGatewayService.gRPC import ValveGatewayService_pb2
+from impl.de.cetoni.valves.ValveGatewayService.gRPC import ValveGatewayService_pb2_grpc
+# import default arguments for this feature
+from impl.de.cetoni.valves.ValveGatewayService.ValveGatewayService_default_arguments import default_dict as ValveGatewayService_default_dict
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
@@ -300,7 +304,27 @@ class ValveClient(SiLA2Client):
         return response
 
 
-    #   No metadata defined
+    def Get_FCPAffectedByMetadata_ValveIdentifier(self) \
+            -> ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses:
+        """Wrapper to get property FCPAffectedByMetadata_ValveIdentifier from the server."""
+        # noinspection PyUnusedLocal - type definition, just for convenience
+        grpc_err: grpc.Call
+
+        logging.debug("Reading unobservable property FCPAffectedByMetadata_ValveIdentifier:")
+        try:
+            response = self.ValveGatewayService_stub.Get_FCPAffectedByMetadata_ValveIdentifier(
+                ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Parameters()
+            )
+            logging.debug(
+                'Get_FCPAffectedByMetadata_ValveIdentifier response: {response}'.format(
+                    response=response
+                )
+            )
+        except grpc.RpcError as grpc_err:
+            self.grpc_error_handling(grpc_err)
+            return None
+
+        return response
 
     @staticmethod
     def grpc_error_handling(error_object: grpc.Call) -> None:

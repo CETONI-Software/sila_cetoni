@@ -36,12 +36,17 @@ import argparse
 from sila2lib.sila_server import SiLA2Server
 
 # Import gRPC libraries of features
+from impl.de.cetoni.valves.ValveGatewayService.gRPC import ValveGatewayService_pb2
+from impl.de.cetoni.valves.ValveGatewayService.gRPC import ValveGatewayService_pb2_grpc
+# import default arguments for this feature
+from impl.de.cetoni.valves.ValveGatewayService.ValveGatewayService_default_arguments import default_dict as ValveGatewayService_default_dict
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
 
 # Import the servicer modules for each feature
+from impl.de.cetoni.valves.ValveGatewayService.ValveGatewayService_servicer import ValveGatewayService
 from impl.de.cetoni.pumps.syringepumps.ValvePositionController.ValvePositionController_servicer import ValvePositionController
 
 from local_ip import LOCAL_IP
@@ -51,7 +56,7 @@ class ValveServer(SiLA2Server):
     Allows to control valve devices
     """
 
-    def __init__(self, cmd_args, valve, simulation_mode: bool = True):
+    def __init__(self, cmd_args, valves, simulation_mode: bool = True):
         """Class initialiser"""
         super().__init__(
             name=cmd_args.server_name, description=cmd_args.description,
@@ -73,9 +78,21 @@ class ValveServer(SiLA2Server):
                                                  'features', 'de', 'cetoni', 'pumps', 'syringepumps'))
 
         # registering features
+        #  Register de.cetoni.valve.ValveGatewayService
+        self.ValveGatewayService_servicer = ValveGatewayService(
+            valves=valves,
+            simulation_mode=self.simulation_mode
+        )
+        ValveGatewayService_pb2_grpc.add_ValveGatewayServiceServicer_to_server(
+            self.ValveGatewayService_servicer,
+            self.grpc_server
+        )
+        self.add_feature(feature_id='ValveGatewayService',
+                         servicer=self.ValveGatewayService_servicer,
+                         data_path=data_path)
         #  Register de.cetoni.pumps.syringepumps.ValvePositionController
         self.ValvePositionController_servicer = ValvePositionController(
-            valve=valve, # TODO: support multiple valves!
+            valve_gateway=self.ValveGatewayService_servicer,
             simulation_mode=self.simulation_mode
         )
         ValvePositionController_pb2_grpc.add_ValvePositionControllerServicer_to_server(
