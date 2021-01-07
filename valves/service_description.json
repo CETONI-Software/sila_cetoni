@@ -1,0 +1,18 @@
+{
+    "service_name": "Valve",
+    "service_description": "Allows to control valve devices",
+    "authors": "Florian Meinicke",
+    "creation_date": "2021-01-07",
+    "version": "0.1.0",
+    "vendor_url": "cetoni.de",
+    "SiLA_standard_feature_list": [
+      "SiLAService",
+      "SimulationController"
+    ],
+    "SiLA_feature_list": [
+    "de/cetoni/pumps/syringepumps/ValvePositionController"
+    ],
+    "communication_port": "50052",
+    "IP_address": "127.0.0.1",
+    "hostname": "localhost"
+  }
