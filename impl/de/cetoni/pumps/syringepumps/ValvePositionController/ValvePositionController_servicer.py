@@ -44,7 +44,8 @@ from .gRPC import ValvePositionController_pb2 as ValvePositionController_pb2
 from .gRPC import ValvePositionController_pb2_grpc as ValvePositionController_pb2_grpc
 
 # import SiLA errors
-from impl.common import neMESYS_errors
+from impl.common.qmix_errors import SiLAFrameworkError, DeviceError, QmixSDKSiLAError, \
+    ValveNotToggleableError, ValvePositionOutOfRangeError
 
 # import simulation and real implementation
 from .ValvePositionController_simulation import ValvePositionControllerSimulation
@@ -58,15 +59,20 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
     implementation: Union[ValvePositionControllerSimulation, ValvePositionControllerReal]
     simulation_mode: bool
 
-    def __init__(self, valve, simulation_mode: bool = True):
+    def __init__(self, valve = None, valve_gateway = None, simulation_mode: bool = True):
         """
         Class initialiser.
 
-        :param valve: A valid `qmixvalve.Valve` object for this service to use
+        :param valve: A valid `qmixvalve.Valve` object for this service to use (if this is None
+                      the ValveGatewayService Feature is expected to be implemented by the server
+                      as otherwise there is no way for this Feature to know the)
+        :param valve_gateway: The ValveGatewayService feature that provides the valves that
+                              this feature can operate on (must be given in valve is None)
         :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode
         """
 
-        self.pump = valve
+        self.valve = valve
+        self.valve_gateway = valve_gateway
 
         self.simulation_mode = simulation_mode
         if simulation_mode:
@@ -96,7 +102,7 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
     def switch_to_real_mode(self):
         """Method that will automatically be called by the server when the real mode is requested."""
         self.simulation_mode = False
-        self._inject_implementation(ValvePositionControllerReal(self.pump))
+        self._inject_implementation(ValvePositionControllerReal(self.valve, self.valve_gateway))
 
     def SwitchToPosition(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.SwitchToPosition_Responses:
@@ -120,9 +126,9 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
 
         try:
             return self.implementation.SwitchToPosition(request, context)
-        except (neMESYS_errors.ValvePositionOutOfRangeError, neMESYS_errors.DeviceError) as err:
-            if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKSiLAError(err)
+        except (SiLAFrameworkError, ValvePositionOutOfRangeError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
 
@@ -148,9 +154,9 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
 
         try:
             return self.implementation.TogglePosition(request, context)
-        except (neMESYS_errors.ValveNotToggleableError, neMESYS_errors.DeviceError) as err:
-            if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKSiLAError(err)
+        except (SiLAFrameworkError, ValveNotToggleableError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def Get_NumberOfPositions(self, request, context: grpc.ServicerContext) \
@@ -171,7 +177,10 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
                 current_mode=('simulation' if self.simulation_mode else 'real')
             )
         )
-        return self.implementation.Get_NumberOfPositions(request, context)
+        try:
+            return self.implementation.Get_NumberOfPositions(request, context)
+        except SiLAFrameworkError as err:
+            err.raise_rpc_error(context)
 
     def Subscribe_Position(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.Subscribe_Position_Responses:
@@ -194,6 +203,7 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
         try:
             for value in self.implementation.Subscribe_Position(request, context):
                 yield value
-        except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKSiLAError(err)
+        except (SiLAFrameworkError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
