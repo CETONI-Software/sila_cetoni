@@ -116,7 +116,10 @@ class ChannelGatewayServiceReal:
         for channel in self.channels:
             if channel.get_name() == channel_name:
                 return channel
-        return None
+        raise SiLAFrameworkError(
+            SiLAFrameworkErrorType.INVALID_METADATA,
+            f"There is no channel with the name '{channel_name}!"
+        )
 
     def GetChannelIdentifiers(self, request, context: grpc.ServicerContext) \
             -> ChannelGatewayService_pb2.GetChannelIdentifiers_Responses:

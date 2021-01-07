@@ -97,7 +97,10 @@ class ValveGatewayServiceReal:
         for valve in self.valves:
             if valve.get_device_name() == valve_name:
                 return valve
-        return None
+        raise SiLAFrameworkError(
+            SiLAFrameworkErrorType.INVALID_METADATA,
+            f"There is no valve with the name '{valve_name}!"
+        )
 
     def Get_FCPAffectedByMetadata_ValveIdentifier(self, request, context: grpc.ServicerContext) \
             -> ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses:
