@@ -67,7 +67,7 @@ class ValvePositionControllerReal:
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
         self.valve = valve
-        self.valve_gateway = valve_gateway
+        self.valve_gateway: ValveGatewayService = valve_gateway
 
     def _get_valve(self, invocation_metadata) -> Valve:
         """

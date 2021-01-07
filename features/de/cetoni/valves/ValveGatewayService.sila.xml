@@ -13,4 +13,19 @@
             <Basic>String</Basic>
         </DataType>
     </Metadata>
+
+    <!-- Commands -->
+    <Property>
+        <Identifier>ValveIdentifiers</Identifier>
+        <DisplayName>Valve Identifiers</DisplayName>
+        <Description>A list of all possible valve names (identifiers) of this device</Description>
+        <Observable>No</Observable>
+        <DataType>
+            <List>
+                <DataType>
+                    <Basic>String</Basic>
+                </DataType>
+            </List>
+        </DataType>
+    </Property>
 </Feature>

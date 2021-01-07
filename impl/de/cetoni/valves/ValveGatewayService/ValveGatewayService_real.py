@@ -102,6 +102,25 @@ class ValveGatewayServiceReal:
             f"There is no valve with the name '{valve_name}!"
         )
 
+    def Get_ValveIdentifiers(self, request, context: grpc.ServicerContext) \
+            -> ValveGatewayService_pb2.Get_ValveIdentifiers_Responses:
+        """
+        Requests the unobservable property Valve Identifiers
+            A list of all possible valve names (identifiers) of this device
+
+        :param request: An empty gRPC request object (properties have no parameters)
+        :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
+
+        :returns: A response object with the following fields:
+            ValveIdentifiers (Valve Identifiers): A list of all possible valve names (identifiers) of this device
+        """
+
+        return ValveGatewayService_pb2.Get_ValveIdentifiers_Responses(
+                ValveIdentifiers=[
+                    silaFW_pb2.String(value=valve.get_device_name()) for valve in self.valves
+                ]
+            )
+
     def Get_FCPAffectedByMetadata_ValveIdentifier(self, request, context: grpc.ServicerContext) \
             -> ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses:
         """
