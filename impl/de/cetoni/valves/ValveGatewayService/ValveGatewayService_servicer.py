@@ -33,7 +33,7 @@ import logging
 import grpc
 
 # meta packages
-from typing import Union
+from typing import Union, Tuple
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
@@ -94,9 +94,14 @@ class ValveGatewayService(ValveGatewayService_pb2_grpc.ValveGatewayServiceServic
         self.simulation_mode = False
         self._inject_implementation(ValveGatewayServiceReal(self.valves))
 
+    def get_valve(self, metadata: Tuple[Tuple[str, str]]):
+        """
+        Get the valve that is identified by the valve name given in `metadata`
 
-
-
+        :param metdata: The metadata of the call. It should contain the requested valve name
+        :return: A valid valve object if the valve can be identified, otherwise a SiLAFrameworkError will be raised
+        """
+        return self.implementation.get_valve(metadata)
 
     def Get_FCPAffectedByMetadata_ValveIdentifier(self, request, context: grpc.ServicerContext) \
             -> ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses:

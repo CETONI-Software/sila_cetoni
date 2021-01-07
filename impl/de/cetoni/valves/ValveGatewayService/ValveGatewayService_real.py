@@ -82,7 +82,7 @@ class ValveGatewayServiceReal:
             raise SiLAFrameworkError(SiLAFrameworkErrorType.INVALID_METADATA,
                                      'This Command requires the ValveIdentifier metadata!')
 
-    def get_valve(self, metadata: Tuple[Tuple[str, str]]):
+    def get_valve(self, metadata: Tuple[Tuple[str, str]]) -> Valve:
         """
         Get the valve that is identified by the valve name given in `metadata`
 
