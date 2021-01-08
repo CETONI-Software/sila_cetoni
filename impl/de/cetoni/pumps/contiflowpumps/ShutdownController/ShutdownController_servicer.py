@@ -39,8 +39,7 @@ from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
-from sila2lib.error_handling.server_err import SiLAError
-
+from impl.common.qmix_errors import DeviceError, QmixSDKSiLAError, SiLAFrameworkError
 # import gRPC modules for this feature
 from .gRPC import ShutdownController_pb2 as ShutdownController_pb2
 from .gRPC import ShutdownController_pb2_grpc as ShutdownController_pb2_grpc
@@ -150,10 +149,11 @@ class ShutdownController(ShutdownController_pb2_grpc.ShutdownControllerServicer)
         )
 
         try:
-            return self.implementation.Shutdown_Info(request, context)
-        except (neMESYS_errors.SiLAFrameworkError, neMESYS_errors.DeviceError) as err:
-            if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKSiLAError(err)
+            for value in self.implementation.Shutdown_Info(request, context):
+                yield value
+        except (SiLAFrameworkError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
 

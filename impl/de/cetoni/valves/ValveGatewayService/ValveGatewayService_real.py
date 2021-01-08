@@ -76,6 +76,7 @@ class ValveGatewayServiceReal:
 
         invocation_metadata = {key: value for key, value in metadata}
         logging.debug(f"Received invocation metadata: {invocation_metadata}")
+        return self.valves[0].get_device_name()
         try:
             return invocation_metadata[self.METADATA_VALVE_IDENTIFIER].decode('utf-8')
         except KeyError:

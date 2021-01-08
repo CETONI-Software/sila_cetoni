@@ -123,7 +123,6 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
             if isinstance(err, neMESYS_errors.DeviceError):
                 err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 
     def SetVolumeUnit(self, request, context: grpc.ServicerContext) \
             -> PumpUnitController_pb2.SetVolumeUnit_Responses:
@@ -151,7 +150,6 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
             if isinstance(err, neMESYS_errors.DeviceError):
                 err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 
     def Subscribe_FlowUnit(self, request, context: grpc.ServicerContext) \
             -> PumpUnitController_pb2.Subscribe_FlowUnit_Responses:
@@ -173,12 +171,12 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
         )
 
         try:
-            return self.implementation.Subscribe_FlowUnit(request, context)
+            for value in self.implementation.Subscribe_FlowUnit(request, context):
+                yield value
         except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
                 err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 
     def Subscribe_VolumeUnit(self, request, context: grpc.ServicerContext) \
             -> PumpUnitController_pb2.Subscribe_VolumeUnit_Responses:
@@ -200,10 +198,10 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
         )
 
         try:
-            return self.implementation.Subscribe_VolumeUnit(request, context)
+            for value in self.implementation.Subscribe_VolumeUnit(request, context):
+                yield value
         except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
                 err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 

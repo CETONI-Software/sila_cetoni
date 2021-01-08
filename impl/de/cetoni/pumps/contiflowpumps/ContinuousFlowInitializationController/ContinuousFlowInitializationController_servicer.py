@@ -149,7 +149,8 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
             )
         )
         try:
-            return self.implementation.InitializeContiflow_Info(request, context)
+            for value in self.implementation.InitializeContiflow_Info(request, context):
+                yield value
         except (SiLAFrameworkError, DeviceError) as err:
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
@@ -203,7 +204,8 @@ class ContinuousFlowInitializationController(ContinuousFlowInitializationControl
             )
         )
         try:
-            return self.implementation.Subscribe_IsInitialized(request, context)
+            for value in self.implementation.Subscribe_IsInitialized(request, context):
+                yield value
         except DeviceError as err:
             err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)

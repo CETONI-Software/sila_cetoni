@@ -152,12 +152,12 @@ class ShutdownController(ShutdownController_pb2_grpc.ShutdownControllerServicer)
         )
 
         try:
-            return self.implementation.Shutdown_Info(request, context)
+            for value in self.implementation.Shutdown_Info(request, context):
+                yield value
         except (neMESYS_errors.SiLAFrameworkError, neMESYS_errors.DeviceError) as err:
             if isinstance(err, neMESYS_errors.DeviceError):
                 err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 
     def Shutdown_Result(self, request, context: grpc.ServicerContext) \
             -> ShutdownController_pb2.Shutdown_Responses:

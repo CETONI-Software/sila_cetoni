@@ -125,7 +125,6 @@ class SyringeConfigurationController(SyringeConfigurationController_pb2_grpc.Syr
             if isinstance(err, neMESYS_errors.DeviceError):
                 err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 
     def Subscribe_InnerDiameter(self, request, context: grpc.ServicerContext) \
             -> SyringeConfigurationController_pb2.Subscribe_InnerDiameter_Responses:
@@ -147,11 +146,11 @@ class SyringeConfigurationController(SyringeConfigurationController_pb2_grpc.Syr
         )
 
         try:
-            return self.implementation.Subscribe_InnerDiameter(request, context)
+            for value in self.implementation.Subscribe_InnerDiameter(request, context):
+                yield value
         except neMESYS_errors.DeviceError as err:
             err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 
 
     def Subscribe_MaxPistonStroke(self, request, context: grpc.ServicerContext) \
@@ -174,9 +173,9 @@ class SyringeConfigurationController(SyringeConfigurationController_pb2_grpc.Syr
         )
 
         try:
-            return self.implementation.Subscribe_MaxPistonStroke(request, context)
+            for value in self.implementation.Subscribe_MaxPistonStroke(request, context):
+                yield value
         except neMESYS_errors.DeviceError as err:
             err = neMESYS_errors.QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
-            return None
 

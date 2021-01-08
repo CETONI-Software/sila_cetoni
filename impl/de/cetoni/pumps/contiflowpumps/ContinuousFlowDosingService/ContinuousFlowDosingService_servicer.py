@@ -153,7 +153,8 @@ class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.Continuou
         )
 
         try:
-            return self.implementation.GenerateFlow_Info(request, context)
+            for value in self.implementation.GenerateFlow_Info(request, context):
+                yield value
         except SiLAFrameworkError as err:
             err.raise_rpc_error(context)
             return None
@@ -207,7 +208,6 @@ class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.Continuou
         try:
             return self.implementation.StopDosage(request, context)
         except DeviceError as err:
-            self.implementation.StopDosage(None, None)
             err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
@@ -232,9 +232,9 @@ class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.Continuou
         )
 
         try:
-            return self.implementation.Subscribe_MaxFlowRate(request, context)
+            for value in self.implementation.Subscribe_MaxFlowRate(request, context):
+                yield value
         except DeviceError as err:
-            self.implementation.StopDosage(None, None)
             err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
@@ -259,9 +259,9 @@ class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.Continuou
         )
 
         try:
-            return self.implementation.Subscribe_FlowRate(request, context)
+            for value in self.implementation.Subscribe_FlowRate(request, context):
+                yield value
         except DeviceError as err:
-            self.implementation.StopDosage(None, None)
             err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
             return None
