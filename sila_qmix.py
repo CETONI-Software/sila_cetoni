@@ -198,7 +198,7 @@ def get_availabe_pumps() -> List[qmixpump.Pump]:
         try:
             pump.get_device_property(qmixpump.ContiFlowProperty.SWITCHING_MODE)
             pump = qmixpump.ContiFlowPump(pump.handle)
-            logging.debug("Pump %s i contiflow pump", pump.get_device_name())
+            logging.debug("Pump %s is contiflow pump", pump.get_device_name())
         except qmixbus.DeviceError as err:
             pass
         pumps.append(pump)
@@ -319,7 +319,18 @@ def get_availabe_valves(devices: List[str]) \
     for i in range(valve_count):
         valve = qmixvalve.Valve()
         valve.lookup_by_device_index(i)
-        valve_name = valve.get_device_name()
+        try:
+            valve_name = valve.get_device_name()
+        except OSError:
+            # When there are contiflow pumps in the config the corresponding
+            # valves from the original syringe pumps are duplicated internally.
+            # I.e. with one contiflow pump made up of two low pressure pumps with
+            # their corresponding valves the total number of valves is 4 in spite
+            # of the actual 2 physical valves available. This leads to an access
+            # violation error inside QmixSDK in case the device name of one of the
+            # non-existent contiflow valves is requested. We can fortunately
+            # mitigate this with this try-except here.
+            continue
         logging.debug("Found valve %d named %s", i, valve_name)
 
         for device in devices:
@@ -397,8 +408,6 @@ if __name__ == '__main__':
             contiflow_descr="contiflow pump made up of two" if isinstance(pump, qmixpump.ContiFlowPump) else ""
         )
 
-        PumpServer = ContiflowServer if isinstance(pump, qmixpump.ContiFlowPump) else neMESYSServer
-
         # a pump most likely has a valve
         valve = None
         if pump_name in device_to_valves:
@@ -411,13 +420,20 @@ if __name__ == '__main__':
             io_channels = device_to_io_channels[pump_name]
             del device_to_io_channels[pump_name]
 
-        server = PumpServer(
-            cmd_args=args,
-            qmix_pump=pump,
-            valve=valve,
-            io_channels=io_channels,
-            simulation_mode=False
-        )
+        if isinstance(pump, qmixpump.ContiFlowPump):
+            server = ContiflowServer(
+                cmd_args=args,
+                qmix_pump=pump,
+                simulation_mode=False
+            )
+        else:
+            server = neMESYSServer(
+                cmd_args=args,
+                qmix_pump=pump,
+                valve=valve,
+                io_channels=io_channels,
+                simulation_mode=False
+            )
         server.run(block=False)
         servers += [server]
 

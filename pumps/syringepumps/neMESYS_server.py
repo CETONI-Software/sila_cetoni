@@ -155,7 +155,7 @@ class neMESYSServer(QmixIOServer):
             self.add_feature(feature_id='PumpFluidDosingService',
                              servicer=self.PumpFluidDosingService_servicer,
                              data_path=data_path)
-            if valve:
+            if valve is not None:
                 #  Register de.cetoni.valves.ValvePositionController
                 self.ValvePositionController_servicer = ValvePositionController(
                     valve=valve,
