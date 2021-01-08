@@ -49,7 +49,7 @@ from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_defau
 from impl.de.cetoni.valves.ValveGatewayService.ValveGatewayService_servicer import ValveGatewayService
 from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_servicer import ValvePositionController
 
-from local_ip import LOCAL_IP
+from ..local_ip import LOCAL_IP
 
 class ValveServer(SiLA2Server):
     """

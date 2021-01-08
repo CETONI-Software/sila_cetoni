@@ -48,7 +48,7 @@ from impl.de.cetoni.core.ChannelGatewayService.ChannelGatewayService_default_arg
 # Import the servicer modules for each feature
 from impl.de.cetoni.controllers.ControlLoopService.ControlLoopService_servicer import ControlLoopService
 from impl.de.cetoni.core.ChannelGatewayService.ChannelGatewayService_servicer import ChannelGatewayService
-from local_ip import LOCAL_IP
+from ..local_ip import LOCAL_IP
 
 class QmixControlServer(SiLA2Server):
     """

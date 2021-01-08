@@ -37,7 +37,7 @@ from qmixsdk import qmixbus
 from qmixsdk import qmixpump
 
 # Import the base server
-from pumps.syringepumps.neMESYS_server import neMESYSServer
+from ..syringepumps.neMESYS_server import neMESYSServer
 
 # Import gRPC libraries of features
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService.gRPC import ContinuousFlowConfigurationService_pb2
@@ -52,18 +52,11 @@ from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService.gRPC import
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService.gRPC import ContinuousFlowDosingService_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService.ContinuousFlowDosingService_default_arguments import default_dict as ContinuousFlowDosingService_default_dict
-from impl.de.cetoni.core.ShutdownController.gRPC import ShutdownController_pb2
-from impl.de.cetoni.core.ShutdownController.gRPC import ShutdownController_pb2_grpc
-# import default arguments for this feature
-from impl.de.cetoni.core.ShutdownController.ShutdownController_default_arguments import default_dict as ShutdownController_default_dict
 
 # Import the servicer modules for each feature
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowConfigurationService.ContinuousFlowConfigurationService_servicer import ContinuousFlowConfigurationService
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.ContinuousFlowInitializationController_servicer import ContinuousFlowInitializationController
 from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService.ContinuousFlowDosingService_servicer import ContinuousFlowDosingService
-from impl.de.cetoni.core.ShutdownController.ShutdownController_servicer import ShutdownController
-
-from local_ip import LOCAL_IP
 
 class ContiflowServer(neMESYSServer):
     """

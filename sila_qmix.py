@@ -45,12 +45,12 @@ from lxml import etree, objectify
 sys.path.append("C:/QmixSDK/lib/python")
 
 # import Qmix servers
-from pumps.syringepumps.neMESYS_server import neMESYSServer
-from pumps.contiflowpumps.Contiflow_server import ContiflowServer
-from controllers.QmixControl_server import QmixControlServer
-from qmixio.QmixIO_server import QmixIOServer
-from motioncontrol.MotionControl_server import MotionControlServer
-from valves.Valve_server import ValveServer
+from serv.pumps.syringepumps.neMESYS_server import neMESYSServer
+from serv.pumps.contiflowpumps.Contiflow_server import ContiflowServer
+from serv.controllers.QmixControl_server import QmixControlServer
+from serv.io.QmixIO_server import QmixIOServer
+from serv.motioncontrol.MotionControl_server import MotionControlServer
+from serv.valves.Valve_server import ValveServer
 
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion, qmixvalve

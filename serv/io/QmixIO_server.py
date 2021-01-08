@@ -68,7 +68,7 @@ from impl.de.cetoni.core.ChannelGatewayService.ChannelGatewayService_servicer im
 from qmixsdk.qmixanalogio import AnalogInChannel, AnalogOutChannel
 from qmixsdk.qmixdigio import DigitalInChannel, DigitalOutChannel
 
-from local_ip import LOCAL_IP
+from ..local_ip import LOCAL_IP
 
 class QmixIOServer(SiLA2Server):
     """

@@ -44,7 +44,7 @@ except ModuleNotFoundError:
 from qmixsdk import qmixbus, qmixpump, qmixvalve
 
 # Import our server base class
-from qmixio.QmixIO_server import QmixIOServer
+from ...io.QmixIO_server import QmixIOServer
 
 # Import gRPC libraries of features
 from impl.de.cetoni.pumps.syringepumps.PumpDriveControlService.gRPC import PumpDriveControlService_pb2
