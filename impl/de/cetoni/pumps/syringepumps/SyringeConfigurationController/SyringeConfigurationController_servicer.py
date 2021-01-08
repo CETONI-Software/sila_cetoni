@@ -37,13 +37,12 @@ from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
+# import SiLA errors
+from impl.common.qmix_errors import SiLAValidationError, DeviceError, QmixSDKSiLAError
 
 # import gRPC modules for this feature
 from .gRPC import SyringeConfigurationController_pb2 as SyringeConfigurationController_pb2
 from .gRPC import SyringeConfigurationController_pb2_grpc as SyringeConfigurationController_pb2_grpc
-
-# import SiLA errors
-from impl.common import neMESYS_errors
 
 # import simulation and real implementation
 from .SyringeConfigurationController_simulation import SyringeConfigurationControllerSimulation
@@ -121,9 +120,9 @@ class SyringeConfigurationController(SyringeConfigurationController_pb2_grpc.Syr
 
         try:
             return self.implementation.SetSyringeParameters(request, context)
-        except (neMESYS_errors.DeviceError, neMESYS_errors.SiLAValidationError) as err:
-            if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKSiLAError(err)
+        except (DeviceError, SiLAValidationError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def Subscribe_InnerDiameter(self, request, context: grpc.ServicerContext) \
@@ -148,8 +147,8 @@ class SyringeConfigurationController(SyringeConfigurationController_pb2_grpc.Syr
         try:
             for value in self.implementation.Subscribe_InnerDiameter(request, context):
                 yield value
-        except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKSiLAError(err)
+        except DeviceError as err:
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
 
@@ -175,7 +174,7 @@ class SyringeConfigurationController(SyringeConfigurationController_pb2_grpc.Syr
         try:
             for value in self.implementation.Subscribe_MaxPistonStroke(request, context):
                 yield value
-        except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKSiLAError(err)
+        except DeviceError as err:
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 

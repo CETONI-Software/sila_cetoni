@@ -38,6 +38,9 @@ import grpc         # used for type hinting only
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
+# import SiLA errors
+from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType, QmixSDKSiLAError, \
+    FlowRateOutOfRangeError
 
 # import gRPC modules for this feature
 from .gRPC import ContinuousFlowDosingService_pb2 as ContinuousFlowDosingService_pb2
@@ -47,9 +50,6 @@ from .gRPC import ContinuousFlowDosingService_pb2 as ContinuousFlowDosingService
 from .ContinuousFlowDosingService_default_arguments import default_dict
 
 from impl.de.cetoni.pumps.syringepumps.PumpUnitController import unit_conversion as uc
-
-# import SiLA errors
-import impl.common.neMESYS_errors as neMESYS_errors
 
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump
@@ -99,7 +99,7 @@ class ContinuousFlowDosingServiceReal:
         max_flow_rate = self.pump.get_flow_rate_max()
         if requested_flow_rate < 0 or requested_flow_rate > max_flow_rate:
             unit = uc.flow_unit_to_string(self.pump.get_flow_unit())
-            raise neMESYS_errors.FlowRateOutOfRangeError(
+            raise FlowRateOutOfRangeError(
                 msg.format(param="flow rate", unit=unit, requested_val=requested_flow_rate, max_val=max_flow_rate)
             )
 
@@ -132,8 +132,8 @@ class ContinuousFlowDosingServiceReal:
 
         # catch invalid CommandExecutionUUID:
         if not command_uuid or self.dosage_uuid != command_uuid:
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
 
         is_pumping = True
@@ -152,7 +152,7 @@ class ContinuousFlowDosingServiceReal:
             yield silaFW_pb2.ExecutionInfo(
                 commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedWithError
             )
-            raise neMESYS_errors.QmixSDKSiLAError(self.pump.read_last_error())
+            raise QmixSDKSiLAError(self.pump.read_last_error())
 
 
     def GenerateFlow_Result(self, request, context: grpc.ServicerContext) \
@@ -173,14 +173,14 @@ class ContinuousFlowDosingServiceReal:
 
         # catch invalid CommandExecutionUUID:
         if not command_uuid and self.dosage_uuid != command_uuid:
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
 
         # catch premature command call
         if self.pump.is_pumping():
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_FINISHED
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_FINISHED
             )
 
         logging.info("Finished dosing! (UUID: %s)", self.dosage_uuid)

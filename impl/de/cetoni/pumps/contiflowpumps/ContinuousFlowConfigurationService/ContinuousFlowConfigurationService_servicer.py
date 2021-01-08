@@ -48,7 +48,7 @@ from .ContinuousFlowConfigurationService_simulation import ContinuousFlowConfigu
 from .ContinuousFlowConfigurationService_real import ContinuousFlowConfigurationServiceReal
 
 # import SiLA errors
-from impl.common.neMESYS_errors import SiLAValidationError, QmixSDKSiLAError, DeviceError
+from impl.common.qmix_errors import SiLAValidationError, QmixSDKSiLAError, DeviceError
 
 # import qmixsdk
 from qmixsdk import qmixpump

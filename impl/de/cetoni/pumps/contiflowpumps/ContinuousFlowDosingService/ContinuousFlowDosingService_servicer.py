@@ -39,7 +39,8 @@ from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
-from sila2lib.error_handling.server_err import SiLAError
+# import SiLA errors
+from impl.common.qmix_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKSiLAError, DeviceError
 
 # import gRPC modules for this feature
 from .gRPC import ContinuousFlowDosingService_pb2 as ContinuousFlowDosingService_pb2
@@ -48,10 +49,6 @@ from .gRPC import ContinuousFlowDosingService_pb2_grpc as ContinuousFlowDosingSe
 # import simulation and real implementation
 from .ContinuousFlowDosingService_simulation import ContinuousFlowDosingServiceSimulation
 from .ContinuousFlowDosingService_real import ContinuousFlowDosingServiceReal
-
-# import SiLA errors
-from impl.common.neMESYS_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKSiLAError, DeviceError
-
 
 class ContinuousFlowDosingService(ContinuousFlowDosingService_pb2_grpc.ContinuousFlowDosingServiceServicer):
     """

@@ -36,20 +36,17 @@ import grpc         # used for type hinting only
 
 # import qmixsdk
 from qmixsdk import qmixpump
-from qmixsdk.qmixbus import TimeUnit
-from qmixsdk.qmixpump import VolumeUnit
 
 from . import unit_conversion as uc
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
+# import SiLA errors
+from impl.common.qmix_errors import UnitConversionError
 
 # import gRPC modules for this feature
 from .gRPC import PumpUnitController_pb2 as PumpUnitController_pb2
 # from .gRPC import PumpUnitController_pb2_grpc as PumpUnitController_pb2_grpc
-
-# import SiLA errors
-from impl.common import neMESYS_errors
 
 # import default arguments
 from .PumpUnitController_default_arguments import default_dict
@@ -104,7 +101,7 @@ class PumpUnitControllerReal:
             prefix, volume_unit, time_unit = uc.evaluate_units(requested_volume_unit,
                                                                requested_time_unit)
         except ValueError:
-            raise neMESYS_errors.UnitConversionError(
+            raise UnitConversionError(
                 parameter="FlowUnit",
                 msg="The given flow unit is malformed. It has to be something like 'ml/s', for instance."
             )

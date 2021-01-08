@@ -1,7 +1,7 @@
 import logging
 
 # import SiLA errors
-from impl.common import neMESYS_errors
+from impl.common.qmix_errors import UnitConversionError
 
 from qmixsdk import qmixpump
 
@@ -45,7 +45,7 @@ def evaluate_prefix(prefix_string, param: str):
     }
     prefix = switcher.get(prefix_string)
     if not prefix:
-        raise neMESYS_errors.UnitConversionError(
+        raise UnitConversionError(
             parameter=param,
             msg=f"Wrong prefix: '{prefix_string}' not supported"
         )
@@ -62,7 +62,7 @@ def evaluate_volume_unit(volume_unit_string, param: str):
     if volume_unit_string == "l":
         return qmixpump.VolumeUnit.litres
 
-    raise neMESYS_errors.UnitConversionError(
+    raise UnitConversionError(
         parameter=param,
         msg=f"Wrong volume unit: '{volume_unit_string}' not supported"
     )
@@ -82,7 +82,7 @@ def evaluate_time_unit(time_unit_string, param: str):
 
     time_unit = switcher.get(time_unit_string)
     if not time_unit:
-        raise neMESYS_errors.UnitConversionError(
+        raise UnitConversionError(
             parameter=param,
             msg=f"Wrong time_unit: '{time_unit_string}' not supported"
         )

@@ -42,13 +42,12 @@ from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
+# import SiLA errors
+from impl.common.qmix_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKSiLAError, DeviceError
 
 # import gRPC modules for this feature
 from .gRPC import PumpFluidDosingService_pb2 as PumpFluidDosingService_pb2
 from .gRPC import PumpFluidDosingService_pb2_grpc as PumpFluidDosingService_pb2_grpc
-
-# import SiLA errors
-from impl.common.neMESYS_errors import SiLAFrameworkError, SiLAValidationError, QmixSDKSiLAError, DeviceError
 
 # import simulation and real implementation
 from .PumpFluidDosingService_simulation import PumpFluidDosingServiceSimulation

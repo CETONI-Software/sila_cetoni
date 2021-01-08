@@ -37,13 +37,12 @@ from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
+# import SiLA errors
+from impl.common.qmix_errors import DeviceError, QmixSDKSiLAError, UnitConversionError
 
 # import gRPC modules for this feature
 from .gRPC import PumpUnitController_pb2 as PumpUnitController_pb2
 from .gRPC import PumpUnitController_pb2_grpc as PumpUnitController_pb2_grpc
-
-# import SiLA errors
-from impl.common import neMESYS_errors
 
 # import simulation and real implementation
 from .PumpUnitController_simulation import PumpUnitControllerSimulation
@@ -119,9 +118,9 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
 
         try:
             return self.implementation.SetFlowUnit(request, context)
-        except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
-            if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKSiLAError(err)
+        except (UnitConversionError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def SetVolumeUnit(self, request, context: grpc.ServicerContext) \
@@ -146,9 +145,9 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
 
         try:
             return self.implementation.SetVolumeUnit(request, context)
-        except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
-            if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKSiLAError(err)
+        except (UnitConversionError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def Subscribe_FlowUnit(self, request, context: grpc.ServicerContext) \
@@ -173,9 +172,9 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
         try:
             for value in self.implementation.Subscribe_FlowUnit(request, context):
                 yield value
-        except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
-            if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKSiLAError(err)
+        except (UnitConversionError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def Subscribe_VolumeUnit(self, request, context: grpc.ServicerContext) \
@@ -200,8 +199,8 @@ class PumpUnitController(PumpUnitController_pb2_grpc.PumpUnitControllerServicer)
         try:
             for value in self.implementation.Subscribe_VolumeUnit(request, context):
                 yield value
-        except (neMESYS_errors.UnitConversionError, neMESYS_errors.DeviceError) as err:
-            if isinstance(err, neMESYS_errors.DeviceError):
-                err = neMESYS_errors.QmixSDKSiLAError(err)
+        except (UnitConversionError, DeviceError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 

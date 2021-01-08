@@ -52,7 +52,8 @@ from .gRPC import PumpFluidDosingService_pb2 as PumpFluidDosingService_pb2
 # import default arguments
 from .PumpFluidDosingService_default_arguments import default_dict
 # import SiLA errors
-from impl.common import neMESYS_errors
+from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType, \
+    FlowRateOutOfRangeError, FillLevelOutOfRangeError, VolumeOutOfRangeError
 
 from ..PumpUnitController import unit_conversion as uc
 
@@ -94,17 +95,17 @@ class PumpFluidDosingServiceReal:
             between 0 {unit} {exclusive} and {max_val} {unit} for this pump."
         if flow_rate <= 0 or flow_rate > max_flow_rate:
             unit = uc.flow_unit_to_string(self.pump.get_flow_unit())
-            raise neMESYS_errors.FlowRateOutOfRangeError(
+            raise FlowRateOutOfRangeError(
                 msg.format(param="flow rate", unit=unit, exclusive="(exclusive)", requested_val=flow_rate, max_val=max_flow_rate)
             )
         if fill_level is not None and (fill_level < 0 or fill_level > max_fill_level):
             unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
-            raise neMESYS_errors.FillLevelOutOfRangeError(
+            raise FillLevelOutOfRangeError(
                 msg.format(param="fill level", unit=unit, exclusive="", requested_val=fill_level, max_val=max_fill_level)
             )
         if volume is not None and (volume <= 0 or volume > max_fill_level):
             unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
-            raise neMESYS_errors.VolumeOutOfRangeError(
+            raise VolumeOutOfRangeError(
                 msg.format(param="volume", unit=unit, exclusive="(exclusive)", requested_val=volume, max_val=max_fill_level)
             )
 
@@ -208,8 +209,8 @@ class PumpFluidDosingServiceReal:
 
         # catch invalid CommandExecutionUUID:
         if not command_uuid or self.dosage_uuid != command_uuid:
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
 
         return self._wait_dosage_finished()
@@ -232,14 +233,14 @@ class PumpFluidDosingServiceReal:
 
         # catch invalid CommandExecutionUUID:
         if not command_uuid and self.dosage_uuid != command_uuid:
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
 
         # catch premature command call
         if self.pump.is_pumping():
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_FINISHED
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_FINISHED
             )
 
         logging.info("Finished dosing! (UUID: %s)", self.dosage_uuid)
@@ -279,13 +280,13 @@ class PumpFluidDosingServiceReal:
         # from empty syringe or aspirate to full syringe.
         pump_fill_level = self.pump.get_fill_level()
         if requested_volume > pump_fill_level:
-            raise neMESYS_errors.VolumeOutOfRangeError(
+            raise VolumeOutOfRangeError(
                 msg="There is too less fluid in the syringe! Aspirate some fluid before dispensing!"
             )
         # negative to indicate that there is still space for mor fluid
         free_volume = pump_fill_level - self.pump.get_volume_max()
         if requested_volume < free_volume:
-            raise neMESYS_errors.VolumeOutOfRangeError(
+            raise VolumeOutOfRangeError(
                 msg="There is too much fluid in the syringe! Dispense some fluid before aspirating!"
             )
 
@@ -320,8 +321,8 @@ class PumpFluidDosingServiceReal:
 
         # catch invalid CommandExecutionUUID:
         if not command_uuid or self.dosage_uuid != command_uuid:
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
 
         return self._wait_dosage_finished()
@@ -344,14 +345,14 @@ class PumpFluidDosingServiceReal:
 
         # catch invalid CommandExecutionUUID:
         if not command_uuid and self.dosage_uuid != command_uuid:
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
 
         # catch premature command call
         if self.pump.is_pumping():
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_FINISHED
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_FINISHED
             )
 
         logging.info("Finished dosing! (UUID: %s)", self.dosage_uuid)
@@ -390,11 +391,11 @@ class PumpFluidDosingServiceReal:
         # QmixSDK would just start and immediately stop dosing in case of dispense
         # from empty syringe or aspirate to full syringe.
         if requested_flow_rate > 0 and self.pump.get_fill_level() == 0:
-            raise neMESYS_errors.FlowRateOutOfRangeError(
+            raise FlowRateOutOfRangeError(
                 msg="Cannot dispense from an empty syringe! Aspirate some fluid before dispensing!"
             )
         if requested_flow_rate < 0 and self.pump.get_fill_level() == self.pump.get_volume_max():
-            raise neMESYS_errors.FlowRateOutOfRangeError(
+            raise FlowRateOutOfRangeError(
                 msg="Cannot aspirate to a full syringe! Dispense some fluid before aspirating!"
             )
 
@@ -426,8 +427,8 @@ class PumpFluidDosingServiceReal:
 
         # catch invalid CommandExecutionUUID:
         if not command_uuid or self.dosage_uuid != command_uuid:
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
 
         return self._wait_dosage_finished()
@@ -450,14 +451,14 @@ class PumpFluidDosingServiceReal:
 
         # catch invalid CommandExecutionUUID:
         if not command_uuid and self.dosage_uuid != command_uuid:
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
 
         # catch premature command call
         if self.pump.is_pumping():
-            raise neMESYS_errors.SiLAFrameworkError(
-                neMESYS_errors.SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_FINISHED
+            raise SiLAFrameworkError(
+                SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_FINISHED
             )
 
         logging.info("Finished dosing! (UUID: %s)", self.dosage_uuid)

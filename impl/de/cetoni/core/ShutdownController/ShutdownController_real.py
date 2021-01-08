@@ -50,7 +50,7 @@ from .gRPC import ShutdownController_pb2 as ShutdownController_pb2
 # from .gRPC import ShutdownController_pb2_grpc as ShutdownController_pb2_grpc
 
 # import SiLA errors
-from impl.common import neMESYS_errors
+from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType
 
 # import default arguments
 from .ShutdownController_default_arguments import default_dict
@@ -178,8 +178,8 @@ class ShutdownControllerReal:
         command_uuid = request.value
 
         if not command_uuid or command_uuid != self.command_uuid:
-            raise neMESYS_errors.SiLAFrameworkError(
-                error_type=neMESYS_errors.SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
+            raise SiLAFrameworkError(
+                error_type=SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
 
         yield silaFW_pb2.ExecutionInfo(

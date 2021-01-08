@@ -42,13 +42,12 @@ from .gRPC import SyringeConfigurationController_pb2 as SyringeConfigurationCont
 # from .gRPC import SyringeConfigurationController_pb2_grpc as SyringeConfigurationController_pb2_grpc
 
 # import SiLA errors
-from impl.common import neMESYS_errors
+from impl.common.qmix_errors import SiLAValidationError
 
 # import default arguments
 from .SyringeConfigurationController_default_arguments import default_dict
 
 # import qmixsdk
-from qmixsdk import qmixbus
 from qmixsdk import qmixpump
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -91,7 +90,7 @@ class SyringeConfigurationControllerReal:
                 :param param_str: A string description of the given param
             """
             if param < 0:
-                raise neMESYS_errors.SiLAValidationError(
+                raise SiLAValidationError(
                     parameter=param_str,
                     msg=f"The {param_str} cannot be less than 0",
                 )

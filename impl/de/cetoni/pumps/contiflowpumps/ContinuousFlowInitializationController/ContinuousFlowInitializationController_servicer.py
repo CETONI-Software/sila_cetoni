@@ -37,7 +37,8 @@ from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
-from sila2lib.error_handling.server_err import SiLAError
+# import SiLA errors
+from impl.common.qmix_errors import SiLAFrameworkError, QmixSDKSiLAError, DeviceError
 
 # import gRPC modules for this feature
 from .gRPC import ContinuousFlowInitializationController_pb2 as ContinuousFlowInitializationController_pb2
@@ -46,9 +47,6 @@ from .gRPC import ContinuousFlowInitializationController_pb2_grpc as ContinuousF
 # import simulation and real implementation
 from .ContinuousFlowInitializationController_simulation import ContinuousFlowInitializationControllerSimulation
 from .ContinuousFlowInitializationController_real import ContinuousFlowInitializationControllerReal
-
-# import SiLA errors
-from impl.common.neMESYS_errors import SiLAFrameworkError, QmixSDKSiLAError, DeviceError
 
 # import qmixsdk
 from qmixsdk.qmixpump import *

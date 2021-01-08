@@ -41,13 +41,12 @@ from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
+# import SiLA errors
+from impl.common.qmix_errors import DeviceError, QmixSDKSiLAError
 
 # import gRPC modules for this feature
 from .gRPC import PumpDriveControlService_pb2 as PumpDriveControlService_pb2
 from .gRPC import PumpDriveControlService_pb2_grpc as PumpDriveControlService_pb2_grpc
-
-# import SiLA errors
-from impl.common import neMESYS_errors
 
 # import simulation and real implementation
 from .PumpDriveControlService_simulation import PumpDriveControlServiceSimulation
@@ -125,8 +124,8 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
 
         try:
             return self.implementation.InitializePumpDrive(request, context)
-        except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKSiLAError(err)
+        except DeviceError as err:
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def EnablePumpDrive(self, request, context: grpc.ServicerContext) \
@@ -151,8 +150,8 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
 
         try:
             return self.implementation.EnablePumpDrive(request, context)
-        except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKSiLAError(err)
+        except DeviceError as err:
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def DisablePumpDrive(self, request, context: grpc.ServicerContext) \
@@ -177,8 +176,8 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
 
         try:
             return self.implementation.DisablePumpDrive(request, context)
-        except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKSiLAError(err)
+        except DeviceError as err:
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
     def Subscribe_PumpDriveState(self, request, context: grpc.ServicerContext) \
@@ -203,8 +202,8 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
         try:
             for value in self.implementation.Subscribe_PumpDriveState(request, context):
                 yield value
-        except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKSiLAError(err)
+        except DeviceError as err:
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
 
 
@@ -230,6 +229,6 @@ class PumpDriveControlService(PumpDriveControlService_pb2_grpc.PumpDriveControlS
         try:
             for value in self.implementation.Subscribe_FaultState(request, context):
                 yield value
-        except neMESYS_errors.DeviceError as err:
-            err = neMESYS_errors.QmixSDKSiLAError(err)
+        except DeviceError as err:
+            err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
