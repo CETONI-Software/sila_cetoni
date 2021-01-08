@@ -45,7 +45,7 @@ from .gRPC import ValvePositionController_pb2_grpc as ValvePositionController_pb
 
 # import SiLA errors
 from impl.common.qmix_errors import SiLAFrameworkError, DeviceError, QmixSDKSiLAError, \
-    ValveNotToggleableError, ValvePositionOutOfRangeError
+    ValveNotToggleableError, ValvePositionNotAvailableError, ValvePositionOutOfRangeError
 
 # import simulation and real implementation
 from .ValvePositionController_simulation import ValvePositionControllerSimulation
@@ -154,7 +154,7 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
 
         try:
             return self.implementation.TogglePosition(request, context)
-        except (SiLAFrameworkError, ValveNotToggleableError, DeviceError) as err:
+        except (SiLAFrameworkError, ValvePositionNotAvailableError, ValveNotToggleableError, DeviceError) as err:
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)
@@ -203,7 +203,7 @@ class ValvePositionController(ValvePositionController_pb2_grpc.ValvePositionCont
         try:
             for value in self.implementation.Subscribe_Position(request, context):
                 yield value
-        except (SiLAFrameworkError, DeviceError) as err:
+        except (SiLAFrameworkError, ValvePositionNotAvailableError, DeviceError) as err:
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context)

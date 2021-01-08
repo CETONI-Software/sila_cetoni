@@ -20,6 +20,8 @@ from sila2lib.error_handling.server_err import *
 from qmixsdk.qmixbus import DeviceError
 
 
+#-----------------------------------------------------------------------------
+# Common
 class QmixSDKSiLAError(SiLAExecutionError):
     """
     An unexpected error that was thrown by the QmixSDK during the execution of a command.
@@ -31,6 +33,8 @@ class QmixSDKSiLAError(SiLAExecutionError):
 
         super().__init__(msg=msg, error_identifier=None)
 
+#-----------------------------------------------------------------------------
+# Valves
 class ValvePositionOutOfRangeError(SiLAValidationError):
     """
     The requested valve position is not in the valid range for this valve.
@@ -50,4 +54,15 @@ class ValveNotToggleableError(SiLAExecutionError):
     def __init__(self):
         msg = "The current valve does not support toggling because it has more than only two possible positions."
         super().__init__(error_identifier="ValveNotToggleable", msg=msg)
+
+class ValvePositionNotAvailableError(SiLAExecutionError):
+    """
+    The actual position of the current valve cannot be retrieved. This is most
+    likely a temporary error that can be fixed by setting a specific valve position.
+    """
+
+    def __init__(self):
+        msg = "The actual position of the current valve cannot be retrieved. " \
+              "This is most likely a temporary error that can be fixed by setting a specific valve position."
+        super().__init__(error_identifier="ValvePositionNotAvailable", msg=msg)
 

@@ -38,7 +38,8 @@ import grpc         # used for type hinting only
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 # import SiLA errors
-from impl.common.qmix_errors import ValvePositionOutOfRangeError, ValveNotToggleableError, QmixSDKSiLAError
+from impl.common.qmix_errors import DeviceError, QmixSDKSiLAError, \
+    ValvePositionNotAvailableError, ValvePositionOutOfRangeError, ValveNotToggleableError
 
 # import gRPC modules for this feature
 from .gRPC import ValvePositionController_pb2 as ValvePositionController_pb2
@@ -51,7 +52,6 @@ from .ValvePositionController_default_arguments import default_dict
 from impl.de.cetoni.valves.ValveGatewayService import ValveGatewayService_servicer as ValveGatewayService
 
 # import qmixsdk
-from qmixsdk import qmixbus
 from qmixsdk.qmixvalve import Valve
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -120,7 +120,7 @@ class ValvePositionControllerReal:
     def TogglePosition(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.TogglePosition_Responses:
         """
-        Executes the unobservable command "Toogle Position"
+        Executes the unobservable command "Toggle Position"
             This command only applies for 2-way valves to toggle between its two different positions. If the command is called for any other valve type a ValveNotToggleable error is thrown.
 
         :param request: gRPC request containing the parameters passed:
@@ -141,8 +141,9 @@ class ValvePositionControllerReal:
             valve.switch_valve_to_position((curr_pos + 1) % 2)
 
             return ValvePositionController_pb2.TogglePosition_Responses()
-        except qmixbus.DeviceError as err:
-            raise QmixSDKSiLAError(err)
+        except DeviceError as err:
+            if err.errorcode == -2:
+                raise ValvePositionNotAvailableError()
 
     def Get_NumberOfPositions(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.Get_NumberOfPositions_Responses:
@@ -179,9 +180,13 @@ class ValvePositionControllerReal:
         valve = self._get_valve(context.invocation_metadata())
 
         while True:
-            yield ValvePositionController_pb2.Subscribe_Position_Responses(
-                Position=silaFW_pb2.Integer(value=valve.actual_valve_position())
-            )
+            try:
+                yield ValvePositionController_pb2.Subscribe_Position_Responses(
+                    Position=silaFW_pb2.Integer(value=valve.actual_valve_position())
+                )
+            except DeviceError as err:
+                if err.errorcode == -2:
+                    raise ValvePositionNotAvailableError()
 
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
