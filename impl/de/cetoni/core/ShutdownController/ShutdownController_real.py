@@ -56,7 +56,7 @@ from impl.common import neMESYS_errors
 from .ShutdownController_default_arguments import default_dict
 
 # import qmixsdk
-from qmixsdk.qmixpump import Pump
+from qmixsdk.qmixpump import Pump, ContiFlowPump, ContiFlowProperty
 from qmixsdk.qmixmotion import Axis, AxisSystem
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -77,31 +77,53 @@ class ShutdownControllerReal:
 
         self.command_uuid = ""
 
-    def _save_drive_position_counter(self):
+    def _save_contiflow_params(self):
         """
-        Saves the current drive position counter so that it can be restored next time.
+        Saves the current contiflow parameters so that they can be restored the next time.
         """
-        config_dir = sila_get_config_dir(subdir=self.server_name)
-        config_filename = os.path.join(config_dir, self.server_name + '.conf')
+        pump_name = self.device.get_pump_name()
+        self.sila2_config[pump_name] = {}
+        self.sila2_config[pump_name]["crossflow_duration"] = \
+            str(self.device.get_device_property(ContiFlowProperty.CROSSFLOW_DURATION_S))
+        self.sila2_config[pump_name]["overlap_duration"] = \
+            str(self.device.get_device_property(ContiFlowProperty.OVERLAP_DURATION_S))
+        self.sila2_config[pump_name]["refill_flow"] = \
+            str(self.device.get_device_property(ContiFlowProperty.REFILL_FLOW))
+        self.sila2_config[pump_name]["switching_mode"] = \
+            str(self.device.get_device_property(ContiFlowProperty.SWITCHING_MODE))
+        logging.debug("Saving contiflow parameters for %s", pump_name)
 
-        if isinstance(self.device, Pump):
-            pump_name = self.device.get_pump_name()
-            drive_pos_counter = self.device.get_position_counter_value()
+    def _save_drive_position_counters(self, device: Union[Pump, AxisSystem]):
+        """
+        Saves the current drive position counters of the given `device` so that they can be restored next time.
+
+        :param device: The device for which to save the position counters
+        """
+        if isinstance(device, Pump):
+            pump_name = device.get_pump_name()
+            drive_pos_counter = device.get_position_counter_value()
             self.sila2_config[pump_name] = {}
             self.sila2_config[pump_name]["drive_pos_counter"] = str(drive_pos_counter)
-            logging.debug("Saving drive position counter (%d) for %s to file: %s",
-                        drive_pos_counter, pump_name, config_filename)
-        elif isinstance(self.device, AxisSystem):
-            for i in range(self.device.get_axes_count()):
-                axis = self.device.get_axis_device(i)
+            logging.debug("Saving drive position counter (%d) for %s",
+                        drive_pos_counter, pump_name)
+        elif isinstance(device, AxisSystem):
+            for i in range(device.get_axes_count()):
+                axis = device.get_axis_device(i)
                 axis_name = axis.get_device_name()
                 drive_pos_counter = axis.get_position_counter()
                 self.sila2_config[axis_name] = {}
                 self.sila2_config[axis_name]["drive_pos_counter"] = str(drive_pos_counter)
-                logging.debug("Saving drive position counter (%d) for %s to file: %s",
-                            drive_pos_counter, axis_name, config_filename)
+                logging.debug("Saving drive position counter (%d) for %s",
+                            drive_pos_counter, axis_name)
 
+    def _write_config(self):
+        """
+        Writes the current config to the config file
+        """
+        config_dir = sila_get_config_dir(subdir=self.server_name)
+        config_filename = os.path.join(config_dir, self.server_name + '.conf')
 
+        logging.debug("Saving config to file %s", config_filename)
         with open(config_filename, "w") as config_file:
             self.sila2_config.write(config_file)
 
@@ -123,6 +145,15 @@ class ShutdownControllerReal:
 
         # respond with UUID
         self.command_uuid = str(uuid.uuid4())
+
+        if isinstance(self.device, ContiFlowPump):
+            self._save_contiflow_params()
+            for i in range(2):
+                self._save_drive_position_counters(self.device.get_syringe_pump(i))
+        else:
+            self._save_drive_position_counters(self.device)
+
+        self._write_config()
 
         return silaFW_pb2.CommandConfirmation(
             commandExecutionUUID=silaFW_pb2.CommandExecutionUUID(value=self.command_uuid)
@@ -154,7 +185,6 @@ class ShutdownControllerReal:
         yield silaFW_pb2.ExecutionInfo(
             commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.running
         )
-        self._save_drive_position_counter()
         yield silaFW_pb2.ExecutionInfo(
             commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully
         )
