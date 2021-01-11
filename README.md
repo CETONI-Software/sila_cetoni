@@ -12,9 +12,9 @@ These SiLA 2 drivers are based on the [Qmix SDK for Python](https://github.com/C
   - [Running SiLA 2 Qmix servers](#running-sila-2-qmix-servers)
     - [Windows](#windows)
     - [Linux](#linux)
-  - [Modifying the drivers](#modifying-the-drivers)
-    - [Repository layout](#repository-layout)
-    - [Generate the prototype code from the FDL](#generate-the-prototype-code-from-the-fdl)
+- [Modifying the drivers](#modifying-the-drivers)
+  - [Repository layout](#repository-layout)
+  - [Generate the prototype code from the FDL](#generate-the-prototype-code-from-the-fdl)
 
 ## Getting Started
 > ##### Note:
@@ -64,12 +64,12 @@ The script will set the necessary variables and run the python script for you.
 You can play around with the server's and their features by using the freely available [SiLA Browser](https://unitelabs.ch/technology/plug-and-play/sila-browser/), for example.  
 Or you can also write your own SiLA Client software using the Python or any other of the [reference implementations](https://gitlab.com/SiLA2/) of SiLA 2.
 
-### Modifying the drivers
+## Modifying the drivers
 You are of course free to play around with the code inside this repository.
 Especially when modifying the feature definitions you need to bear in mind a few things.
 The following is meant to be some kind of guidance for your first steps modifying the code.
 
-#### Repository layout
+### Repository layout
 The repository is structured in the following way:
 ```
 sila_qmix
@@ -103,7 +103,7 @@ sila_qmix
 `- sila_qmix.sh                     # standalone shell wrapper script for Linux
 ```
 
-#### Generate the prototype code from the FDL
+### Generate the prototype code from the FDL
 If you modify a feature definition (`.sila.xml` file) you need to regenerate the gRPC Python code and the SiLA implementation prototypes.
 This is done using the `sila2codegenerator` from the `sila_python` reference implementation.
 The code generator has been automatically installed if you followed the step in [Installation](#installation).
