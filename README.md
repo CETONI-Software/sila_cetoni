@@ -15,6 +15,7 @@ These SiLA 2 drivers are based on the [Qmix SDK for Python](https://github.com/C
 - [Modifying the drivers](#modifying-the-drivers)
   - [Repository layout](#repository-layout)
   - [Generate the prototype code from the FDL](#generate-the-prototype-code-from-the-fdl)
+- [Contributing](#contributing)
 
 ## Getting Started
 > ##### Note:
@@ -131,3 +132,9 @@ The code regeneration process is now as follows:
 4. After that delete all directories you don't need and only move the `gRPC/` directory of th current feature into the correct directory in `impl/de/cetoni/` (i.e. in our case into `impl/de/cetoni/pumps/syringepumps/PumpFluidDosingService/`).
 5. Finally, inspect each of the `_servicer.py`, `_real.py` and `_simulation.py` files of te feature to find the prototype definition(s) of the functions for your new command and copy them into the correct file in the `impl/` folder.
    Then simply add your implementation in the `_real.py` file (the `_simulation.py` files have not been implemented because Qmix configurations support simulated devices already hence we don't need to use the simulation functionality of `sila_python`).
+
+## Contributing
+
+You can change and improve the current implementations, create new Commands, Properties, or even whole new SiLA 2 Features.
+If you think your changes might be interesting for us and other users as well, feel free to [open a pull request](https://github.com/CETONI-Software/sila_qmix/compare) on the GitHub project page.
+Also, if you have any questions or problems with the drivers, just open an issue and we'll try to help you.
