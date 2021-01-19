@@ -74,7 +74,7 @@ class ValveServer(SiLA2Server):
             )
         )
 
-        data_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..',
+        data_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                                  'features', 'de', 'cetoni', 'valves'))
 
         # registering features

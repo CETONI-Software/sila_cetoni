@@ -103,7 +103,7 @@ class QmixIOServer(SiLA2Server):
             )
         )
 
-        meta_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..',
+        meta_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                                  'features', 'de', 'cetoni', 'io'))
 
         # registering features
