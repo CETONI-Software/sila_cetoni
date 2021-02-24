@@ -36,6 +36,7 @@ import grpc         # used for type hinting only
 
 # meta packages
 from typing import List, Tuple, Union
+from sila2lib.error_handling.server_err import SiLAValidationError
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
@@ -136,6 +137,12 @@ class ChannelGatewayServiceReal:
         """
 
         requested_feature = request.FeatureIdentifier.value
+
+        if not requested_feature:
+            raise SiLAValidationError(
+                'FeatureIdentifier',
+                'You need to specify the Identifier of a Feature for which to get the ChannelIdentifiers.'
+            )
 
         logging.debug(f"Requested channel identifiers for feature {requested_feature}")
 
