@@ -10,7 +10,7 @@
         <DisplayName>Channel Identifier</DisplayName>
         <Description>The name (identifier) of the channel that should be used.</Description>
         <DataType>
-            <Basic>Integer</Basic>
+            <Basic>String</Basic>
         </DataType>
         <DefinedExecutionErrors>
             <Identifier>InvalidChannelIdentifier</Identifier>

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1b\x43hannelGatewayService.proto\x12-sila2.de.cetoni.core.channelgatewayservice.v1\x1a\x13SiLAFramework.proto\"]\n GetChannelIdentifiers_Parameters\x12\x39\n\x11\x46\x65\x61tureIdentifier\x18\x01 \x01(\x0b\x32\x1e.sila2.org.silastandard.String\"]\n\x1fGetChannelIdentifiers_Responses\x12:\n\x12\x43hannelIdentifiers\x18\x01 \x03(\x0b\x32\x1e.sila2.org.silastandard.String\"8\n6Get_FCPAffectedByMetadata_ChannelIdentifier_Parameters\"n\n5Get_FCPAffectedByMetadata_ChannelIdentifier_Responses\x12\x35\n\rAffectedCalls\x18\x01 \x03(\x0b\x32\x1e.sila2.org.silastandard.String\"X\n\x1aMetadata_ChannelIdentifier\x12:\n\x11\x43hannelIdentifier\x18\x01 \x01(\x0b\x32\x1f.sila2.org.silastandard.Integer2\xd3\x03\n\x15\x43hannelGatewayService\x12\xba\x01\n\x15GetChannelIdentifiers\x12O.sila2.de.cetoni.core.channelgatewayservice.v1.GetChannelIdentifiers_Parameters\x1aN.sila2.de.cetoni.core.channelgatewayservice.v1.GetChannelIdentifiers_Responses\"\x00\x12\xfc\x01\n+Get_FCPAffectedByMetadata_ChannelIdentifier\x12\x65.sila2.de.cetoni.core.channelgatewayservice.v1.Get_FCPAffectedByMetadata_ChannelIdentifier_Parameters\x1a\x64.sila2.de.cetoni.core.channelgatewayservice.v1.Get_FCPAffectedByMetadata_ChannelIdentifier_Responses\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x1b\x43hannelGatewayService.proto\x12-sila2.de.cetoni.core.channelgatewayservice.v1\x1a\x13SiLAFramework.proto\"]\n GetChannelIdentifiers_Parameters\x12\x39\n\x11\x46\x65\x61tureIdentifier\x18\x01 \x01(\x0b\x32\x1e.sila2.org.silastandard.String\"]\n\x1fGetChannelIdentifiers_Responses\x12:\n\x12\x43hannelIdentifiers\x18\x01 \x03(\x0b\x32\x1e.sila2.org.silastandard.String\"8\n6Get_FCPAffectedByMetadata_ChannelIdentifier_Parameters\"n\n5Get_FCPAffectedByMetadata_ChannelIdentifier_Responses\x12\x35\n\rAffectedCalls\x18\x01 \x03(\x0b\x32\x1e.sila2.org.silastandard.String\"W\n\x1aMetadata_ChannelIdentifier\x12\x39\n\x11\x43hannelIdentifier\x18\x01 \x01(\x0b\x32\x1e.sila2.org.silastandard.String2\xd3\x03\n\x15\x43hannelGatewayService\x12\xba\x01\n\x15GetChannelIdentifiers\x12O.sila2.de.cetoni.core.channelgatewayservice.v1.GetChannelIdentifiers_Parameters\x1aN.sila2.de.cetoni.core.channelgatewayservice.v1.GetChannelIdentifiers_Responses\"\x00\x12\xfc\x01\n+Get_FCPAffectedByMetadata_ChannelIdentifier\x12\x65.sila2.de.cetoni.core.channelgatewayservice.v1.Get_FCPAffectedByMetadata_ChannelIdentifier_Parameters\x1a\x64.sila2.de.cetoni.core.channelgatewayservice.v1.Get_FCPAffectedByMetadata_ChannelIdentifier_Responses\"\x00\x62\x06proto3'
   ,
   dependencies=[SiLAFramework__pb2.DESCRIPTOR,])
 
@@ -176,13 +176,13 @@ _METADATA_CHANNELIDENTIFIER = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=459,
-  serialized_end=547,
+  serialized_end=546,
 )
 
 _GETCHANNELIDENTIFIERS_PARAMETERS.fields_by_name['FeatureIdentifier'].message_type = SiLAFramework__pb2._STRING
 _GETCHANNELIDENTIFIERS_RESPONSES.fields_by_name['ChannelIdentifiers'].message_type = SiLAFramework__pb2._STRING
 _GET_FCPAFFECTEDBYMETADATA_CHANNELIDENTIFIER_RESPONSES.fields_by_name['AffectedCalls'].message_type = SiLAFramework__pb2._STRING
-_METADATA_CHANNELIDENTIFIER.fields_by_name['ChannelIdentifier'].message_type = SiLAFramework__pb2._INTEGER
+_METADATA_CHANNELIDENTIFIER.fields_by_name['ChannelIdentifier'].message_type = SiLAFramework__pb2._STRING
 DESCRIPTOR.message_types_by_name['GetChannelIdentifiers_Parameters'] = _GETCHANNELIDENTIFIERS_PARAMETERS
 DESCRIPTOR.message_types_by_name['GetChannelIdentifiers_Responses'] = _GETCHANNELIDENTIFIERS_RESPONSES
 DESCRIPTOR.message_types_by_name['Get_FCPAffectedByMetadata_ChannelIdentifier_Parameters'] = _GET_FCPAFFECTEDBYMETADATA_CHANNELIDENTIFIER_PARAMETERS
@@ -234,8 +234,8 @@ _CHANNELGATEWAYSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=550,
-  serialized_end=1017,
+  serialized_start=549,
+  serialized_end=1016,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetChannelIdentifiers',
