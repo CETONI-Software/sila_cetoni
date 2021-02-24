@@ -97,7 +97,9 @@ class ChannelGatewayServiceReal:
         invocation_metadata = {key: value for key, value in metadata}
         logging.debug(f"Received invocation metadata: {invocation_metadata}")
         try:
-            return invocation_metadata[self.METADATA_CHANNEL_IDENTIFIER].decode('utf-8')
+            message = ChannelGatewayService_pb2.Metadata_ChannelIdentifier()
+            message.ParseFromString(invocation_metadata[self.METADATA_CHANNEL_IDENTIFIER])
+            return message.ChannelIdentifier.value
         except KeyError:
             raise SiLAFrameworkError(SiLAFrameworkErrorType.INVALID_METADATA,
                                      'This Command requires the ChannelIdentifier metadata!')
@@ -119,7 +121,7 @@ class ChannelGatewayServiceReal:
                 return channel
         raise SiLAFrameworkError(
             SiLAFrameworkErrorType.INVALID_METADATA,
-            f"There is no channel with the name '{channel_name}!"
+            f"There is no channel with the name '{channel_name}'!"
         )
 
     def GetChannelIdentifiers(self, request, context: grpc.ServicerContext) \
