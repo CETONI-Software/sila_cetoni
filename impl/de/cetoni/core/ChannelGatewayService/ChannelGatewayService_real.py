@@ -77,11 +77,11 @@ class ChannelGatewayServiceReal:
 
         self.channels = channels
         self.feature_to_channel = {
-            'ControlLoopService': ControllerChannel,
-            'AnalogInChannelProvider': AnalogInChannel,
-            'AnalogOutChannelController': AnalogOutChannel,
-            'DigitalInChannelProvider': DigitalInChannel,
-            'DigitalOutChannelController': DigitalOutChannel
+            'de.cetoni/controllers/ControlLoopService/v1': ControllerChannel,
+            'de.cetoni/io/AnalogInChannelProvider/v1': AnalogInChannel,
+            'de.cetoni/io/AnalogOutChannelController/v1': AnalogOutChannel,
+            'de.cetoni/io/DigitalInChannelProvider/v1': DigitalInChannel,
+            'de.cetoni/io/DigitalOutChannelController/v1': DigitalOutChannel
         }
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
