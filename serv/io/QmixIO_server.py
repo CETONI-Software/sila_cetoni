@@ -116,7 +116,7 @@ class QmixIOServer(SiLA2Server):
             self.ChannelGatewayService_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='ChannelGatewayService',
+        self.add_feature(feature_id='de.cetoni/core/ChannelGatewayService/v1',
                          servicer=self.ChannelGatewayService_servicer,
                          data_path=meta_path.replace('io', 'core'))
 
@@ -130,7 +130,7 @@ class QmixIOServer(SiLA2Server):
                 self.AnalogInChannelProvider_servicer,
                 self.grpc_server
             )
-            self.add_feature(feature_id='AnalogInChannelProvider',
+            self.add_feature(feature_id='de.cetoni/io/AnalogInChannelProvider/v1',
                              servicer=self.AnalogInChannelProvider_servicer,
                              data_path=meta_path)
         if any(isinstance(channel, AnalogOutChannel) for channel in io_channels):
@@ -143,7 +143,7 @@ class QmixIOServer(SiLA2Server):
                 self.AnalogOutChannelController_servicer,
                 self.grpc_server
             )
-            self.add_feature(feature_id='AnalogOutChannelController',
+            self.add_feature(feature_id='de.cetoni/io/AnalogOutChannelController/v1',
                              servicer=self.AnalogOutChannelController_servicer,
                              data_path=meta_path)
         if any(isinstance(channel, DigitalInChannel) for channel in io_channels):
@@ -156,7 +156,7 @@ class QmixIOServer(SiLA2Server):
                 self.DigitalInChannelProvider_servicer,
                 self.grpc_server
             )
-            self.add_feature(feature_id='DigitalInChannelProvider',
+            self.add_feature(feature_id='de.cetoni/io/DigitalInChannelProvider/v1',
                              servicer=self.DigitalInChannelProvider_servicer,
                              data_path=meta_path)
         if any(isinstance(channel, DigitalOutChannel) for channel in io_channels):
@@ -169,7 +169,7 @@ class QmixIOServer(SiLA2Server):
                 self.DigitalOutChannelController_servicer,
                 self.grpc_server
             )
-            self.add_feature(feature_id='DigitalOutChannelController',
+            self.add_feature(feature_id='de.cetoni/io/DigitalOutChannelController/v1',
                              servicer=self.DigitalOutChannelController_servicer,
                              data_path=meta_path)
 

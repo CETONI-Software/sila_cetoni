@@ -92,7 +92,7 @@ class QmixControlServer(SiLA2Server):
             self.ChannelGatewayService_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='ChannelGatewayService',
+        self.add_feature(feature_id='de.cetoni/core/ChannelGatewayService/v1',
                          servicer=self.ChannelGatewayService_servicer,
                          data_path=meta_path.replace('controllers', 'core'))
         #  Register de.cetoni.controllers.ControlLoopService
@@ -104,7 +104,7 @@ class QmixControlServer(SiLA2Server):
             self.ControlLoopService_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='ControlLoopService',
+        self.add_feature(feature_id='de.cetoni/controllers/ControlLoopService/v1',
                          servicer=self.ControlLoopService_servicer,
                          data_path=meta_path)
 

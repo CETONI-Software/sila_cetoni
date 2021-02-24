@@ -82,7 +82,7 @@ class ContiflowServer(neMESYSServer):
             self.ContinuousFlowConfigurationService_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='ContinuousFlowConfigurationService',
+        self.add_feature(feature_id='de.cetoni/pumps.contiflowpumps/ContinuousFlowConfigurationService/v1',
                          servicer=self.ContinuousFlowConfigurationService_servicer,
                          data_path=data_path)
         #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController
@@ -95,7 +95,7 @@ class ContiflowServer(neMESYSServer):
             self.ContinuousFlowInitializationController_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='ContinuousFlowInitializationController',
+        self.add_feature(feature_id='de.cetoni/pumps.contiflowpumps/ContinuousFlowInitializationController/v1',
                          servicer=self.ContinuousFlowInitializationController_servicer,
                          data_path=data_path)
         #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService
@@ -107,7 +107,7 @@ class ContiflowServer(neMESYSServer):
             self.ContinuousFlowDosingService_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='ContinuousFlowDosingService',
+        self.add_feature(feature_id='de.cetoni/pumps.contiflowpumps/ContinuousFlowDosingService/v1',
                          servicer=self.ContinuousFlowDosingService_servicer,
                          data_path=data_path)
 

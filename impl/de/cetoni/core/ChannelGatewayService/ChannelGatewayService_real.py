@@ -173,10 +173,10 @@ class ChannelGatewayServiceReal:
 
         return ChannelGatewayService_pb2.Get_FCPAffectedByMetadata_ChannelIdentifier_Responses(
             AffectedCalls=[
-                silaFW_pb2.String(value="ControlLoopService"),
-                silaFW_pb2.String(value="AnalogInChannelProvider"),
-                silaFW_pb2.String(value="AnalogOutChannelController"),
-                silaFW_pb2.String(value="DigitalInChannelProvider"),
-                silaFW_pb2.String(value="DigitalOutChannelController")
+                silaFW_pb2.String(value="de.cetoni/controllers/ControlLoopService/v1"),
+                silaFW_pb2.String(value="de.cetoni/io/AnalogInChannelProvider/v1"),
+                silaFW_pb2.String(value="de.cetoni/io/AnalogOutChannelController/v1"),
+                silaFW_pb2.String(value="de.cetoni/io/DigitalInChannelProvider/v1"),
+                silaFW_pb2.String(value="de.cetoni/io/DigitalOutChannelController/v1")
             ]
         )

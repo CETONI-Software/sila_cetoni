@@ -116,7 +116,7 @@ class neMESYSServer(QmixIOServer):
             self.PumpDriveControlService_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='PumpDriveControlService',
+        self.add_feature(feature_id='de.cetoni/pumps.syringepumps/PumpDriveControlService/v1',
                          servicer=self.PumpDriveControlService_servicer,
                          data_path=data_path)
         #  Register de.cetoni.pumps.syringepumps.PumpUnitController
@@ -127,7 +127,7 @@ class neMESYSServer(QmixIOServer):
             self.PumpUnitController_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='PumpUnitController',
+        self.add_feature(feature_id='de.cetoni/pumps.syringepumps/PumpUnitController/v1',
                          servicer=self.PumpUnitController_servicer,
                          data_path=data_path)
 
@@ -141,7 +141,7 @@ class neMESYSServer(QmixIOServer):
                 self.SyringeConfigurationController_servicer,
                 self.grpc_server
             )
-            self.add_feature(feature_id='SyringeConfigurationController',
+            self.add_feature(feature_id='de.cetoni/pumps.syringepumps/SyringeConfigurationController/v1',
                              servicer=self.SyringeConfigurationController_servicer,
                              data_path=data_path)
             #  Register de.cetoni.pumps.syringepumps.PumpFluidDosingService
@@ -152,7 +152,7 @@ class neMESYSServer(QmixIOServer):
                 self.PumpFluidDosingService_servicer,
                 self.grpc_server
             )
-            self.add_feature(feature_id='PumpFluidDosingService',
+            self.add_feature(feature_id='de.cetoni/pumps.syringepumps/PumpFluidDosingService/v1',
                              servicer=self.PumpFluidDosingService_servicer,
                              data_path=data_path)
             if valve is not None:
@@ -164,7 +164,7 @@ class neMESYSServer(QmixIOServer):
                     self.ValvePositionController_servicer,
                     self.grpc_server
                 )
-                self.add_feature(feature_id='ValvePositionController',
+                self.add_feature(feature_id='de.cetoni/valves/ValvePositionController/v1',
                                 servicer=self.ValvePositionController_servicer,
                                 data_path=data_path.replace(os.path.join('pumps', 'syringepumps'), 'valves'))
 
@@ -179,7 +179,7 @@ class neMESYSServer(QmixIOServer):
             self.ShutdownController_servicer,
             self.grpc_server
         )
-        self.add_feature(feature_id='ShutdownController',
+        self.add_feature(feature_id='de.cetoni/core/ShutdownController/v1',
                             servicer=self.ShutdownController_servicer,
                             data_path=data_path.replace(os.path.join('pumps', 'syringepumps'), 'core'))
 
