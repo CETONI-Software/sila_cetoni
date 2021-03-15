@@ -437,6 +437,32 @@ if __name__ == '__main__':
         server.run(block=False)
         servers += [server]
 
+    for system in axis_systems:
+        args.port += 1
+        system_name = system.get_device_name()
+        args.server_name = system_name.replace("_", " ")
+        args.description = "Allows to control motion systems like axis systems"
+
+        # rotAXYS360 reports a valve ?!?
+        if system_name in device_to_valves:
+            del device_to_valves[system_name]
+
+        # an axis system can have built in I/O channels
+        io_channels = []
+        if system_name in device_to_io_channels:
+            io_channels = device_to_io_channels[system_name]
+            del device_to_io_channels[system_name]
+
+        server = MotionControlServer(
+            cmd_args=args,
+            axis_system=system,
+            io_channels=io_channels,
+            device_properties=device_properties[system_name] if system_name in device_properties else {},
+            simulation_mode=False
+        )
+        server.run(block=False)
+        servers += [server]
+
     for device, valves in device_to_valves.items():
         args.port += 1
         args.server_name = device.replace("_", " ")
@@ -451,28 +477,6 @@ if __name__ == '__main__':
             cmd_args=args,
             valves=valves,
             # io_channels=io_channels,
-            simulation_mode=False
-        )
-        server.run(block=False)
-        servers += [server]
-
-    for system in axis_systems:
-        args.port += 1
-        system_name = system.get_device_name()
-        args.server_name = system_name.replace("_", " ")
-        args.description = "Allows to control motion systems like axis systems"
-
-        # an axis system can have built in I/O channels
-        io_channels = []
-        if system_name in device_to_io_channels:
-            io_channels = device_to_io_channels[system_name]
-            del device_to_io_channels[system_name]
-
-        server = MotionControlServer(
-            cmd_args=args,
-            axis_system=system,
-            io_channels=io_channels,
-            device_properties=device_properties[system_name] if system_name in device_properties else {},
             simulation_mode=False
         )
         server.run(block=False)
