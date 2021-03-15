@@ -67,10 +67,10 @@ from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionCont
 from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_default_arguments import default_dict as ValvePositionController_default_dict
-from impl.de.cetoni.pumps.syringepumps.ShutdownController.gRPC import ShutdownController_pb2
-from impl.de.cetoni.pumps.syringepumps.ShutdownController.gRPC import ShutdownController_pb2_grpc
+from impl.de.cetoni.core.ShutdownController.gRPC import ShutdownController_pb2
+from impl.de.cetoni.core.ShutdownController.gRPC import ShutdownController_pb2_grpc
 # import default arguments for this feature
-from impl.de.cetoni.pumps.syringepumps.ShutdownController.ShutdownController_default_arguments import default_dict as ShutdownController_default_dict
+from impl.de.cetoni.core.ShutdownController.ShutdownController_default_arguments import default_dict as ShutdownController_default_dict
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
