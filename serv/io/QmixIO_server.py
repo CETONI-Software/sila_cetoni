@@ -33,8 +33,8 @@ import logging
 import argparse
 from typing import List, Union
 
-# Import the main SiLA library
-from sila2lib.sila_server import SiLA2Server
+# Import our server base class
+from ..battery.Battery_server import BatteryServer
 
 # Import gRPC libraries of features
 from impl.de.cetoni.io.AnalogInChannelProvider.gRPC import AnalogInChannelProvider_pb2
@@ -68,9 +68,7 @@ from impl.de.cetoni.core.ChannelGatewayService.ChannelGatewayService_servicer im
 from qmixsdk.qmixanalogio import AnalogInChannel, AnalogOutChannel
 from qmixsdk.qmixdigio import DigitalInChannel, DigitalOutChannel
 
-from ..local_ip import LOCAL_IP
-
-class QmixIOServer(SiLA2Server):
+class QmixIOServer(BatteryServer):
     """
     The SiLA 2 driver for Qmix I/O Devices
     """
@@ -87,21 +85,7 @@ class QmixIOServer(SiLA2Server):
         :param io_channels: The I/O channels that this server represents
         :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode.
         """
-        super().__init__(
-            name=cmd_args.server_name, description=cmd_args.description,
-            server_type=cmd_args.server_type, server_uuid=None,
-            version=__version__,
-            vendor_url="cetoni.de",
-            ip=LOCAL_IP, port=int(cmd_args.port),
-            key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert,
-            simulation_mode=simulation_mode
-        )
-
-        logging.info(
-            "Starting SiLA2 server with server name: {server_name}".format(
-                server_name=cmd_args.server_name
-            )
-        )
+        super().__init__(cmd_args, simulation_mode=simulation_mode)
 
         meta_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                                  'features', 'de', 'cetoni', 'io'))
