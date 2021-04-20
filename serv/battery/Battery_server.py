@@ -78,6 +78,7 @@ class BatteryServer(SiLA2Server):
         )
 
         if not Zero2Go.is_available():
+            logging.debug("This device does not seem to be battery powered...")
             return
 
         meta_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',

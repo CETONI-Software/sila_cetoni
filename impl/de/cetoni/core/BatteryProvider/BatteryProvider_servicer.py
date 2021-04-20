@@ -68,7 +68,7 @@ class BatteryProvider(BatteryProvider_pb2_grpc.BatteryProviderServicer):
         if simulation_mode:
             self._inject_implementation(BatteryProviderSimulation())
         else:
-            self._inject_implementation(BatteryProviderReal(hardware_interface=self.hardware_interface))
+            self._inject_implementation(BatteryProviderReal())
 
     def _inject_implementation(self,
                                implementation: Union[BatteryProviderSimulation,
@@ -92,7 +92,7 @@ class BatteryProvider(BatteryProvider_pb2_grpc.BatteryProviderServicer):
     def switch_to_real_mode(self):
         """Method that will automatically be called by the server when the real mode is requested."""
         self.simulation_mode = False
-        self._inject_implementation(BatteryProviderReal(hardware_interface=self.hardware_interface))
+        self._inject_implementation(BatteryProviderReal())
 
 
 
