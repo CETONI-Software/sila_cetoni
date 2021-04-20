@@ -60,7 +60,7 @@ class Zero2Go:
         except ModuleNotFoundError:
             return False
 
-        return subprocess.call(['service', 'zero2go', 'status'],
+        return subprocess.call(['service', 'zero2go_daemon', 'status'],
                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) == 0
 
 
