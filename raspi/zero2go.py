@@ -76,8 +76,8 @@ class Zero2Go:
 
 
         int_voltage = self.bus.read_byte_data(
-            self._I2C_ADDRESS, self._channel_to_int_registers(channel))
+            self._I2C_ADDRESS, self._channel_to_int_registers[channel])
         dec_voltage = self.bus.read_byte_data(
-            self._I2C_ADDRESS, self._channel_to_dec_registers(channel)) * 0.01
+            self._I2C_ADDRESS, self._channel_to_dec_registers[channel]) * 0.01
 
         return int_voltage + dec_voltage
