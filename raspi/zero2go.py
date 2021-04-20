@@ -75,9 +75,9 @@ class Zero2Go:
             raise ValueError("Channel has to be either 'A', 'B', or 'C'!")
 
 
-        int_voltage = self.bus.read_byte_data(
-            self.I2C_ADDRESS, self.channel_to_int_registers(channel))
-        dec_voltage = self.bus.read_byte_data(
-            self.I2C_ADDRESS, self.channel_to_dec_registers(channel)) * 0.01
+        int_voltage = self._bus.read_byte_data(
+            self.I2C_ADDRESS, self._channel_to_int_registers(channel))
+        dec_voltage = self._bus.read_byte_data(
+            self.I2C_ADDRESS, self._channel_to_dec_registers(channel)) * 0.01
 
         return int_voltage + dec_voltage
