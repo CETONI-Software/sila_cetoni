@@ -11,7 +11,13 @@
 sleep 1 # prevent sporadically not working 2nd pump
 
 # change this path to point to your QmixSDK installation
-export QMIXSDK_PATH="$HOME/QmixSDK_Linux"
+grep -qi raspbian /etc/os-release 2>/dev/null && {
+    # default directory for RaspberryPi
+    export QMIXSDK_PATH="$HOME/QmixSDK_Raspi"
+} || {
+    # default directory for generic Linux
+    export QMIXSDK_PATH="$HOME/QmixSDK_Linux"
+}
 
 export PATH="$QMIXSDK_PATH":"$PATH"
 export PYTHONPATH="$QMIXSDK_PATH/python":"$PYTHONPATH"
