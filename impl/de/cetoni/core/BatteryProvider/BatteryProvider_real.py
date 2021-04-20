@@ -34,7 +34,7 @@ import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
 
-from smbus2 import SMBus
+from raspi.zero2go import Zero2Go
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
@@ -58,9 +58,7 @@ class BatteryProviderReal:
     def __init__(self):
         """Class initialiser"""
 
-        self.DEVICE_BUS = 1
-        self.DEVICE_ADDRESS = 0x29
-        self.bus = SMBus(self.DEVICE_BUS)
+        self.zero2go = Zero2Go()
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
@@ -80,16 +78,10 @@ class BatteryProviderReal:
         # initialise the return value
         return_value: BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses = None
 
-        # we could use a timeout here if we wanted
         while True:
-            # zero2go channel A => registers 1 + 2
-            # zero2go channel B => registers 3 + 4
-            # zero2go channel C => registers 5 + 6
-            int_voltage = self.bus.read_byte_data(self.DEVICE_ADDRESS, 1)
-            dec_voltage = self.bus.read_byte_data(self.DEVICE_ADDRESS, 2) * 0.01
 
             yield BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses(
-                BatteryVoltage=silaFW_pb2.Real(value=int_voltage + dec_voltage)
+                BatteryVoltage=silaFW_pb2.Real(value=self.zero2go.voltage_for_channel('C'))
             )
             time.sleep(0.5) # give client some time to catch up
 
