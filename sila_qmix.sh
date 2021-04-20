@@ -20,6 +20,7 @@ export LD_LIBRARY_PATH="$QMIXSDK_PATH/lib":"$LD_LIBRARY_PATH"
 curr_dir=$(pwd)
 
 # Redirect stdout into a named pipe
+mkdir -p $curr_dir/log
 exec > >( tee -i "$curr_dir/log/sila_qmix-`date +%Y-%m-%d.%H:%M:%S`.log" )
 # Also redirect stderr
 exec 2>&1
