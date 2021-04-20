@@ -1,0 +1,18 @@
+{
+    "service_name": "Battery",
+    "service_description": "A device that is powered by a battery",
+    "authors": "Florian Meinicke",
+    "creation_date": "20-04-2021",
+    "version": "0.1.0",
+    "vendor_url": "cetoni.de",
+    "SiLA_standard_feature_list": [
+      "SiLAService",
+      "SimulationController"
+    ],
+    "SiLA_feature_list": [
+      "de/cetoni/core/BatteryProvider"
+    ],
+    "communication_port": "50052",
+    "IP_address": "127.0.0.1",
+    "hostname": "localhost"
+  }
