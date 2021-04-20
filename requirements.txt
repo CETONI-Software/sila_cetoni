@@ -1,5 +1,7 @@
 sila2codegenerator
 coloredlogs
+# only on RaspberryPi when using Zero2Go
+smbus2
 # most recent numpy has an issue with fmod on Windows 10 (2004); see https://tinyurl.com/y3dm3h86
 numpy==1.19.3
 shapely
