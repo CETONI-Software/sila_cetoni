@@ -37,7 +37,7 @@ class Zero2Go:
             print("`pip install smbus2`")
             return
 
-        self._bus = SMBus(1)
+        self.bus = SMBus(1)
         self._I2C_ADDRESS = 0x29
         self._channel_to_int_registers = {
             'A': 1,
@@ -71,13 +71,13 @@ class Zero2Go:
         :param channel: The channel to read from (either 'A', 'B', or 'C')
         """
 
-        if channel not in self.channel_to_int_registers.keys():
+        if channel not in self._channel_to_int_registers.keys():
             raise ValueError("Channel has to be either 'A', 'B', or 'C'!")
 
 
-        int_voltage = self._bus.read_byte_data(
-            self.I2C_ADDRESS, self._channel_to_int_registers(channel))
-        dec_voltage = self._bus.read_byte_data(
-            self.I2C_ADDRESS, self._channel_to_dec_registers(channel)) * 0.01
+        int_voltage = self.bus.read_byte_data(
+            self._I2C_ADDRESS, self._channel_to_int_registers(channel))
+        dec_voltage = self.bus.read_byte_data(
+            self._I2C_ADDRESS, self._channel_to_dec_registers(channel)) * 0.01
 
         return int_voltage + dec_voltage
