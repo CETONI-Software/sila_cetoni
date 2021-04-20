@@ -44,14 +44,6 @@ from lxml import etree, objectify
 # adjust PATH to point to QmixSDK
 sys.path.append("C:/QmixSDK/lib/python")
 
-# import Qmix servers
-from serv.pumps.syringepumps.neMESYS_server import neMESYSServer
-from serv.pumps.contiflowpumps.Contiflow_server import ContiflowServer
-from serv.controllers.QmixControl_server import QmixControlServer
-from serv.io.QmixIO_server import QmixIOServer
-from serv.motioncontrol.MotionControl_server import MotionControlServer
-from serv.valves.Valve_server import ValveServer
-
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion, qmixvalve
 
@@ -421,12 +413,14 @@ if __name__ == '__main__':
             del device_to_io_channels[pump_name]
 
         if isinstance(pump, qmixpump.ContiFlowPump):
+            from serv.pumps.contiflowpumps.Contiflow_server import ContiflowServer
             server = ContiflowServer(
                 cmd_args=args,
                 qmix_pump=pump,
                 simulation_mode=False
             )
         else:
+            from serv.pumps.syringepumps.neMESYS_server import neMESYSServer
             server = neMESYSServer(
                 cmd_args=args,
                 qmix_pump=pump,
@@ -453,6 +447,7 @@ if __name__ == '__main__':
             io_channels = device_to_io_channels[system_name]
             del device_to_io_channels[system_name]
 
+        from serv.motioncontrol.MotionControl_server import MotionControlServer
         server = MotionControlServer(
             cmd_args=args,
             axis_system=system,
@@ -473,6 +468,7 @@ if __name__ == '__main__':
         if device in device_to_io_channels:
             del device_to_io_channels[device]
 
+        from serv.valves.Valve_server import ValveServer
         server = ValveServer(
             cmd_args=args,
             valves=valves,
@@ -486,6 +482,8 @@ if __name__ == '__main__':
         args.port += 1
         args.server_name = device.replace("_", " ")
         args.description = "Allows to control Qmix Controller Channels"
+
+        from serv.controllers.QmixControl_server import QmixControlServer
         server = QmixControlServer(cmd_args=args, controller_channels=channels, simulation_mode=False)
         server.run(block=False)
         servers += [server]
@@ -494,6 +492,8 @@ if __name__ == '__main__':
         args.port += 1
         args.server_name = device.replace("_", " ")
         args.description = "Allows to control Qmix I/O Channels"
+
+        from serv.io.QmixIO_server import QmixIOServer
         server = QmixIOServer(cmd_args=args, io_channels=channels, simulation_mode=False)
         server.run(block=False)
         servers += [server]
