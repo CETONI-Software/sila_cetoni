@@ -121,16 +121,17 @@ class PumpDriveControlServiceReal:
         self.pump.calibrate()
         time.sleep(0.2)
         try:
-            calibration_finished = self._wait_calibration_finished(30)
+            calibration_finished = self._wait_calibration_finished(60)
         except DeviceError as err:
             raise SiLAExecutionError('InitializationFailed',
                                      f'QmixSDK returned the following error: {err}')
 
         logging.info("Pump calibrated: %s", calibration_finished)
-        if not calibration_finished:
+        last_error = self.pump.read_last_error()
+        if not calibration_finished and last_error.code != 0:
             raise SiLAExecutionError(
                 'InitializationFailed',
-                f'The pump could not be initialized. The last error that occurred was {self.pump.read_last_error()}')
+                f'The pump could not be initialized. The last error that occurred was {last_error}')
 
 
         return PumpDriveControlService_pb2.InitializePumpDrive_Responses()
