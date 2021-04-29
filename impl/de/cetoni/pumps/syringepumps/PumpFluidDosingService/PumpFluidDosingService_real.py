@@ -138,18 +138,20 @@ class PumpFluidDosingServiceReal:
                 logging.info("Fill level: %s", self.pump.get_fill_level())
                 yield silaFW_pb2.ExecutionInfo(
                     commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.running,
-                    progress=silaFW_pb2.Real(timer.elapsed_msecs() / dosing_time_ms)
+                    progressInfo=silaFW_pb2.Real(value=timer.elapsed_msecs()/dosing_time_ms)
                 )
                 message_timer.restart()
             is_pumping = self.pump.is_pumping()
 
         if not is_pumping and not self.pump.is_in_fault_state():
             yield silaFW_pb2.ExecutionInfo(
-                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully
+                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully,
+                progressInfo=silaFW_pb2.Real(value=1)
             )
         else:
             yield silaFW_pb2.ExecutionInfo(
-                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedWithError
+                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedWithError,
+                progressInfo=silaFW_pb2.Real(value=1)
             )
             logging.error("An unexpected error occurred: %s", self.pump.read_last_error())
 
