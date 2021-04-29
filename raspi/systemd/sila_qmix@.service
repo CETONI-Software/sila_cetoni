@@ -1,5 +1,5 @@
 [Unit]
-Description=SiLA Qmix running %i
+Description=SiLA Qmix running %i config
 Wants=sys-subsystem-net-devices-can0.device
 After=sys-subsystem-net-devices-can0.device
 
@@ -7,7 +7,7 @@ After=sys-subsystem-net-devices-can0.device
 Type=simple
 ExecStartPre=+-/sbin/ip link set can0 up type can bitrate 500000
 ExecStartPre=+/bin/sh -c '/sbin/ip addr show can0 | grep UP'
-ExecStart=/home/pi/sila_qmix/sila_qmix.sh %i
+ExecStart=/home/pi/sila_qmix/sila_qmix.sh /home/pi/sila_qmix/configs/%i
 KillSignal=SIGINT
 WorkingDirectory=/home/pi/sila_qmix
 User=pi
