@@ -126,7 +126,7 @@ class PumpFluidDosingServiceReal:
         logging.debug("target volume: %f", self.pump.get_target_volume())
         flow_in_sec = self.pump.get_flow_is() / self.pump.get_flow_unit().time_unitid.value
         logging.debug("flow_in_sec: %f", flow_in_sec)
-        dosing_time_ms = (self.pump.get_target_volume() / flow_in_sec) * 1000
+        dosing_time_ms = (self.pump.get_target_volume() / flow_in_sec) * 1000 if flow_in_sec > 0 else 0
         logging.debug("dosing_time_ms: %fs", dosing_time_ms)
 
         timer = qmixbus.PollingTimer(period_ms=dosing_time_ms + 2000) # +2 sec buffer
