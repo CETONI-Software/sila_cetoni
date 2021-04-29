@@ -123,21 +123,22 @@ class PumpFluidDosingServiceReal:
             )
             return
 
-        flow_in_sec = self.pump.get_flow_is() / self.pump.get_flow_unit().time_unitid.value
-        max_wait_time = self.pump.get_target_volume() / flow_in_sec + 2 # +2 sec buffer
         logging.debug("target volume: %f", self.pump.get_target_volume())
+        flow_in_sec = self.pump.get_flow_is() / self.pump.get_flow_unit().time_unitid.value
         logging.debug("flow_in_sec: %f", flow_in_sec)
-        logging.debug("max_wait_time: %fs", max_wait_time)
+        dosing_time_ms = (self.pump.get_target_volume() / flow_in_sec) * 1000
+        logging.debug("dosing_time_ms: %fs", dosing_time_ms)
 
-        timer = qmixbus.PollingTimer(max_wait_time * 1000) # msec
-        message_timer = qmixbus.PollingTimer(500) # msec
+        timer = qmixbus.PollingTimer(period_ms=dosing_time_ms + 2000) # +2 sec buffer
+        message_timer = qmixbus.PollingTimer(period_ms=500)
         is_pumping = True
         while is_pumping and not timer.is_expired():
             time.sleep(0.1)
             if message_timer.is_expired():
                 logging.info("Fill level: %s", self.pump.get_fill_level())
                 yield silaFW_pb2.ExecutionInfo(
-                    commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.running
+                    commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.running,
+                    progress=silaFW_pb2.Real(timer.elapsed_msecs() / dosing_time_ms)
                 )
                 message_timer.restart()
             is_pumping = self.pump.is_pumping()
