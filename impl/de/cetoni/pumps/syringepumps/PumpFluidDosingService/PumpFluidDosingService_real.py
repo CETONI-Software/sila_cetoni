@@ -123,13 +123,25 @@ class PumpFluidDosingServiceReal:
             )
             return
 
-        logging.debug("target volume: %f", self.pump.get_target_volume())
+        target_volume = self.pump.get_target_volume()
+        logging.debug("target volume: %f", target_volume)
         flow_in_sec = self.pump.get_flow_is() / self.pump.get_flow_unit().time_unitid.value
-        logging.debug("flow_in_sec: %f", flow_in_sec)
-        dosing_time_ms = (self.pump.get_target_volume() / flow_in_sec) * 1000 if flow_in_sec > 0 else 0
-        logging.debug("dosing_time_ms: %fs", dosing_time_ms)
+        if flow_in_sec == 0:
+            # try again, maybe the pump didn't start pumping yet
+            time.sleep(0.5)
+            flow_in_sec = self.pump.get_flow_is() / self.pump.get_flow_unit().time_unitid.value
+        if flow_in_sec == 0:
+            yield silaFW_pb2.ExecutionInfo(
+                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedWithError,
+                progressInfo=silaFW_pb2.Real(value=1)
+            )
+            logging.error("The pump didn't start pumping. Last error: %s", self.pump.read_last_error())
 
-        timer = qmixbus.PollingTimer(period_ms=dosing_time_ms + 2000) # +2 sec buffer
+        logging.debug("flow_in_sec: %f", flow_in_sec)
+        dosing_time_s = self.pump.get_target_volume() / flow_in_sec + 2 # +2 sec buffer
+        logging.debug("dosing_time_s: %fs", dosing_time_s)
+
+        timer = qmixbus.PollingTimer(period_ms=dosing_time_s * 1000)
         message_timer = qmixbus.PollingTimer(period_ms=500)
         is_pumping = True
         while is_pumping and not timer.is_expired():
@@ -138,7 +150,7 @@ class PumpFluidDosingServiceReal:
                 logging.info("Fill level: %s", self.pump.get_fill_level())
                 yield silaFW_pb2.ExecutionInfo(
                     commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.running,
-                    progressInfo=silaFW_pb2.Real(value=timer.elapsed_msecs()/dosing_time_ms)
+                    progressInfo=silaFW_pb2.Real(value=self.pump.get_dosed_volume()/target_volume)
                 )
                 message_timer.restart()
             is_pumping = self.pump.is_pumping()
