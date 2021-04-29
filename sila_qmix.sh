@@ -25,11 +25,18 @@ export LD_LIBRARY_PATH="$QMIXSDK_PATH/lib":"$LD_LIBRARY_PATH"
 
 curr_dir=$(pwd)
 
+# use runtime dir if available which is mounted as tmpfs to save some writes to the SD card
+${RUNTIME_DIRECTORY:=$XDG_RUNTIME_DIR} 2>/dev/null # RUNTIME_DIRECTORY might come from systemd
+LOG_DIR="${RUNTIME_DIRECTORY:-$curr_dir}/log"
+LOG_FILE="$LOG_DIR/sila_qmix-`date +%Y-%m-%d.%H:%M:%S`.log"
+mkdir -p $LOG_DIR
 # Redirect stdout into a named pipe
-mkdir -p $curr_dir/log
-exec > >( tee -i "$curr_dir/log/sila_qmix-`date +%Y-%m-%d.%H:%M:%S`.log" )
+exec > >( tee -i "$LOG_FILE" )
 # Also redirect stderr
 exec 2>&1
 
 python3 sila_qmix.py $@
 cd $curr_dir
+
+# write log to SD card if it's in RUNTIME_DIRECTORY
+[ "$LOG_DIR" = "$RUNTIME_DIR/log" ] && cp "$LOG_FILE" "$curr_dir/${LOG_FILE##*/}"

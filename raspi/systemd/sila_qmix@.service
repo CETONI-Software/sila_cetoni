@@ -11,6 +11,7 @@ ExecStart=/home/pi/sila_qmix/sila_qmix.sh /home/pi/sila_qmix/configs/%i
 KillSignal=SIGINT
 WorkingDirectory=/home/pi/sila_qmix
 User=pi
+RuntimeDirectory=sila
 
 [Install]
 WantedBy=default.target multi-user.target
