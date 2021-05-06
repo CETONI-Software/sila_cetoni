@@ -94,14 +94,15 @@ class ChannelGatewayService(ChannelGatewayService_pb2_grpc.ChannelGatewayService
         self.simulation_mode = False
         self._inject_implementation(ChannelGatewayServiceReal(self.channels))
 
-    def get_channel(self, metadata: Tuple[Tuple[str, str]]):
+    def get_channel(self, metadata: Tuple[Tuple[str, str]], type: str):
         """
         Get the channel that is identified by the channel name given in `metadata`
 
         :param metdata: The metadata of the call. It should contain the requested channel name
+        :param type: Either "Command" or "Property"
         :return: A valid channel object if the channel can be identified, otherwise a SiLAFrameworkError will be raised
         """
-        return self.implementation.get_channel(metadata)
+        return self.implementation.get_channel(metadata, type)
 
     def GetChannelIdentifiers(self, request, context: grpc.ServicerContext) \
             -> ChannelGatewayService_pb2.GetChannelIdentifiers_Responses:

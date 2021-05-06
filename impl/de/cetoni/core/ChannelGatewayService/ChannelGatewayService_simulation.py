@@ -91,11 +91,12 @@ class ChannelGatewayServiceSimulation:
             )
         )
 
-    def get_channel(self, metadata):
+    def get_channel(self, metadata, type):
         """
         Get the channel that is identified by the channel name given in `metadata`
 
         :param metdata: The metadata of the call. It should contain the requested channel name
+        :param type: Either "Command" or "Property"
         :return: A valid channel object if the channel can be identified, otherwise a SiLAFrameworkError will be raised
         """
         return None

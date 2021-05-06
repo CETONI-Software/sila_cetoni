@@ -80,7 +80,7 @@ class DigitalInChannelProviderReal:
             request.State (State): The state of the channel.
         """
 
-        channel = self.channel_gateway.get_channel(context.invocation_metadata())
+        channel = self.channel_gateway.get_channel(context.invocation_metadata(), "Property")
 
         while True:
             yield DigitalInChannelProvider_pb2.Subscribe_State_Responses(

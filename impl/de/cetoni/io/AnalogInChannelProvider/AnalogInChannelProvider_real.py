@@ -79,7 +79,7 @@ class AnalogInChannelProviderReal:
             request.Value (Value): The value of the analog I/O channel.
         """
 
-        channel = self.channel_gateway.get_channel(context.invocation_metadata())
+        channel = self.channel_gateway.get_channel(context.invocation_metadata(), "Property")
 
         while True:
             yield AnalogInChannelProvider_pb2.Subscribe_Value_Responses(

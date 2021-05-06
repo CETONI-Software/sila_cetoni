@@ -86,7 +86,7 @@ class ControlLoopServiceReal:
         # TODO validate SetPoint!!
 
         logging.info(f"Writing SetPoint {setpoint} to device")
-        self.channel_gateway.get_channel(context.invocation_metadata()).write_setpoint(setpoint)
+        self.channel_gateway.get_channel(context.invocation_metadata(), "Command").write_setpoint(setpoint)
 
         return ControlLoopService_pb2.WriteSetPoint_Responses()
 
@@ -112,7 +112,7 @@ class ControlLoopServiceReal:
                 msg="There is a running control loop already. Cannot start a new loop!"
             )
 
-        controller = self.channel_gateway.get_channel(context.invocation_metadata())
+        controller = self.channel_gateway.get_channel(context.invocation_metadata(), "Command")
 
         controller.enable_control_loop(True)
         result = ('' if controller.is_control_loop_enabled() else 'not ') + 'successful'
@@ -152,7 +152,7 @@ class ControlLoopServiceReal:
             commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.waiting
         )
 
-        controller = self.channel_gateway.get_channel(context.invocation_metadata())
+        controller = self.channel_gateway.get_channel(context.invocation_metadata(), "Command")
 
         # we loop only as long as the command is running
         while controller.is_control_loop_enabled():
@@ -199,7 +199,7 @@ class ControlLoopServiceReal:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        self.channel_gateway.get_channel(context.invocation_metadata()).enable_control_loop(False)
+        self.channel_gateway.get_channel(context.invocation_metadata(), "Command").enable_control_loop(False)
         self.loop_run_uuid = None
 
         return ControlLoopService_pb2.StopControlLoop_Responses()
@@ -217,7 +217,7 @@ class ControlLoopServiceReal:
             request.ControllerValue (Controller Value): The actual value from the Device
         """
 
-        controller = self.channel_gateway.get_channel(context.invocation_metadata())
+        controller = self.channel_gateway.get_channel(context.invocation_metadata(), "Property")
 
         while True:
             yield ControlLoopService_pb2.Subscribe_ControllerValue_Responses(
@@ -239,7 +239,7 @@ class ControlLoopServiceReal:
             request.SetPointValue (Set Point Value): The current SetPoint value of the Device
         """
 
-        controller = self.channel_gateway.get_channel(context.invocation_metadata())
+        controller = self.channel_gateway.get_channel(context.invocation_metadata(), "Property")
 
         while True:
             yield ControlLoopService_pb2.Subscribe_SetPointValue_Responses(

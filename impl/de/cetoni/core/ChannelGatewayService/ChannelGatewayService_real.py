@@ -86,11 +86,12 @@ class ChannelGatewayServiceReal:
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
-    def _get_channel_name(self, metadata: Tuple[Tuple[str, str]]) -> str:
+    def _get_channel_name(self, metadata: Tuple[Tuple[str, str]], type: str) -> str:
         """
         Get the requested channel name from the given `metadata`
 
         :param metdata: The metadata of the call. It should contain the requested channel name
+        :param type: Either "Command" or "Property"
         :return: The channel name if it can be obtained, otherwise a SiLAFrameworkError will be raised
         """
 
@@ -102,17 +103,18 @@ class ChannelGatewayServiceReal:
             return message.ChannelIdentifier.value
         except KeyError:
             raise SiLAFrameworkError(SiLAFrameworkErrorType.INVALID_METADATA,
-                                     'This Command requires the ChannelIdentifier metadata!')
+                                     f'This {type} requires the ChannelIdentifier metadata!')
 
-    def get_channel(self, metadata: Tuple[Tuple[str, str]]):
+    def get_channel(self, metadata: Tuple[Tuple[str, str]], type: str):
         """
         Get the channel that is identified by the channel name given in `metadata`
 
         :param metdata: The metadata of the call. It should contain the requested channel name
+        :param type: Either "Command" or "Property"
         :return: A valid channel object if the channel can be identified, otherwise a SiLAFrameworkError will be raised
         """
 
-        channel_name = self._get_channel_name(metadata)
+        channel_name = self._get_channel_name(metadata, type)
 
         logging.debug(f"Requested channel: {channel_name}")
 

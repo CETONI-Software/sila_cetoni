@@ -83,7 +83,7 @@ class DigitalOutChannelControllerReal:
 
         state = request.State.State.value
         logging.info(f"Setting output state to {state}")
-        self.channel_gateway.get_channel(context.invocation_metadata()).write_on(state == 'On')
+        self.channel_gateway.get_channel(context.invocation_metadata(), "Command").write_on(state == 'On')
 
         return DigitalOutChannelController_pb2.SetOutput_Responses()
 
@@ -101,7 +101,7 @@ class DigitalOutChannelControllerReal:
             request.State (State): The state of the channel.
         """
 
-        channel = self.channel_gateway.get_channel(context.invocation_metadata())
+        channel = self.channel_gateway.get_channel(context.invocation_metadata(), "Property")
 
         while True:
             yield DigitalOutChannelController_pb2.Subscribe_State_Responses(

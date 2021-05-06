@@ -82,7 +82,7 @@ class AnalogOutChannelControllerReal:
 
         value = request.Value.value
         logging.info(f"Setting output value to {value}")
-        self.channel_gateway.get_channel(context.invocation_metadata()).write_output(value)
+        self.channel_gateway.get_channel(context.invocation_metadata(), "Command").write_output(value)
 
         return AnalogOutChannelController_pb2.SetOutputValue_Responses()
 
@@ -100,7 +100,7 @@ class AnalogOutChannelControllerReal:
             request.Value (Value): The value of the analog I/O channel.
         """
 
-        channel = self.channel_gateway.get_channel(context.invocation_metadata())
+        channel = self.channel_gateway.get_channel(context.invocation_metadata(), "Property")
 
         while True:
             yield AnalogOutChannelController_pb2.Subscribe_Value_Responses(
