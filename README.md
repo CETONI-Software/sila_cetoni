@@ -1,15 +1,15 @@
-![SiLA Qmix Logo](doc/sila_header.png)
+![SiLA CETONI Logo](doc/sila_header.png)
 
 <!-- omit in toc -->
 # SiLA Qmix
 This repository contains the official [SiLA 2](https://sila-standard.com/) drivers for a variety of [CETONI devices](https://www.cetoni.com/products/).
-These SiLA 2 drivers are based on the [Qmix SDK for Python](https://github.com/CETONI-Software/qmixsdk-for-python) in order to control the devices.
+These SiLA 2 drivers are based on the [CETONI SDK for Python](https://github.com/CETONI-Software/qmixsdk-for-python) in order to control the devices.
 
 - [Getting Started](#getting-started)
   - [Installation](#installation)
     - [Python dependencies](#python-dependencies)
-    - [QmixSDK](#qmixsdk)
-  - [Running SiLA 2 Qmix servers](#running-sila-2-qmix-servers)
+    - [CETONI SDK](#cetoni-sdk)
+  - [Running SiLA 2 CETONI servers](#running-sila-2-cetoni-servers)
     - [Windows](#windows)
     - [Linux](#linux)
 - [Modifying the drivers](#modifying-the-drivers)
@@ -24,41 +24,41 @@ These SiLA 2 drivers are based on the [Qmix SDK for Python](https://github.com/C
 
 ### Installation
 #### Python dependencies
-Install the requirements for SiLA Qmix from PyPI with
+Install the requirements for SiLA CETONI from PyPI with
 ```console
 $ pip install -r requirements.txt
 ```
 It is recommended to install these things in a virtual environment to not interfere with anything in your system's environment.  
-This will install all Python dependencies for SiLA Qmix most notably `sila_python` and its codegenerator (`sila2codegenerator`).
+This will install all Python dependencies for SiLA CETONI most notably `sila_python` and its codegenerator (`sila2codegenerator`).
 
-#### QmixSDK
-Additionally you'll of course need the QmixSDK with the Python Integration.
+#### CETONI SDK
+Additionally you'll of course need the CETONI SDK with the Python Integration.
 
-For instructions on how to install the QmixSDK for Python on your system and get a valid Qmix configuration for your devices see the [QmixSDK Documentation](https://www.cetoni.de/fileadmin/user_upload/Documents/Manuals/QmixSDK/index.html).  
+For instructions on how to install the CETONI SDK for Python on your system and get a valid configuration for your devices see the [CETONI SDK Documentation](https://www.cetoni.de/fileadmin/user_upload/Documents/Manuals/QmixSDK/index.html).  
 On Linux be sure to also install the correct SocketCAN driver (either [SysTec](https://www.systec-electronic.com/en/company/support/device-driver/) or [IXXAT](https://www.ixxat.com/support/file-and-documents-download/drivers/socketcan-driver) depending on your CETONI base module).
 
-### Running SiLA 2 Qmix servers
+### Running SiLA 2 CETONI servers
 > ##### Note:
-> You always need a valid Qmix device configuration created with the [QmixElements software](https://www.cetoni.com/products/qmixelements/) in order to use SiLA Qmix.
+> You always need a valid device configuration created with the [CETONI Elements software](https://www.cetoni.com/products/qmixelements/) in order to use SiLA CETONI.
 
-Running any valid Qmix device configuration to get the corresponding SiLA 2 servers is always done through the `sila_qmix.py` wrapper script located in the root of this repository.
+Running any valid device configuration to get the corresponding SiLA 2 servers is always done through the `sila_cetoni.py` wrapper script located in the root of this repository.
 
 #### Windows
 On Windows you can simply run the script through Python giving it the path to the Qmix configuration folder as its argument:
 ```cmd
-> python .\sila_qmix.py <path\to\your\qmix_config>
+> python .\sila_cetoni.py <path\to\your\device_config>
 ```
 
 #### Linux
 On Linux this is not as easy, unfortunately.  
 This is due to how Python loads shared object files.
-You need to specify the dynamic library search path *before* running the `python` executable in order for the QmixSDK to find all necessary libraries.
-This can be done by manually specifying the `PATH`, `PYTHONPATH` and `LD_LIBRARY_PATH` environment variables before running `sila_qmix.py`.  
-To make this a bit easier you can use the provided shell script `sila_qmix.sh`.
-You only need to edit the path to the QmixSDK installation folder in this file.  
+You need to specify the dynamic library search path *before* running the `python` executable in order for the CETONI SDK to find all necessary libraries.
+This can be done by manually specifying the `PATH`, `PYTHONPATH` and `LD_LIBRARY_PATH` environment variables before running `sila_cetoni.py`.  
+To make this a bit easier you can use the provided shell script `sila_cetoni.sh`.
+You only need to edit the path to the CETONI SDK installation folder in this file.  
 After that you can run this script giving it only the path to your configuration folder as its argument:
 ```console
-$ ./sila_qmix.sh <path/to/your/qmix_config>
+$ ./sila_cetoni.sh <path/to/your/device_config>
 ```
 The script will set the necessary variables and run the python script for you.
 
@@ -73,7 +73,7 @@ The following is meant to be some kind of guidance for your first steps modifyin
 ### Repository layout
 The repository is structured in the following way:
 ```
-sila_qmix
+sila_cetoni
 |- features/de/cetoni/        # folder structure according to SiLA 2 Part A
 |  |- controllers/            # contains all feature definitions grouped by category
 |  |  `- ControlLoopService.sila.xml
@@ -100,8 +100,8 @@ sila_qmix
 |- templates/                       # template files for developing new features
 |  |- Feature.sila.xml              # FDL template file
 |  `- service_description.json      # service description template
-|- sila_qmix.py                     # standalone python wrapper script to run arbitrary servers
-`- sila_qmix.sh                     # standalone shell wrapper script for Linux
+|- sila_cetoni.py                   # standalone python wrapper script to run arbitrary servers
+`- sila_cetoni.sh                   # standalone shell wrapper script for Linux
 ```
 
 ### Generate the prototype code from the FDL
@@ -110,14 +110,14 @@ This is done using the `sila2codegenerator` from the `sila_python` reference imp
 The code generator has been automatically installed if you followed the step in [Installation](#installation).
 
 To show you the code generation process we're going to use the `PumpFluidDosingService` syringe pump feature as an example.
-In this case the feature definition resides in the file `sila_qmix/features/de/cetoni/pumps/syringepumps/PumpFluidDosingService.sila.xml`.  
+In this case the feature definition resides in the file `sila_cetoni/features/de/cetoni/pumps/syringepumps/PumpFluidDosingService.sila.xml`.  
 Let's say you've added anew command to this feature.
 The code regeneration process is now as follows:
 
 1. Our target directory is the `serv/pumps/syringepumps/` folder. 
    This folder already contains the `service_description.json` file that tells the code generator which feature we want our syringe pump server to have.
    If you added a new feature you need to add it to the `SiLA_feature_list` in the service description.
-2. Then run the code generator from the root directory (i.e. `sila_qmix/`) with the following command
+2. Then run the code generator from the root directory (i.e. `sila_cetoni/`) with the following command
    ```console
    $ silacodegenerator -b -o <target_dir> --service-description ../<target_dir>/service_description features/
    ```

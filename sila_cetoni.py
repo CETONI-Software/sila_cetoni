@@ -2,14 +2,14 @@
 """
 ________________________________________________________________________
 
-:PROJECT: sila_qmix
+:PROJECT: sila_cetoni
 
 *SiLA Qmix*
 
 :details: SiLA Qmix:
     A wrapper script that starts as many individual SiLA2 servers as there are devices in the given configuration.
 
-:file:    sila_qmix.py
+:file:    sila_cetoni.py
 :authors: Florian Meinicke
 
 :date: (creation)          2020-10-08

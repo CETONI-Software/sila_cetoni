@@ -5,7 +5,7 @@
 #
 #set -x
 
-FILENAME="$HOME/sila_qmix/log/wlan0-`date +%Y-%m-%d.%H:%M:%S`.csv"
+FILENAME="$HOME/sila_cetoni/log/wlan0-`date +%Y-%m-%d.%H:%M:%S`.csv"
 
 echo "time; rx bitrate; tx bitrate; signal" > $FILENAME
 

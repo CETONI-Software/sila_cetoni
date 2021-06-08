@@ -5,8 +5,8 @@ After=default.target multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/home/pi/sila_qmix/monitor_wlan0.sh
-WorkingDirectory=/home/pi/sila_qmix
+ExecStart=/home/pi/sila_cetoni/monitor_wlan0.sh
+WorkingDirectory=/home/pi/sila_cetoni
 User=pi
 
 [Install]

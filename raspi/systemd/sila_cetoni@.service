@@ -7,9 +7,9 @@ After=sys-subsystem-net-devices-can0.device
 Type=simple
 ExecStartPre=+-/sbin/ip link set can0 up type can bitrate 500000
 ExecStartPre=+/bin/sh -c '/sbin/ip addr show can0 | grep UP'
-ExecStart=/home/pi/sila_qmix/sila_qmix.sh /home/pi/sila_qmix/configs/%i
+ExecStart=/home/pi/sila_cetoni/sila_cetoni.sh /home/pi/sila_cetoni/configs/%i
 KillSignal=SIGINT
-WorkingDirectory=/home/pi/sila_qmix
+WorkingDirectory=/home/pi/sila_cetoni
 User=pi
 RuntimeDirectory=sila
 
