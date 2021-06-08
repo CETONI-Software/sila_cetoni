@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Pump Drive Control Service*
 
@@ -100,151 +100,151 @@ class PumpDriveControlServiceSimulation:
         """
         Executes the unobservable command "Initialize Pump Drive"
             Initialize the pump drive (e.g. by executing a reference move).
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command InitializePumpDrive here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = PumpDriveControlService_pb2.InitializePumpDrive_Responses(
                 **default_dict['InitializePumpDrive_Responses']
             )
-    
+
         return return_value
-    
-    
+
+
     def EnablePumpDrive(self, request, context: grpc.ServicerContext) \
             -> PumpDriveControlService_pb2.EnablePumpDrive_Responses:
         """
         Executes the unobservable command "Enable Pump Drive"
             Set the pump into enabled state.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command EnablePumpDrive here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = PumpDriveControlService_pb2.EnablePumpDrive_Responses(
                 **default_dict['EnablePumpDrive_Responses']
             )
-    
+
         return return_value
-    
-    
+
+
     def DisablePumpDrive(self, request, context: grpc.ServicerContext) \
             -> PumpDriveControlService_pb2.DisablePumpDrive_Responses:
         """
         Executes the unobservable command "Disable Pump Drive"
             Set the pump into disabled state.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command DisablePumpDrive here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = PumpDriveControlService_pb2.DisablePumpDrive_Responses(
                 **default_dict['DisablePumpDrive_Responses']
             )
-    
+
         return return_value
-    
+
 
     def Subscribe_PumpDriveState(self, request, context: grpc.ServicerContext) \
             -> PumpDriveControlService_pb2.Subscribe_PumpDriveState_Responses:
         """
         Requests the observable property Pump Drive State
             The current state of the pump. This is either enabled (true) or disabled (false). Only if the sate is enabled, the pump can dose fluids.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.PumpDriveState (Pump Drive State): The current state of the pump. This is either enabled (true) or disabled (false). Only if the sate is enabled, the pump can dose fluids.
         """
-    
+
         # initialise the return value
         return_value: PumpDriveControlService_pb2.Subscribe_PumpDriveState_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property PumpDriveState here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = PumpDriveControlService_pb2.Subscribe_PumpDriveState_Responses(
                     **default_dict['Subscribe_PumpDriveState_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
-    
+
+
     def Subscribe_FaultState(self, request, context: grpc.ServicerContext) \
             -> PumpDriveControlService_pb2.Subscribe_FaultState_Responses:
         """
         Requests the observable property Fault State
             Returns if the pump is in fault state. If the value is true (i.e. the pump is in fault state), it can be cleared by calling EnablePumpDrive.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.FaultState (Fault State): Returns if the pump is in fault state. If the value is true (i.e. the pump is in fault state), it can be cleared by calling EnablePumpDrive.
         """
-    
+
         # initialise the return value
         return_value: PumpDriveControlService_pb2.Subscribe_FaultState_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property FaultState here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = PumpDriveControlService_pb2.Subscribe_FaultState_Responses(
                     **default_dict['Subscribe_FaultState_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
+

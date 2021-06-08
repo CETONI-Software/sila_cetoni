@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *I/O Channel Gateway Service*
 

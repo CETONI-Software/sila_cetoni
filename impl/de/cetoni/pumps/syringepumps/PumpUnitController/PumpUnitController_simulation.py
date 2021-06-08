@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Pump Unit Controller*
 
@@ -96,121 +96,121 @@ class PumpUnitControllerSimulation:
         """
         Executes the unobservable command "Set Flow Unit"
             Sets the flow unit for the pump. The flow unit defines the unit to be used for all flow values passed to or retrieved from the pump.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.FlowUnit (FlowUnit): The flow unit to set. It has to something like "ml/s" or "µl/s", for instance.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command SetFlowUnit here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = PumpUnitController_pb2.SetFlowUnit_Responses(
                 **default_dict['SetFlowUnit_Responses']
             )
-    
+
         return return_value
-    
-    
+
+
     def SetVolumeUnit(self, request, context: grpc.ServicerContext) \
             -> PumpUnitController_pb2.SetVolumeUnit_Responses:
         """
         Executes the unobservable command "Set Volume Unit"
             Sets the default volume unit. The volume unit defines the unit to be used for all volume values passed to or retrieved from the pump.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.VolumeUnit (Volume Unit): The volume unit to set. It has to be something like "ml" or "µl", for instance.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command SetVolumeUnit here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = PumpUnitController_pb2.SetVolumeUnit_Responses(
                 **default_dict['SetVolumeUnit_Responses']
             )
-    
+
         return return_value
-    
+
 
     def Subscribe_FlowUnit(self, request, context: grpc.ServicerContext) \
             -> PumpUnitController_pb2.Subscribe_FlowUnit_Responses:
         """
         Requests the observable property Flow Unit
             The currently used flow unit.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.FlowUnit (Flow Unit): The currently used flow unit.
         """
-    
+
         # initialise the return value
         return_value: PumpUnitController_pb2.Subscribe_FlowUnit_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property FlowUnit here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = PumpUnitController_pb2.Subscribe_FlowUnit_Responses(
                     **default_dict['Subscribe_FlowUnit_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
-    
+
+
     def Subscribe_VolumeUnit(self, request, context: grpc.ServicerContext) \
             -> PumpUnitController_pb2.Subscribe_VolumeUnit_Responses:
         """
         Requests the observable property Volume Unit
             The currently used volume unit.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.VolumeUnit (Volume Unit): The currently used volume unit.
         """
-    
+
         # initialise the return value
         return_value: PumpUnitController_pb2.Subscribe_VolumeUnit_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property VolumeUnit here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = PumpUnitController_pb2.Subscribe_VolumeUnit_Responses(
                     **default_dict['Subscribe_VolumeUnit_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
+

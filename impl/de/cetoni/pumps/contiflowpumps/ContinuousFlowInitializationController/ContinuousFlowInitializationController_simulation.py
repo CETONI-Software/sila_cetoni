@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Continuous Flow Initialization Controller*
 
@@ -97,24 +97,24 @@ class ContinuousFlowInitializationControllerSimulation:
         Executes the observable command "Initialize Contiflow"
             Initialize the continuous flow pump.
             Call this command after all parameters have been set, to prepare the conti flow pump for the start of the continuous flow. The initialization procedure ensures, that the syringes are sufficiently filled to start the continuous flow. So calling this command may cause a syringe refill if the syringes are not sufficiently filled. So before calling this command you should ensure, that syringe refilling properly works an can be executed. If you have a certain syringe refill procedure, you can also manually refill the syringes with the normal syringe pump functions. If the syringes are sufficiently filled if you call this function, no refilling will take place.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A command confirmation object with the following information:
             commandId: A command id with which this observable command can be referenced in future calls
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
-    
+
         # initialise default values
         #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
         lifetime_of_execution: silaFW_pb2.Duration = None
-    
+
         # TODO:
         #   Execute the actual command
         #   Optional: Generate a lifetime_of_execution
-    
+
         # respond with UUID and lifetime of execution
         command_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
         if lifetime_of_execution is not None:
@@ -126,16 +126,16 @@ class ContinuousFlowInitializationControllerSimulation:
             return silaFW_pb2.CommandConfirmation(
                 commandExecutionUUID=command_uuid
             )
-    
+
     def InitializeContiflow_Info(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.ExecutionInfo:
         """
         Returns execution information regarding the command call :meth:`~.InitializeContiflow`.
-    
+
         :param request: A request object with the following properties
             commandId: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: An ExecutionInfo response stream for the command with the following fields:
             commandStatus: Status of the command (enumeration)
             progressInfo: Information on the progress of the command (0 to 1)
@@ -144,10 +144,10 @@ class ContinuousFlowInitializationControllerSimulation:
         """
         # Get the UUID of the command
         command_uuid = request.value
-    
+
         # Get the current state
         execution_info = self._get_command_state(command_uuid=command_uuid)
-    
+
         # construct the initial return dictionary in case while is not executed
         return_values = {'commandStatus': execution_info.commandStatus}
         if execution_info.HasField('progressInfo'):
@@ -156,7 +156,7 @@ class ContinuousFlowInitializationControllerSimulation:
             return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
         if execution_info.HasField('updatedLifetimeOfExecution'):
             return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
-    
+
         # we loop only as long as the command is running
         while execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.waiting \
                 or execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.running:
@@ -170,10 +170,10 @@ class ContinuousFlowInitializationControllerSimulation:
             #       * Determine the progress (progressInfo)
             #       * Determine the estimated remaining time
             #       * Update the Lifetime of execution
-    
+
             # Update all values
             execution_info = self._get_command_state(command_uuid=command_uuid)
-    
+
             # construct the return dictionary
             return_values = {'commandStatus': execution_info.commandStatus}
             if execution_info.HasField('progressInfo'):
@@ -182,46 +182,46 @@ class ContinuousFlowInitializationControllerSimulation:
                 return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
             if execution_info.HasField('updatedLifetimeOfExecution'):
                 return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
-    
+
             yield silaFW_pb2.ExecutionInfo(**return_values)
-    
+
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
         else:
             # one last time yield the status
             yield silaFW_pb2.ExecutionInfo(**return_values)
-    
+
     def InitializeContiflow_Result(self, request, context: grpc.ServicerContext) \
             -> ContinuousFlowInitializationController_pb2.InitializeContiflow_Responses:
         """
         Returns the final result of the command call :meth:`~.InitializeContiflow`.
-    
+
         :param request: A request object with the following properties
             CommandExecutionUUID: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value: ContinuousFlowInitializationController_pb2.InitializeContiflow_Responses = None
-    
+
         # Get the UUID of the command
         command_uuid = request.value
-    
+
         # TODO:
         #   Add implementation of Simulation for command InitializeContiflow here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ContinuousFlowInitializationController_pb2.InitializeContiflow_Responses(
                 **default_dict['InitializeContiflow_Responses']
             )
-    
+
         return return_value
-    
+
 
     def Subscribe_IsInitialized(self, request, context: grpc.ServicerContext) \
             -> ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses:
@@ -229,31 +229,31 @@ class ContinuousFlowInitializationControllerSimulation:
         Requests the observable property Is Initialized
             Returns true, if the conti fow pump is initialized and ready for continuous flow start.
             Use this function to check if the pump is initialized before you start a continuous flow. If you change and continuous flow parameter, like valve settings, cross flow duration and so on, the pump will leave the initialized state. That means, after each parameter change, an initialization is required. Changing the flow rate or the dosing volume does not require and initialization.
-                    
-    
+
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.IsInitialized (Is Initialized): Returns true, if the conti fow pump is initialized and ready for continuous flow start.
             Use this function to check if the pump is initialized before you start a continuous flow. If you change and continuous flow parameter, like valve settings, cross flow duration and so on, the pump will leave the initialized state. That means, after each parameter change, an initialization is required. Changing the flow rate or the dosing volume does not require and initialization.
         """
-    
+
         # initialise the return value
         return_value: ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property IsInitialized here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses(
                     **default_dict['Subscribe_IsInitialized_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
+

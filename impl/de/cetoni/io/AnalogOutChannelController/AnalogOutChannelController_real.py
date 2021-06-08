@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Analog Out Channel Controller*
 

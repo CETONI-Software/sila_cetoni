@@ -2,7 +2,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Contiflow client*
 
@@ -204,14 +204,14 @@ class ContiflowClient(SiLA2Client):
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetSwitchingMode_Responses:
         """
         Wrapper to call the unobservable command SetSwitchingMode on the server.
-    
+
         :param parameter: The parameter gRPC construct required for this command.
-    
+
         :returns: A gRPC object with the response that has been defined for this command.
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Calling SetSwitchingMode:")
         try:
             # resolve to default if no value given
@@ -220,29 +220,29 @@ class ContiflowClient(SiLA2Client):
                 parameter = de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetSwitchingMode_Parameters(
                     **de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_default_dict['SetSwitchingMode_Parameters']
                 )
-    
+
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.SetSwitchingMode(parameter)
-    
+
             logging.debug('SetSwitchingMode response: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
+
     def SetRefillFlowRate(self,
                       parameter: de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetRefillFlowRate_Parameters = None) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetRefillFlowRate_Responses:
         """
         Wrapper to call the unobservable command SetRefillFlowRate on the server.
-    
+
         :param parameter: The parameter gRPC construct required for this command.
-    
+
         :returns: A gRPC object with the response that has been defined for this command.
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Calling SetRefillFlowRate:")
         try:
             # resolve to default if no value given
@@ -251,29 +251,29 @@ class ContiflowClient(SiLA2Client):
                 parameter = de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetRefillFlowRate_Parameters(
                     **de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_default_dict['SetRefillFlowRate_Parameters']
                 )
-    
+
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.SetRefillFlowRate(parameter)
-    
+
             logging.debug('SetRefillFlowRate response: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
+
     def SetCrossFlowDuration(self,
                       parameter: de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetCrossFlowDuration_Parameters = None) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetCrossFlowDuration_Responses:
         """
         Wrapper to call the unobservable command SetCrossFlowDuration on the server.
-    
+
         :param parameter: The parameter gRPC construct required for this command.
-    
+
         :returns: A gRPC object with the response that has been defined for this command.
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Calling SetCrossFlowDuration:")
         try:
             # resolve to default if no value given
@@ -282,29 +282,29 @@ class ContiflowClient(SiLA2Client):
                 parameter = de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetCrossFlowDuration_Parameters(
                     **de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_default_dict['SetCrossFlowDuration_Parameters']
                 )
-    
+
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.SetCrossFlowDuration(parameter)
-    
+
             logging.debug('SetCrossFlowDuration response: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
+
     def SetOverlapDuration(self,
                       parameter: de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetOverlapDuration_Parameters = None) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetOverlapDuration_Responses:
         """
         Wrapper to call the unobservable command SetOverlapDuration on the server.
-    
+
         :param parameter: The parameter gRPC construct required for this command.
-    
+
         :returns: A gRPC object with the response that has been defined for this command.
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Calling SetOverlapDuration:")
         try:
             # resolve to default if no value given
@@ -313,31 +313,31 @@ class ContiflowClient(SiLA2Client):
                 parameter = de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.SetOverlapDuration_Parameters(
                     **de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_default_dict['SetOverlapDuration_Parameters']
                 )
-    
+
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.SetOverlapDuration(parameter)
-    
+
             logging.debug('SetOverlapDuration response: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
+
     def InitializeContiflow(self,
                       parameter: de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_pb2.InitializeContiflow_Parameters = None) \
             -> silaFW_pb2.CommandConfirmation:
         """
         Wrapper to call the observable command InitializeContiflow on the server.
-    
+
         :param parameter: The parameter gRPC construct required for this command.
-    
+
         :returns: A command confirmation object with the following information:
             commandExecutionUUID: A command id with which this observable command can be referenced in future calls
             lifetimeOfExecution (optional): The (maximum) lifetime of this command call.
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Calling InitializeContiflow:")
         try:
             # resolve to default if no value given
@@ -346,25 +346,25 @@ class ContiflowClient(SiLA2Client):
                 parameter = de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_pb2.InitializeContiflow_Parameters(
                     **de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_default_dict['InitializeContiflow_Parameters']
                 )
-    
+
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_stub.InitializeContiflow(parameter)
-    
+
             logging.debug('InitializeContiflow response: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
+
     def InitializeContiflow_Info(self,
                            uuid: Union[str, silaFW_pb2.CommandExecutionUUID]) \
             -> silaFW_pb2.ExecutionInfo:
         """
         Wrapper to get an intermediate response for the observable command InitializeContiflow on the server.
-    
+
         :param uuid: The UUID that has been returned with the first command call. Can be given as string or as the
                      corresponding SiLA2 gRPC object.
-    
+
         :returns: A gRPC object with the status information that has been defined for this command. The following fields
                   are defined:
                     * *commandStatus*: Status of the command (enumeration)
@@ -374,10 +374,10 @@ class ContiflowClient(SiLA2Client):
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         if type(uuid) is str:
             uuid = silaFW_pb2.CommandExecutionUUID(value=uuid)
-    
+
         logging.debug(
             "Requesting status information for command InitializeContiflow (UUID={uuid}):".format(
                 uuid=uuid.value
@@ -389,48 +389,48 @@ class ContiflowClient(SiLA2Client):
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
+
     def InitializeContiflow_Result(self,
                              uuid: Union[str, silaFW_pb2.CommandExecutionUUID]) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_pb2.InitializeContiflow_Responses:
         """
         Wrapper to get an intermediate response for the observable command InitializeContiflow on the server.
-    
+
         :param uuid: The UUID that has been returned with the first command call. Can be given as string or as the
                      corresponding SiLA2 gRPC object.
-    
+
         :returns: A gRPC object with the result response that has been defined for this command.
-    
+
         .. note:: Whether the result is available or not can and should be evaluated by calling the
                   :meth:`InitializeContiflow_Info` method of this call.
         """
         if type(uuid) is str:
             uuid = silaFW_pb2.CommandExecutionUUID(value=uuid)
-    
+
         logging.debug(
             "Requesting status information for command InitializeContiflow (UUID={uuid}):".format(
                 uuid=uuid.value
             )
         )
-    
+
         try:
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_stub.InitializeContiflow_Result(uuid)
             logging.debug('InitializeContiflow result response: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
+
 
     def Subscribe_SwitchingMode(self) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.Subscribe_SwitchingMode_Responses:
         """Wrapper to get property SwitchingMode from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Reading observable property SwitchingMode:")
         try:
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.Subscribe_SwitchingMode(
@@ -444,14 +444,14 @@ class ContiflowClient(SiLA2Client):
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
     def Subscribe_MaxRefillFlowRate(self) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.Subscribe_MaxRefillFlowRate_Responses:
         """Wrapper to get property MaxRefillFlowRate from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Reading observable property MaxRefillFlowRate:")
         try:
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.Subscribe_MaxRefillFlowRate(
@@ -465,14 +465,14 @@ class ContiflowClient(SiLA2Client):
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
     def Subscribe_RefillFlowRate(self) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.Subscribe_RefillFlowRate_Responses:
         """Wrapper to get property RefillFlowRate from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Reading observable property RefillFlowRate:")
         try:
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.Subscribe_RefillFlowRate(
@@ -486,14 +486,14 @@ class ContiflowClient(SiLA2Client):
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
     def Subscribe_MinFlowRate(self) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.Subscribe_MinFlowRate_Responses:
         """Wrapper to get property MinFlowRate from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Reading observable property MinFlowRate:")
         try:
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.Subscribe_MinFlowRate(
@@ -507,14 +507,14 @@ class ContiflowClient(SiLA2Client):
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
     def Subscribe_CrossFlowDuration(self) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.Subscribe_CrossFlowDuration_Responses:
         """Wrapper to get property CrossFlowDuration from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Reading observable property CrossFlowDuration:")
         try:
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.Subscribe_CrossFlowDuration(
@@ -528,14 +528,14 @@ class ContiflowClient(SiLA2Client):
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
     def Subscribe_OverlapDuration(self) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_pb2.Subscribe_OverlapDuration_Responses:
         """Wrapper to get property OverlapDuration from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Reading observable property OverlapDuration:")
         try:
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService_stub.Subscribe_OverlapDuration(
@@ -549,14 +549,14 @@ class ContiflowClient(SiLA2Client):
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
     def Subscribe_IsInitialized(self) \
             -> de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses:
         """Wrapper to get property IsInitialized from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Reading observable property IsInitialized:")
         try:
             response = self.de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController_stub.Subscribe_IsInitialized(
@@ -570,9 +570,9 @@ class ContiflowClient(SiLA2Client):
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
+
 
     @staticmethod
     def grpc_error_handling(error_object: grpc.Call) -> None:

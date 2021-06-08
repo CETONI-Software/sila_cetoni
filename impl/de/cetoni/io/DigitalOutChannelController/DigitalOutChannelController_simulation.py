@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Digital Out Channel Controller*
 
@@ -96,59 +96,59 @@ class DigitalOutChannelControllerSimulation:
         """
         Executes the unobservable command "Set Output"
             Switch a digital output channel on or off.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.State (State): The state to set.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command SetOutput here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = DigitalOutChannelController_pb2.SetOutput_Responses(
                 **default_dict['SetOutput_Responses']
             )
-    
+
         return return_value
-    
+
 
     def Subscribe_State(self, request, context: grpc.ServicerContext) \
             -> DigitalOutChannelController_pb2.Subscribe_State_Responses:
         """
         Requests the observable property State
             The state of the channel.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.State (State): The state of the channel.
         """
-    
+
         # initialise the return value
         return_value: DigitalOutChannelController_pb2.Subscribe_State_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property State here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = DigitalOutChannelController_pb2.Subscribe_State_Responses(
                     **default_dict['Subscribe_State_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
+

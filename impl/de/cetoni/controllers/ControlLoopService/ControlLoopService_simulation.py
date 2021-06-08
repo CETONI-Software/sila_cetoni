@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Control Loop Service*
 
@@ -96,54 +96,54 @@ class ControlLoopServiceSimulation:
         """
         Executes the unobservable command "Write Set Point"
             Write a Set Point value to the Controller Device
-    
+
         :param request: gRPC request containing the parameters passed:
             request.SetPointValue (Set Point Value): The Set Point value to write
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command WriteSetPoint here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ControlLoopService_pb2.WriteSetPoint_Responses(
                 **default_dict['WriteSetPoint_Responses']
             )
-    
+
         return return_value
-    
-    
+
+
     def RunControlLoop(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.CommandConfirmation:
         """
         Executes the observable command "Run Control Loop"
             Run the Control Loop
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A command confirmation object with the following information:
             commandId: A command id with which this observable command can be referenced in future calls
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
-    
+
         # initialise default values
         #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
         lifetime_of_execution: silaFW_pb2.Duration = None
-    
+
         # TODO:
         #   Execute the actual command
         #   Optional: Generate a lifetime_of_execution
-    
+
         # respond with UUID and lifetime of execution
         command_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
         if lifetime_of_execution is not None:
@@ -155,16 +155,16 @@ class ControlLoopServiceSimulation:
             return silaFW_pb2.CommandConfirmation(
                 commandExecutionUUID=command_uuid
             )
-    
+
     def RunControlLoop_Info(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.ExecutionInfo:
         """
         Returns execution information regarding the command call :meth:`~.RunControlLoop`.
-    
+
         :param request: A request object with the following properties
             commandId: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: An ExecutionInfo response stream for the command with the following fields:
             commandStatus: Status of the command (enumeration)
             progressInfo: Information on the progress of the command (0 to 1)
@@ -173,10 +173,10 @@ class ControlLoopServiceSimulation:
         """
         # Get the UUID of the command
         command_uuid = request.value
-    
+
         # Get the current state
         execution_info = self._get_command_state(command_uuid=command_uuid)
-    
+
         # construct the initial return dictionary in case while is not executed
         return_values = {'commandStatus': execution_info.commandStatus}
         if execution_info.HasField('progressInfo'):
@@ -185,7 +185,7 @@ class ControlLoopServiceSimulation:
             return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
         if execution_info.HasField('updatedLifetimeOfExecution'):
             return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
-    
+
         # we loop only as long as the command is running
         while execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.waiting \
                 or execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.running:
@@ -199,10 +199,10 @@ class ControlLoopServiceSimulation:
             #       * Determine the progress (progressInfo)
             #       * Determine the estimated remaining time
             #       * Update the Lifetime of execution
-    
+
             # Update all values
             execution_info = self._get_command_state(command_uuid=command_uuid)
-    
+
             # construct the return dictionary
             return_values = {'commandStatus': execution_info.commandStatus}
             if execution_info.HasField('progressInfo'):
@@ -211,137 +211,137 @@ class ControlLoopServiceSimulation:
                 return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
             if execution_info.HasField('updatedLifetimeOfExecution'):
                 return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
-    
+
             yield silaFW_pb2.ExecutionInfo(**return_values)
-    
+
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
         else:
             # one last time yield the status
             yield silaFW_pb2.ExecutionInfo(**return_values)
-    
+
     def RunControlLoop_Result(self, request, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.RunControlLoop_Responses:
         """
         Returns the final result of the command call :meth:`~.RunControlLoop`.
-    
+
         :param request: A request object with the following properties
             CommandExecutionUUID: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value: ControlLoopService_pb2.RunControlLoop_Responses = None
-    
+
         # Get the UUID of the command
         command_uuid = request.value
-    
+
         # TODO:
         #   Add implementation of Simulation for command RunControlLoop here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ControlLoopService_pb2.RunControlLoop_Responses(
                 **default_dict['RunControlLoop_Responses']
             )
-    
+
         return return_value
-    
-    
+
+
     def StopControlLoop(self, request, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.StopControlLoop_Responses:
         """
         Executes the unobservable command "Stop Control Loop"
             Stops the Control Loop (has no effect, if no Loop is currently running)
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command StopControlLoop here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ControlLoopService_pb2.StopControlLoop_Responses(
                 **default_dict['StopControlLoop_Responses']
             )
-    
+
         return return_value
-    
+
 
     def Subscribe_ControllerValue(self, request, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.Subscribe_ControllerValue_Responses:
         """
         Requests the observable property Controller Value
             The actual value from the Device
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.ControllerValue (Controller Value): The actual value from the Device
         """
-    
+
         # initialise the return value
         return_value: ControlLoopService_pb2.Subscribe_ControllerValue_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property ControllerValue here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = ControlLoopService_pb2.Subscribe_ControllerValue_Responses(
                     **default_dict['Subscribe_ControllerValue_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
-    
+
+
     def Subscribe_SetPointValue(self, request, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.Subscribe_SetPointValue_Responses:
         """
         Requests the observable property Set Point Value
             The current SetPoint value of the Device
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.SetPointValue (Set Point Value): The current SetPoint value of the Device
         """
-    
+
         # initialise the return value
         return_value: ControlLoopService_pb2.Subscribe_SetPointValue_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property SetPointValue here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = ControlLoopService_pb2.Subscribe_SetPointValue_Responses(
                     **default_dict['Subscribe_SetPointValue_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
+

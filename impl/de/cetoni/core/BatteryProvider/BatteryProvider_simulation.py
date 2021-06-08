@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Battery Provider*
 
@@ -94,37 +94,37 @@ class BatteryProviderSimulation:
             )
         )
 
-    
+
 
     def Subscribe_BatteryVoltage(self, request, context: grpc.ServicerContext) \
             -> BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses:
         """
         Requests the observable property Battery Voltage
             The current voltage of the battery
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.BatteryVoltage (Battery Voltage): The current voltage of the battery
         """
-    
+
         # initialise the return value
         return_value: BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property BatteryVoltage here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses(
                     #**default_dict['Subscribe_BatteryVoltage_Responses']
                 BatteryVoltage=silaFW_pb2.Real(value=1.0)
                 )
-    
-    
+
+
             yield return_value
-    
+

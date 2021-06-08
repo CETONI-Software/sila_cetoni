@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Syringe Configuration Controller*
 
@@ -97,92 +97,92 @@ class SyringeConfigurationControllerSimulation:
         Executes the unobservable command "Set Syringe Parameters"
             Set syringe parameters.
             If you change the syringe in one device, you need to setup the new syringe parameters to get proper conversion of flow rate und volume units.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.InnerDiameter (Inner Diameter): Inner diameter of the syringe tube in millimetres.
             request.MaxPistonStroke (Max Piston Stroke): The maximum piston stroke defines the maximum position the piston can be moved to before it slips out of the syringe tube. The maximum piston stroke limits the maximum travel range of the syringe pump pusher.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command SetSyringeParameters here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = SyringeConfigurationController_pb2.SetSyringeParameters_Responses(
                 **default_dict['SetSyringeParameters_Responses']
             )
-    
+
         return return_value
-    
+
 
     def Subscribe_InnerDiameter(self, request, context: grpc.ServicerContext) \
             -> SyringeConfigurationController_pb2.Subscribe_InnerDiameter_Responses:
         """
         Requests the observable property Inner Diameter
             Inner diameter of the syringe tube in millimetres.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.InnerDiameter (Inner Diameter): Inner diameter of the syringe tube in millimetres.
         """
-    
+
         # initialise the return value
         return_value: SyringeConfigurationController_pb2.Subscribe_InnerDiameter_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property InnerDiameter here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = SyringeConfigurationController_pb2.Subscribe_InnerDiameter_Responses(
                     **default_dict['Subscribe_InnerDiameter_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
-    
+
+
     def Subscribe_MaxPistonStroke(self, request, context: grpc.ServicerContext) \
             -> SyringeConfigurationController_pb2.Subscribe_MaxPistonStroke_Responses:
         """
         Requests the observable property Max Piston Stroke
             The maximum piston stroke defines the maximum position the piston can be moved to before it slips out of the syringe tube. The maximum piston stroke limits the maximum travel range of the syringe pump pusher.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.MaxPistonStroke (Max Piston Stroke): The maximum piston stroke defines the maximum position the piston can be moved to before it slips out of the syringe tube. The maximum piston stroke limits the maximum travel range of the syringe pump pusher.
         """
-    
+
         # initialise the return value
         return_value: SyringeConfigurationController_pb2.Subscribe_MaxPistonStroke_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property MaxPistonStroke here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = SyringeConfigurationController_pb2.Subscribe_MaxPistonStroke_Responses(
                     **default_dict['Subscribe_MaxPistonStroke_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
+

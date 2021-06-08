@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Digital In Channel Provider*
 
@@ -91,36 +91,36 @@ class DigitalInChannelProviderSimulation:
             )
         )
 
-    
+
 
     def Subscribe_State(self, request, context: grpc.ServicerContext) \
             -> DigitalInChannelProvider_pb2.Subscribe_State_Responses:
         """
         Requests the observable property State
             The state of the channel.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.State (State): The state of the channel.
         """
-    
+
         # initialise the return value
         return_value: DigitalInChannelProvider_pb2.Subscribe_State_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property State here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = DigitalInChannelProvider_pb2.Subscribe_State_Responses(
                     **default_dict['Subscribe_State_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
+

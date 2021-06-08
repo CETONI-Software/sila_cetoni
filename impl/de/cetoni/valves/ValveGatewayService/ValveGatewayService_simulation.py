@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Valve Gateway Service*
 
@@ -91,34 +91,34 @@ class ValveGatewayServiceSimulation:
             )
         )
 
-    
+
 
     def Get_ValveIdentifiers(self, request, context: grpc.ServicerContext) \
             -> ValveGatewayService_pb2.Get_ValveIdentifiers_Responses:
         """
         Requests the unobservable property Valve Identifiers
             A list of all possible valve names (identifiers) of this device
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             ValveIdentifiers (Valve Identifiers): A list of all possible valve names (identifiers) of this device
         """
-    
+
         # initialise the return value
         return_value: ValveGatewayService_pb2.Get_ValveIdentifiers_Responses = None
-    
+
         # TODO:
         #   Add implementation of Simulation for property ValveIdentifiers here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ValveGatewayService_pb2.Get_ValveIdentifiers_Responses(
                 **default_dict['Get_ValveIdentifiers_Responses']
             )
-    
+
         return return_value
 
     def Get_FCPAffectedByMetadata_ValveIdentifier(self, request, context: grpc.ServicerContext) \
@@ -126,25 +126,25 @@ class ValveGatewayServiceSimulation:
         """
         Requests the unobservable property FCPAffectedByMetadata Valve Identifier
             Specifies which Features/Commands/Properties of the SiLA server are affected by the Valve Identifier Metadata.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             AffectedCalls (AffectedCalls): A string containing a list of Fully Qualified Identifiers of Features, Commands and Properties for which the SiLA Client Metadata is expected as part of the respective RPCs.
         """
-    
+
         # initialise the return value
         return_value: ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses = None
-    
+
         # TODO:
         #   Add implementation of Simulation for property FCPAffectedByMetadata_ValveIdentifier here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses(
                 **default_dict['Get_FCPAffectedByMetadata_ValveIdentifier_Responses']
             )
-    
+
         return return_value

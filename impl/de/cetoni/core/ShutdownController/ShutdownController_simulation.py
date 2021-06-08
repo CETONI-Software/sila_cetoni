@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Shutdown Controller*
 
@@ -98,24 +98,24 @@ class ShutdownControllerSimulation:
         """
         Executes the observable command "Shutdown"
             Initiates the shutdown routine. If no errors occured during the shutdown process the server should be considered ready to be physically shutdown (i.e. the device can be shut down/powered off).
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A command confirmation object with the following information:
             commandId: A command id with which this observable command can be referenced in future calls
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
-    
+
         # initialise default values
         #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
         lifetime_of_execution: silaFW_pb2.Duration = None
-    
+
         # TODO:
         #   Execute the actual command
         #   Optional: Generate a lifetime_of_execution
-    
+
         # respond with UUID and lifetime of execution
         command_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
         if lifetime_of_execution is not None:
@@ -127,16 +127,16 @@ class ShutdownControllerSimulation:
             return silaFW_pb2.CommandConfirmation(
                 commandExecutionUUID=command_uuid
             )
-    
+
     def Shutdown_Info(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.ExecutionInfo:
         """
         Returns execution information regarding the command call :meth:`~.Shutdown`.
-    
+
         :param request: A request object with the following properties
             commandId: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: An ExecutionInfo response stream for the command with the following fields:
             commandStatus: Status of the command (enumeration)
             progressInfo: Information on the progress of the command (0 to 1)
@@ -145,10 +145,10 @@ class ShutdownControllerSimulation:
         """
         # Get the UUID of the command
         command_uuid = request.value
-    
+
         # Get the current state
         execution_info = self._get_command_state(command_uuid=command_uuid)
-    
+
         # construct the initial return dictionary in case while is not executed
         return_values = {'commandStatus': execution_info.commandStatus}
         if execution_info.HasField('progressInfo'):
@@ -157,7 +157,7 @@ class ShutdownControllerSimulation:
             return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
         if execution_info.HasField('updatedLifetimeOfExecution'):
             return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
-    
+
         # we loop only as long as the command is running
         while execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.waiting \
                 or execution_info.commandStatus == silaFW_pb2.ExecutionInfo.CommandStatus.running:
@@ -171,10 +171,10 @@ class ShutdownControllerSimulation:
             #       * Determine the progress (progressInfo)
             #       * Determine the estimated remaining time
             #       * Update the Lifetime of execution
-    
+
             # Update all values
             execution_info = self._get_command_state(command_uuid=command_uuid)
-    
+
             # construct the return dictionary
             return_values = {'commandStatus': execution_info.commandStatus}
             if execution_info.HasField('progressInfo'):
@@ -183,45 +183,45 @@ class ShutdownControllerSimulation:
                 return_values['estimatedRemainingTime'] = execution_info.estimatedRemainingTime
             if execution_info.HasField('updatedLifetimeOfExecution'):
                 return_values['updatedLifetimeOfExecution'] = execution_info.updatedLifetimeOfExecution
-    
+
             yield silaFW_pb2.ExecutionInfo(**return_values)
-    
+
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
         else:
             # one last time yield the status
             yield silaFW_pb2.ExecutionInfo(**return_values)
-    
+
     def Shutdown_Result(self, request, context: grpc.ServicerContext) \
             -> ShutdownController_pb2.Shutdown_Responses:
         """
         Returns the final result of the command call :meth:`~.Shutdown`.
-    
+
         :param request: A request object with the following properties
             CommandExecutionUUID: The UUID of the command executed.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value: ShutdownController_pb2.Shutdown_Responses = None
-    
+
         # Get the UUID of the command
         command_uuid = request.value
-    
+
         # TODO:
         #   Add implementation of Simulation for command Shutdown here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ShutdownController_pb2.Shutdown_Responses(
                 **default_dict['Shutdown_Responses']
             )
-    
-        return return_value
-    
 
-    
+        return return_value
+
+
+

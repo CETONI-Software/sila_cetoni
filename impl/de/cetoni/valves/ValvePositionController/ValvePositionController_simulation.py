@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Valve Position Controller*
 
@@ -97,117 +97,117 @@ class ValvePositionControllerSimulation:
         """
         Executes the unobservable command "Switch To Position"
             Switches the valve to the specified position. The given position has to be less than the NumberOfPositions or else a ValidationError is thrown.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.Position (Position): The target position that the valve should be switched to.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command SwitchToPosition here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ValvePositionController_pb2.SwitchToPosition_Responses(
                 **default_dict['SwitchToPosition_Responses']
             )
-    
+
         return return_value
-    
-    
+
+
     def TogglePosition(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.TogglePosition_Responses:
         """
         Executes the unobservable command "Toogle Position"
             This command only applies for 2-way valves to toggle between its two different positions. If the command is called for any other valve type a ValveNotToggleable error is thrown.
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         # initialise the return value
         return_value = None
-    
+
         # TODO:
         #   Add implementation of Simulation for command TogglePosition here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ValvePositionController_pb2.TogglePosition_Responses(
                 **default_dict['TogglePosition_Responses']
             )
-    
+
         return return_value
-    
+
 
     def Get_NumberOfPositions(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.Get_NumberOfPositions_Responses:
         """
         Requests the unobservable property Number Of Positions
             The number of the valve positions available.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.NumberOfPositions (Number Of Positions): The number of the valve positions available.
         """
-    
+
         # initialise the return value
         return_value: ValvePositionController_pb2.Get_NumberOfPositions_Responses = None
-    
+
         # TODO:
         #   Add implementation of Simulation for property NumberOfPositions here and write the resulting response
         #   in return_value
-    
+
         # fallback to default
         if return_value is None:
             return_value = ValvePositionController_pb2.Get_NumberOfPositions_Responses(
                 **default_dict['Get_NumberOfPositions_Responses']
             )
-    
+
         return return_value
-    
+
     def Subscribe_Position(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.Subscribe_Position_Responses:
         """
         Requests the observable property Position
             The current logical valve position. This is a value between 0 and NumberOfPositions - 1.
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.Position (Position): The current logical valve position. This is a value between 0 and NumberOfPositions - 1.
         """
-    
+
         # initialise the return value
         return_value: ValvePositionController_pb2.Subscribe_Position_Responses = None
-    
+
         # we could use a timeout here if we wanted
         while True:
             # TODO:
             #   Add implementation of Simulation for property Position here and write the resulting
             #   response in return_value
-    
+
             # create the default value
             if return_value is None:
                 return_value = ValvePositionController_pb2.Subscribe_Position_Responses(
                     **default_dict['Subscribe_Position_Responses']
                 )
-    
-    
+
+
             yield return_value
-    
+
