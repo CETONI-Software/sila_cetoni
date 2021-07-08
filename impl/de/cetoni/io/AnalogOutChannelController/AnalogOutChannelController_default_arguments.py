@@ -16,13 +16,21 @@ default_dict = dict()
 
 
 default_dict['SetOutputValue_Parameters'] = {
-    'Value': silaFW_pb2.Real(value=0.0)
+    'Value': silaFW_pb2.Real(value=1.0)
 }
 
 default_dict['SetOutputValue_Responses'] = {
     
 }
 
+default_dict['Get_NumberOfChannels_Responses'] = {
+    'NumberOfChannels': silaFW_pb2.Integer(value=1)
+}
+
 default_dict['Subscribe_Value_Responses'] = {
-    'Value': silaFW_pb2.Real(value=0.0)
+    'Value': silaFW_pb2.Real(value=1.0)
+}
+
+default_dict['Get_FCPAffectedByMetadata_ChannelIndex_Responses'] = {
+    'AffectedCalls': [silaFW_pb2.String(value='default string')]
 }

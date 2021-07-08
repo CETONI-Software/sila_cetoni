@@ -42,6 +42,11 @@ class ControlLoopServiceStub(object):
                 request_serializer=ControlLoopService__pb2.StopControlLoop_Parameters.SerializeToString,
                 response_deserializer=ControlLoopService__pb2.StopControlLoop_Responses.FromString,
                 )
+        self.Get_NumberOfChannels = channel.unary_unary(
+                '/sila2.de.cetoni.controllers.controlloopservice.v1.ControlLoopService/Get_NumberOfChannels',
+                request_serializer=ControlLoopService__pb2.Get_NumberOfChannels_Parameters.SerializeToString,
+                response_deserializer=ControlLoopService__pb2.Get_NumberOfChannels_Responses.FromString,
+                )
         self.Subscribe_ControllerValue = channel.unary_stream(
                 '/sila2.de.cetoni.controllers.controlloopservice.v1.ControlLoopService/Subscribe_ControllerValue',
                 request_serializer=ControlLoopService__pb2.Subscribe_ControllerValue_Parameters.SerializeToString,
@@ -51,6 +56,11 @@ class ControlLoopServiceStub(object):
                 '/sila2.de.cetoni.controllers.controlloopservice.v1.ControlLoopService/Subscribe_SetPointValue',
                 request_serializer=ControlLoopService__pb2.Subscribe_SetPointValue_Parameters.SerializeToString,
                 response_deserializer=ControlLoopService__pb2.Subscribe_SetPointValue_Responses.FromString,
+                )
+        self.Get_FCPAffectedByMetadata_ChannelIndex = channel.unary_unary(
+                '/sila2.de.cetoni.controllers.controlloopservice.v1.ControlLoopService/Get_FCPAffectedByMetadata_ChannelIndex',
+                request_serializer=ControlLoopService__pb2.Get_FCPAffectedByMetadata_ChannelIndex_Parameters.SerializeToString,
+                response_deserializer=ControlLoopService__pb2.Get_FCPAffectedByMetadata_ChannelIndex_Responses.FromString,
                 )
 
 
@@ -95,6 +105,15 @@ class ControlLoopServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Get_NumberOfChannels(self, request, context):
+        """Number Of Channels
+        The number of controller channels. This value is 0-indexed, i.e. the first channel has index 0, the second one index 1
+        and so on.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def Subscribe_ControllerValue(self, request, context):
         """Controller Value
         The actual value from the Device
@@ -106,6 +125,14 @@ class ControlLoopServiceServicer(object):
     def Subscribe_SetPointValue(self, request, context):
         """Set Point Value
         The current SetPoint value of the Device
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Get_FCPAffectedByMetadata_ChannelIndex(self, request, context):
+        """Channel Index
+        The index of the channel that should be used.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -139,6 +166,11 @@ def add_ControlLoopServiceServicer_to_server(servicer, server):
                     request_deserializer=ControlLoopService__pb2.StopControlLoop_Parameters.FromString,
                     response_serializer=ControlLoopService__pb2.StopControlLoop_Responses.SerializeToString,
             ),
+            'Get_NumberOfChannels': grpc.unary_unary_rpc_method_handler(
+                    servicer.Get_NumberOfChannels,
+                    request_deserializer=ControlLoopService__pb2.Get_NumberOfChannels_Parameters.FromString,
+                    response_serializer=ControlLoopService__pb2.Get_NumberOfChannels_Responses.SerializeToString,
+            ),
             'Subscribe_ControllerValue': grpc.unary_stream_rpc_method_handler(
                     servicer.Subscribe_ControllerValue,
                     request_deserializer=ControlLoopService__pb2.Subscribe_ControllerValue_Parameters.FromString,
@@ -148,6 +180,11 @@ def add_ControlLoopServiceServicer_to_server(servicer, server):
                     servicer.Subscribe_SetPointValue,
                     request_deserializer=ControlLoopService__pb2.Subscribe_SetPointValue_Parameters.FromString,
                     response_serializer=ControlLoopService__pb2.Subscribe_SetPointValue_Responses.SerializeToString,
+            ),
+            'Get_FCPAffectedByMetadata_ChannelIndex': grpc.unary_unary_rpc_method_handler(
+                    servicer.Get_FCPAffectedByMetadata_ChannelIndex,
+                    request_deserializer=ControlLoopService__pb2.Get_FCPAffectedByMetadata_ChannelIndex_Parameters.FromString,
+                    response_serializer=ControlLoopService__pb2.Get_FCPAffectedByMetadata_ChannelIndex_Responses.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -247,6 +284,23 @@ class ControlLoopService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def Get_NumberOfChannels(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.controllers.controlloopservice.v1.ControlLoopService/Get_NumberOfChannels',
+            ControlLoopService__pb2.Get_NumberOfChannels_Parameters.SerializeToString,
+            ControlLoopService__pb2.Get_NumberOfChannels_Responses.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def Subscribe_ControllerValue(request,
             target,
             options=(),
@@ -277,5 +331,22 @@ class ControlLoopService(object):
         return grpc.experimental.unary_stream(request, target, '/sila2.de.cetoni.controllers.controlloopservice.v1.ControlLoopService/Subscribe_SetPointValue',
             ControlLoopService__pb2.Subscribe_SetPointValue_Parameters.SerializeToString,
             ControlLoopService__pb2.Subscribe_SetPointValue_Responses.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Get_FCPAffectedByMetadata_ChannelIndex(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.controllers.controlloopservice.v1.ControlLoopService/Get_FCPAffectedByMetadata_ChannelIndex',
+            ControlLoopService__pb2.Get_FCPAffectedByMetadata_ChannelIndex_Parameters.SerializeToString,
+            ControlLoopService__pb2.Get_FCPAffectedByMetadata_ChannelIndex_Responses.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

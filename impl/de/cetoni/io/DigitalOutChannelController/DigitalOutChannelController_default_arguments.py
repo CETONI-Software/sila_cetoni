@@ -25,6 +25,14 @@ default_dict['SetOutput_Responses'] = {
     
 }
 
+default_dict['Get_NumberOfChannels_Responses'] = {
+    'NumberOfChannels': silaFW_pb2.Integer(value=1)
+}
+
 default_dict['Subscribe_State_Responses'] = {
     'State': pb2.DataType_State(**default_dict['DataType_State'])
+}
+
+default_dict['Get_FCPAffectedByMetadata_ChannelIndex_Responses'] = {
+    'AffectedCalls': [silaFW_pb2.String(value='default string')]
 }

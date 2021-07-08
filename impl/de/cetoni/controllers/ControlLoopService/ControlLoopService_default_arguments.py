@@ -16,7 +16,7 @@ default_dict = dict()
 
 
 default_dict['WriteSetPoint_Parameters'] = {
-    'SetPointValue': silaFW_pb2.Real(value=0.0)
+    'SetPointValue': silaFW_pb2.Real(value=1.0)
 }
 
 default_dict['WriteSetPoint_Responses'] = {
@@ -39,10 +39,18 @@ default_dict['StopControlLoop_Responses'] = {
     
 }
 
+default_dict['Get_NumberOfChannels_Responses'] = {
+    'NumberOfChannels': silaFW_pb2.Integer(value=1)
+}
+
 default_dict['Subscribe_ControllerValue_Responses'] = {
-    'ControllerValue': silaFW_pb2.Real(value=0.0)
+    'ControllerValue': silaFW_pb2.Real(value=1.0)
 }
 
 default_dict['Subscribe_SetPointValue_Responses'] = {
-    'SetPointValue': silaFW_pb2.Real(value=0.0)
+    'SetPointValue': silaFW_pb2.Real(value=1.0)
+}
+
+default_dict['Get_FCPAffectedByMetadata_ChannelIndex_Responses'] = {
+    'AffectedCalls': [silaFW_pb2.String(value='default string')]
 }
