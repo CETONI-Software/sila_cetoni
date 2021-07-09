@@ -66,7 +66,8 @@ class BatteryServer(SiLA2Server):
             vendor_url="cetoni.de",
             ip=LOCAL_IP, port=int(cmd_args.port),
             key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert,
-            simulation_mode=simulation_mode
+            simulation_mode=simulation_mode,
+            max_worker_threads=100
         )
 
         self.simulation_mode = simulation_mode
