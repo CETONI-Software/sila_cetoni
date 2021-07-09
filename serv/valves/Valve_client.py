@@ -304,19 +304,19 @@ class ValveClient(SiLA2Client):
         return response
 
 
-    def Get_FCPAffectedByMetadata_ValveIdentifier(self) \
-            -> ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses:
-        """Wrapper to get property FCPAffectedByMetadata_ValveIdentifier from the server."""
+    def Get_FCPAffectedByMetadata_ValveIndex(self) \
+            -> ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIndex_Responses:
+        """Wrapper to get property FCPAffectedByMetadata_ValveIndex from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
 
-        logging.debug("Reading unobservable property FCPAffectedByMetadata_ValveIdentifier:")
+        logging.debug("Reading unobservable property FCPAffectedByMetadata_ValveIndex:")
         try:
-            response = self.ValveGatewayService_stub.Get_FCPAffectedByMetadata_ValveIdentifier(
-                ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Parameters()
+            response = self.ValveGatewayService_stub.Get_FCPAffectedByMetadata_ValveIndex(
+                ValveGatewayService_pb2.Get_FCPAffectedByMetadata_ValveIndex_Parameters()
             )
             logging.debug(
-                'Get_FCPAffectedByMetadata_ValveIdentifier response: {response}'.format(
+                'Get_FCPAffectedByMetadata_ValveIndex response: {response}'.format(
                     response=response
                 )
             )

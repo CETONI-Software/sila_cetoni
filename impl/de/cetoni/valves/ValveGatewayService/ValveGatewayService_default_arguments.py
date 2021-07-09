@@ -17,10 +17,10 @@ default_dict = dict()
 
 
 
-default_dict['Get_ValveIdentifiers_Responses'] = {
-    'ValveIdentifiers': [silaFW_pb2.String(value='default string')]
+default_dict['Get_NumberOfValves_Responses'] = {
+    'NumberOfValves': silaFW_pb2.Integer(value=1)
 }
 
-default_dict['Get_FCPAffectedByMetadata_ValveIdentifier_Responses'] = {
+default_dict['Get_FCPAffectedByMetadata_ValveIndex_Responses'] = {
     'AffectedCalls': [silaFW_pb2.String(value='default string')]
 }

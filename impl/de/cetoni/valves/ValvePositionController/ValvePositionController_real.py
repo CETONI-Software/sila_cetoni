@@ -49,7 +49,7 @@ from .gRPC import ValvePositionController_pb2 as ValvePositionController_pb2
 from .ValvePositionController_default_arguments import default_dict
 
 # import valve gateway feature
-from impl.de.cetoni.valves.ValveGatewayService import ValveGatewayService_servicer as ValveGatewayService
+from impl.de.cetoni.valves.ValveGatewayService.ValveGatewayService_servicer import ValveGatewayService
 
 # import qmixsdk
 from qmixsdk.qmixvalve import Valve
@@ -69,7 +69,7 @@ class ValvePositionControllerReal:
         self.valve = valve
         self.valve_gateway: ValveGatewayService = valve_gateway
 
-    def _get_valve(self, invocation_metadata) -> Valve:
+    def _get_valve(self, invocation_metadata, type: str) -> Valve:
         """
         Get the valve that the calling command/property should operate on.
         This returns either this Feature's specific valve or the valve that is identified
@@ -77,6 +77,7 @@ class ValvePositionControllerReal:
 
         :param invocation_metadata: The metadata that contains a valve identifier which
                                     can be mapped to a qmixvalve.Valve object
+        :param type: Either "Command" or "Property"
 
         :returns: A valve that the calling command/property can operate on
         :rtype: Valve
@@ -85,7 +86,7 @@ class ValvePositionControllerReal:
         if self.valve is not None:
             return self.valve
 
-        return self.valve_gateway.get_valve(invocation_metadata)
+        return self.valve_gateway.get_valve(invocation_metadata, type)
 
     def SwitchToPosition(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.SwitchToPosition_Responses:
@@ -101,7 +102,7 @@ class ValvePositionControllerReal:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        valve = self._get_valve(context.invocation_metadata())
+        valve = self._get_valve(context.invocation_metadata(), "Command")
 
         requested_valve_pos = request.Position.value
         num_of_valve_pos = valve.number_of_valve_positions()
@@ -131,7 +132,7 @@ class ValvePositionControllerReal:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        valve = self._get_valve(context.invocation_metadata())
+        valve = self._get_valve(context.invocation_metadata(), "Command")
 
         if valve.number_of_valve_positions() > 2:
             raise ValveNotToggleableError()
@@ -158,7 +159,7 @@ class ValvePositionControllerReal:
             request.NumberOfPositions (Number Of Positions): The number of the valve positions available.
         """
 
-        valve = self._get_valve(context.invocation_metadata())
+        valve = self._get_valve(context.invocation_metadata(), "Property")
 
         return ValvePositionController_pb2.Get_NumberOfPositions_Responses(
             NumberOfPositions=silaFW_pb2.Integer(value=valve.number_of_valve_positions())
@@ -177,7 +178,7 @@ class ValvePositionControllerReal:
             request.Position (Position): The current logical valve position. This is a value between 0 and NumberOfPositions - 1.
         """
 
-        valve = self._get_valve(context.invocation_metadata())
+        valve = self._get_valve(context.invocation_metadata(), "Property")
 
         while True:
             try:

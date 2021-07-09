@@ -20,6 +20,9 @@ import functools
 
 from typing import Tuple
 
+# import SiLA2 library modules
+from sila2lib.framework import SiLAFramework_pb2 as silaFW_pb2
+
 # import SiLA errors
 from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType
 
@@ -32,10 +35,10 @@ class InvalidChannelIndex(Exception):
 
 def channel_index(pb2, metadata_key):
     """
-    A class decorator that adds helper functions to retrieve the channel index from the
-    invocation metadata of a Command call or Property read.
-    The decorated class needs to have a public member called `channels` which contains
-    a list of all channels that can be used by this class.
+    A class decorator that adds helper functions for server side implementation
+    classes to retrieve the channel index from the invocation metadata of a Command
+    call or Property read. The decorated class needs to have a public member called
+    `channels` which contains a list of all channels that can be used by this class.
 
     From the functions added by this decorator only one is intended to be used directly: `_get_channel`.
     It receives the `metadata` as first argument and as the second argument a string
@@ -96,3 +99,32 @@ def channel_index(pb2, metadata_key):
             return cls
         return wrapper_channel_index(cls)
     return decorator_channel_index
+
+
+def channel_index_serializer(pb2):
+    """
+    A class decorator that adds a helper function for client classes to convert
+    a channel index (given as an int) to the corresponding metadata object for the
+    RPC.
+    The added function `_serialize_channel_id` has to be called with the channel
+    index (as an int), e.g.:
+        >>> def MyCommand(self, channel_id: int):
+                parameter = ...
+                metadata = ((METADATA_IDENTIFIER, self._serialize_channel_id(channel_id)),)
+                response = self.stub.MyCommand(parameter, metadata)
+    """
+    def _serialize_channel_id(self, channel_id: int) -> bytes:
+        """
+        Converts the given Channel Index from its string representation into
+        a serialized protobuf message
+        """
+        return pb2.Metadata_ChannelIndex(
+            ChannelIndex=silaFW_pb2.Integer(value=channel_id)).SerializeToString()
+
+    def decorator_channel_index_serializer(cls):
+        @functools.wraps(cls)
+        def wrapper_channel_index_serializer(cls):
+            setattr(cls, '_serialize_channel_id', _serialize_channel_id)
+            return cls
+        return wrapper_channel_index_serializer(cls)
+    return decorator_channel_index_serializer

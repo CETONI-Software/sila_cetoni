@@ -16,15 +16,15 @@ class ValveGatewayServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Get_ValveIdentifiers = channel.unary_unary(
-                '/sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService/Get_ValveIdentifiers',
-                request_serializer=ValveGatewayService__pb2.Get_ValveIdentifiers_Parameters.SerializeToString,
-                response_deserializer=ValveGatewayService__pb2.Get_ValveIdentifiers_Responses.FromString,
+        self.Get_NumberOfValves = channel.unary_unary(
+                '/sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService/Get_NumberOfValves',
+                request_serializer=ValveGatewayService__pb2.Get_NumberOfValves_Parameters.SerializeToString,
+                response_deserializer=ValveGatewayService__pb2.Get_NumberOfValves_Responses.FromString,
                 )
-        self.Get_FCPAffectedByMetadata_ValveIdentifier = channel.unary_unary(
-                '/sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService/Get_FCPAffectedByMetadata_ValveIdentifier',
-                request_serializer=ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Parameters.SerializeToString,
-                response_deserializer=ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses.FromString,
+        self.Get_FCPAffectedByMetadata_ValveIndex = channel.unary_unary(
+                '/sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService/Get_FCPAffectedByMetadata_ValveIndex',
+                request_serializer=ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIndex_Parameters.SerializeToString,
+                response_deserializer=ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIndex_Responses.FromString,
                 )
 
 
@@ -33,17 +33,18 @@ class ValveGatewayServiceServicer(object):
     Provides means to access individual valves of a valve terminal
     """
 
-    def Get_ValveIdentifiers(self, request, context):
-        """Valve Identifiers
-        A list of all possible valve names (identifiers) of this device
+    def Get_NumberOfValves(self, request, context):
+        """Number Of Valves
+        The number of valves of a terminal
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def Get_FCPAffectedByMetadata_ValveIdentifier(self, request, context):
-        """Valve Identifier
-        The identifier of a single valve of a valve terminal
+    def Get_FCPAffectedByMetadata_ValveIndex(self, request, context):
+        """Valve Index
+        The index of a single valve of a valve terminal. This value is 0-indexed, i.e. the first valve has index 0, the second
+        one index 1 and so on.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -52,15 +53,15 @@ class ValveGatewayServiceServicer(object):
 
 def add_ValveGatewayServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Get_ValveIdentifiers': grpc.unary_unary_rpc_method_handler(
-                    servicer.Get_ValveIdentifiers,
-                    request_deserializer=ValveGatewayService__pb2.Get_ValveIdentifiers_Parameters.FromString,
-                    response_serializer=ValveGatewayService__pb2.Get_ValveIdentifiers_Responses.SerializeToString,
+            'Get_NumberOfValves': grpc.unary_unary_rpc_method_handler(
+                    servicer.Get_NumberOfValves,
+                    request_deserializer=ValveGatewayService__pb2.Get_NumberOfValves_Parameters.FromString,
+                    response_serializer=ValveGatewayService__pb2.Get_NumberOfValves_Responses.SerializeToString,
             ),
-            'Get_FCPAffectedByMetadata_ValveIdentifier': grpc.unary_unary_rpc_method_handler(
-                    servicer.Get_FCPAffectedByMetadata_ValveIdentifier,
-                    request_deserializer=ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Parameters.FromString,
-                    response_serializer=ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses.SerializeToString,
+            'Get_FCPAffectedByMetadata_ValveIndex': grpc.unary_unary_rpc_method_handler(
+                    servicer.Get_FCPAffectedByMetadata_ValveIndex,
+                    request_deserializer=ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIndex_Parameters.FromString,
+                    response_serializer=ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIndex_Responses.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -75,7 +76,7 @@ class ValveGatewayService(object):
     """
 
     @staticmethod
-    def Get_ValveIdentifiers(request,
+    def Get_NumberOfValves(request,
             target,
             options=(),
             channel_credentials=None,
@@ -85,14 +86,14 @@ class ValveGatewayService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService/Get_ValveIdentifiers',
-            ValveGatewayService__pb2.Get_ValveIdentifiers_Parameters.SerializeToString,
-            ValveGatewayService__pb2.Get_ValveIdentifiers_Responses.FromString,
+        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService/Get_NumberOfValves',
+            ValveGatewayService__pb2.Get_NumberOfValves_Parameters.SerializeToString,
+            ValveGatewayService__pb2.Get_NumberOfValves_Responses.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def Get_FCPAffectedByMetadata_ValveIdentifier(request,
+    def Get_FCPAffectedByMetadata_ValveIndex(request,
             target,
             options=(),
             channel_credentials=None,
@@ -102,8 +103,8 @@ class ValveGatewayService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService/Get_FCPAffectedByMetadata_ValveIdentifier',
-            ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Parameters.SerializeToString,
-            ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIdentifier_Responses.FromString,
+        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService/Get_FCPAffectedByMetadata_ValveIndex',
+            ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIndex_Parameters.SerializeToString,
+            ValveGatewayService__pb2.Get_FCPAffectedByMetadata_ValveIndex_Responses.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -20,16 +20,16 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x19ValveGatewayService.proto\x12-sila2.de.cetoni.valves.valvegatewayservice.v1\x1a\x13SiLAFramework.proto\"!\n\x1fGet_ValveIdentifiers_Parameters\"Z\n\x1eGet_ValveIdentifiers_Responses\x12\x38\n\x10ValveIdentifiers\x18\x01 \x03(\x0b\x32\x1e.sila2.org.silastandard.String\"6\n4Get_FCPAffectedByMetadata_ValveIdentifier_Parameters\"l\n3Get_FCPAffectedByMetadata_ValveIdentifier_Responses\x12\x35\n\rAffectedCalls\x18\x01 \x03(\x0b\x32\x1e.sila2.org.silastandard.String\"S\n\x18Metadata_ValveIdentifier\x12\x37\n\x0fValveIdentifier\x18\x01 \x01(\x0b\x32\x1e.sila2.org.silastandard.String2\xc8\x03\n\x13ValveGatewayService\x12\xb7\x01\n\x14Get_ValveIdentifiers\x12N.sila2.de.cetoni.valves.valvegatewayservice.v1.Get_ValveIdentifiers_Parameters\x1aM.sila2.de.cetoni.valves.valvegatewayservice.v1.Get_ValveIdentifiers_Responses\"\x00\x12\xf6\x01\n)Get_FCPAffectedByMetadata_ValveIdentifier\x12\x63.sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIdentifier_Parameters\x1a\x62.sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIdentifier_Responses\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x19ValveGatewayService.proto\x12-sila2.de.cetoni.valves.valvegatewayservice.v1\x1a\x13SiLAFramework.proto\"\x1f\n\x1dGet_NumberOfValves_Parameters\"W\n\x1cGet_NumberOfValves_Responses\x12\x37\n\x0eNumberOfValves\x18\x01 \x01(\x0b\x32\x1f.sila2.org.silastandard.Integer\"1\n/Get_FCPAffectedByMetadata_ValveIndex_Parameters\"g\n.Get_FCPAffectedByMetadata_ValveIndex_Responses\x12\x35\n\rAffectedCalls\x18\x01 \x03(\x0b\x32\x1e.sila2.org.silastandard.String\"J\n\x13Metadata_ValveIndex\x12\x33\n\nValveIndex\x18\x01 \x01(\x0b\x32\x1f.sila2.org.silastandard.Integer2\xb3\x03\n\x13ValveGatewayService\x12\xb1\x01\n\x12Get_NumberOfValves\x12L.sila2.de.cetoni.valves.valvegatewayservice.v1.Get_NumberOfValves_Parameters\x1aK.sila2.de.cetoni.valves.valvegatewayservice.v1.Get_NumberOfValves_Responses\"\x00\x12\xe7\x01\n$Get_FCPAffectedByMetadata_ValveIndex\x12^.sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIndex_Parameters\x1a].sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIndex_Responses\"\x00\x62\x06proto3'
   ,
   dependencies=[SiLAFramework__pb2.DESCRIPTOR,])
 
 
 
 
-_GET_VALVEIDENTIFIERS_PARAMETERS = _descriptor.Descriptor(
-  name='Get_ValveIdentifiers_Parameters',
-  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_ValveIdentifiers_Parameters',
+_GET_NUMBEROFVALVES_PARAMETERS = _descriptor.Descriptor(
+  name='Get_NumberOfValves_Parameters',
+  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_NumberOfValves_Parameters',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -48,109 +48,20 @@ _GET_VALVEIDENTIFIERS_PARAMETERS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=97,
-  serialized_end=130,
+  serialized_end=128,
 )
 
 
-_GET_VALVEIDENTIFIERS_RESPONSES = _descriptor.Descriptor(
-  name='Get_ValveIdentifiers_Responses',
-  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_ValveIdentifiers_Responses',
+_GET_NUMBEROFVALVES_RESPONSES = _descriptor.Descriptor(
+  name='Get_NumberOfValves_Responses',
+  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_NumberOfValves_Responses',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ValveIdentifiers', full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_ValveIdentifiers_Responses.ValveIdentifiers', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=132,
-  serialized_end=222,
-)
-
-
-_GET_FCPAFFECTEDBYMETADATA_VALVEIDENTIFIER_PARAMETERS = _descriptor.Descriptor(
-  name='Get_FCPAffectedByMetadata_ValveIdentifier_Parameters',
-  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIdentifier_Parameters',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=224,
-  serialized_end=278,
-)
-
-
-_GET_FCPAFFECTEDBYMETADATA_VALVEIDENTIFIER_RESPONSES = _descriptor.Descriptor(
-  name='Get_FCPAffectedByMetadata_ValveIdentifier_Responses',
-  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIdentifier_Responses',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='AffectedCalls', full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIdentifier_Responses.AffectedCalls', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=280,
-  serialized_end=388,
-)
-
-
-_METADATA_VALVEIDENTIFIER = _descriptor.Descriptor(
-  name='Metadata_ValveIdentifier',
-  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Metadata_ValveIdentifier',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ValveIdentifier', full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Metadata_ValveIdentifier.ValveIdentifier', index=0,
+      name='NumberOfValves', full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_NumberOfValves_Responses.NumberOfValves', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -168,54 +79,143 @@ _METADATA_VALVEIDENTIFIER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=390,
-  serialized_end=473,
+  serialized_start=130,
+  serialized_end=217,
 )
 
-_GET_VALVEIDENTIFIERS_RESPONSES.fields_by_name['ValveIdentifiers'].message_type = SiLAFramework__pb2._STRING
-_GET_FCPAFFECTEDBYMETADATA_VALVEIDENTIFIER_RESPONSES.fields_by_name['AffectedCalls'].message_type = SiLAFramework__pb2._STRING
-_METADATA_VALVEIDENTIFIER.fields_by_name['ValveIdentifier'].message_type = SiLAFramework__pb2._STRING
-DESCRIPTOR.message_types_by_name['Get_ValveIdentifiers_Parameters'] = _GET_VALVEIDENTIFIERS_PARAMETERS
-DESCRIPTOR.message_types_by_name['Get_ValveIdentifiers_Responses'] = _GET_VALVEIDENTIFIERS_RESPONSES
-DESCRIPTOR.message_types_by_name['Get_FCPAffectedByMetadata_ValveIdentifier_Parameters'] = _GET_FCPAFFECTEDBYMETADATA_VALVEIDENTIFIER_PARAMETERS
-DESCRIPTOR.message_types_by_name['Get_FCPAffectedByMetadata_ValveIdentifier_Responses'] = _GET_FCPAFFECTEDBYMETADATA_VALVEIDENTIFIER_RESPONSES
-DESCRIPTOR.message_types_by_name['Metadata_ValveIdentifier'] = _METADATA_VALVEIDENTIFIER
+
+_GET_FCPAFFECTEDBYMETADATA_VALVEINDEX_PARAMETERS = _descriptor.Descriptor(
+  name='Get_FCPAffectedByMetadata_ValveIndex_Parameters',
+  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIndex_Parameters',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=219,
+  serialized_end=268,
+)
+
+
+_GET_FCPAFFECTEDBYMETADATA_VALVEINDEX_RESPONSES = _descriptor.Descriptor(
+  name='Get_FCPAffectedByMetadata_ValveIndex_Responses',
+  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIndex_Responses',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='AffectedCalls', full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIndex_Responses.AffectedCalls', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=270,
+  serialized_end=373,
+)
+
+
+_METADATA_VALVEINDEX = _descriptor.Descriptor(
+  name='Metadata_ValveIndex',
+  full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Metadata_ValveIndex',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='ValveIndex', full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.Metadata_ValveIndex.ValveIndex', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=375,
+  serialized_end=449,
+)
+
+_GET_NUMBEROFVALVES_RESPONSES.fields_by_name['NumberOfValves'].message_type = SiLAFramework__pb2._INTEGER
+_GET_FCPAFFECTEDBYMETADATA_VALVEINDEX_RESPONSES.fields_by_name['AffectedCalls'].message_type = SiLAFramework__pb2._STRING
+_METADATA_VALVEINDEX.fields_by_name['ValveIndex'].message_type = SiLAFramework__pb2._INTEGER
+DESCRIPTOR.message_types_by_name['Get_NumberOfValves_Parameters'] = _GET_NUMBEROFVALVES_PARAMETERS
+DESCRIPTOR.message_types_by_name['Get_NumberOfValves_Responses'] = _GET_NUMBEROFVALVES_RESPONSES
+DESCRIPTOR.message_types_by_name['Get_FCPAffectedByMetadata_ValveIndex_Parameters'] = _GET_FCPAFFECTEDBYMETADATA_VALVEINDEX_PARAMETERS
+DESCRIPTOR.message_types_by_name['Get_FCPAffectedByMetadata_ValveIndex_Responses'] = _GET_FCPAFFECTEDBYMETADATA_VALVEINDEX_RESPONSES
+DESCRIPTOR.message_types_by_name['Metadata_ValveIndex'] = _METADATA_VALVEINDEX
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-Get_ValveIdentifiers_Parameters = _reflection.GeneratedProtocolMessageType('Get_ValveIdentifiers_Parameters', (_message.Message,), {
-  'DESCRIPTOR' : _GET_VALVEIDENTIFIERS_PARAMETERS,
+Get_NumberOfValves_Parameters = _reflection.GeneratedProtocolMessageType('Get_NumberOfValves_Parameters', (_message.Message,), {
+  'DESCRIPTOR' : _GET_NUMBEROFVALVES_PARAMETERS,
   '__module__' : 'ValveGatewayService_pb2'
-  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Get_ValveIdentifiers_Parameters)
+  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Get_NumberOfValves_Parameters)
   })
-_sym_db.RegisterMessage(Get_ValveIdentifiers_Parameters)
+_sym_db.RegisterMessage(Get_NumberOfValves_Parameters)
 
-Get_ValveIdentifiers_Responses = _reflection.GeneratedProtocolMessageType('Get_ValveIdentifiers_Responses', (_message.Message,), {
-  'DESCRIPTOR' : _GET_VALVEIDENTIFIERS_RESPONSES,
+Get_NumberOfValves_Responses = _reflection.GeneratedProtocolMessageType('Get_NumberOfValves_Responses', (_message.Message,), {
+  'DESCRIPTOR' : _GET_NUMBEROFVALVES_RESPONSES,
   '__module__' : 'ValveGatewayService_pb2'
-  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Get_ValveIdentifiers_Responses)
+  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Get_NumberOfValves_Responses)
   })
-_sym_db.RegisterMessage(Get_ValveIdentifiers_Responses)
+_sym_db.RegisterMessage(Get_NumberOfValves_Responses)
 
-Get_FCPAffectedByMetadata_ValveIdentifier_Parameters = _reflection.GeneratedProtocolMessageType('Get_FCPAffectedByMetadata_ValveIdentifier_Parameters', (_message.Message,), {
-  'DESCRIPTOR' : _GET_FCPAFFECTEDBYMETADATA_VALVEIDENTIFIER_PARAMETERS,
+Get_FCPAffectedByMetadata_ValveIndex_Parameters = _reflection.GeneratedProtocolMessageType('Get_FCPAffectedByMetadata_ValveIndex_Parameters', (_message.Message,), {
+  'DESCRIPTOR' : _GET_FCPAFFECTEDBYMETADATA_VALVEINDEX_PARAMETERS,
   '__module__' : 'ValveGatewayService_pb2'
-  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIdentifier_Parameters)
+  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIndex_Parameters)
   })
-_sym_db.RegisterMessage(Get_FCPAffectedByMetadata_ValveIdentifier_Parameters)
+_sym_db.RegisterMessage(Get_FCPAffectedByMetadata_ValveIndex_Parameters)
 
-Get_FCPAffectedByMetadata_ValveIdentifier_Responses = _reflection.GeneratedProtocolMessageType('Get_FCPAffectedByMetadata_ValveIdentifier_Responses', (_message.Message,), {
-  'DESCRIPTOR' : _GET_FCPAFFECTEDBYMETADATA_VALVEIDENTIFIER_RESPONSES,
+Get_FCPAffectedByMetadata_ValveIndex_Responses = _reflection.GeneratedProtocolMessageType('Get_FCPAffectedByMetadata_ValveIndex_Responses', (_message.Message,), {
+  'DESCRIPTOR' : _GET_FCPAFFECTEDBYMETADATA_VALVEINDEX_RESPONSES,
   '__module__' : 'ValveGatewayService_pb2'
-  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIdentifier_Responses)
+  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Get_FCPAffectedByMetadata_ValveIndex_Responses)
   })
-_sym_db.RegisterMessage(Get_FCPAffectedByMetadata_ValveIdentifier_Responses)
+_sym_db.RegisterMessage(Get_FCPAffectedByMetadata_ValveIndex_Responses)
 
-Metadata_ValveIdentifier = _reflection.GeneratedProtocolMessageType('Metadata_ValveIdentifier', (_message.Message,), {
-  'DESCRIPTOR' : _METADATA_VALVEIDENTIFIER,
+Metadata_ValveIndex = _reflection.GeneratedProtocolMessageType('Metadata_ValveIndex', (_message.Message,), {
+  'DESCRIPTOR' : _METADATA_VALVEINDEX,
   '__module__' : 'ValveGatewayService_pb2'
-  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Metadata_ValveIdentifier)
+  # @@protoc_insertion_point(class_scope:sila2.de.cetoni.valves.valvegatewayservice.v1.Metadata_ValveIndex)
   })
-_sym_db.RegisterMessage(Metadata_ValveIdentifier)
+_sym_db.RegisterMessage(Metadata_ValveIndex)
 
 
 
@@ -226,26 +226,26 @@ _VALVEGATEWAYSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=476,
-  serialized_end=932,
+  serialized_start=452,
+  serialized_end=887,
   methods=[
   _descriptor.MethodDescriptor(
-    name='Get_ValveIdentifiers',
-    full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService.Get_ValveIdentifiers',
+    name='Get_NumberOfValves',
+    full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService.Get_NumberOfValves',
     index=0,
     containing_service=None,
-    input_type=_GET_VALVEIDENTIFIERS_PARAMETERS,
-    output_type=_GET_VALVEIDENTIFIERS_RESPONSES,
+    input_type=_GET_NUMBEROFVALVES_PARAMETERS,
+    output_type=_GET_NUMBEROFVALVES_RESPONSES,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='Get_FCPAffectedByMetadata_ValveIdentifier',
-    full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService.Get_FCPAffectedByMetadata_ValveIdentifier',
+    name='Get_FCPAffectedByMetadata_ValveIndex',
+    full_name='sila2.de.cetoni.valves.valvegatewayservice.v1.ValveGatewayService.Get_FCPAffectedByMetadata_ValveIndex',
     index=1,
     containing_service=None,
-    input_type=_GET_FCPAFFECTEDBYMETADATA_VALVEIDENTIFIER_PARAMETERS,
-    output_type=_GET_FCPAFFECTEDBYMETADATA_VALVEIDENTIFIER_RESPONSES,
+    input_type=_GET_FCPAFFECTEDBYMETADATA_VALVEINDEX_PARAMETERS,
+    output_type=_GET_FCPAFFECTEDBYMETADATA_VALVEINDEX_RESPONSES,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
