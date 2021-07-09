@@ -84,7 +84,7 @@ class ContiflowServer(neMESYSServer):
         )
         self.add_feature(feature_id='de.cetoni/pumps.contiflowpumps/ContinuousFlowConfigurationService/v1',
                          servicer=self.ContinuousFlowConfigurationService_servicer,
-                         data_path=data_path)
+                         meta_path=data_path)
         #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController
         self.ContinuousFlowInitializationController_servicer = \
             ContinuousFlowInitializationController(
@@ -97,7 +97,7 @@ class ContiflowServer(neMESYSServer):
         )
         self.add_feature(feature_id='de.cetoni/pumps.contiflowpumps/ContinuousFlowInitializationController/v1',
                          servicer=self.ContinuousFlowInitializationController_servicer,
-                         data_path=data_path)
+                         meta_path=data_path)
         #  Register de.cetoni.pumps.contiflowpumps.ContinuousFlowDosingService
         self.ContinuousFlowDosingService_servicer = ContinuousFlowDosingService(
                 pump=qmix_pump,
@@ -109,7 +109,7 @@ class ContiflowServer(neMESYSServer):
         )
         self.add_feature(feature_id='de.cetoni/pumps.contiflowpumps/ContinuousFlowDosingService/v1',
                          servicer=self.ContinuousFlowDosingService_servicer,
-                         data_path=data_path)
+                         meta_path=data_path)
 
         self.simulation_mode = simulation_mode
 

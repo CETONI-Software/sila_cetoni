@@ -89,7 +89,7 @@ class ValveServer(SiLA2Server):
         )
         self.add_feature(feature_id='de.cetoni/valves/ValveGatewayService/v1',
                          servicer=self.ValveGatewayService_servicer,
-                         data_path=data_path)
+                         meta_path=data_path)
         #  Register de.cetoni.valves.ValvePositionController
         self.ValvePositionController_servicer = ValvePositionController(
             valve_gateway=self.ValveGatewayService_servicer,
@@ -101,7 +101,7 @@ class ValveServer(SiLA2Server):
         )
         self.add_feature(feature_id='de.cetoni/valves/ValvePositionController/v1',
                          servicer=self.ValvePositionController_servicer,
-                         data_path=data_path)
+                         meta_path=data_path)
 
         self.simulation_mode = simulation_mode
 

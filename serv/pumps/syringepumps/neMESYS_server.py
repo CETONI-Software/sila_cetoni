@@ -103,7 +103,7 @@ class neMESYSServer(QmixIOServer):
         """
         super().__init__(cmd_args, io_channels, simulation_mode=simulation_mode)
 
-        data_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', '..',
+        meta_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', '..',
                                                  'features', 'de', 'cetoni', 'pumps', 'syringepumps'))
 
         # registering common pump features
@@ -118,7 +118,7 @@ class neMESYSServer(QmixIOServer):
         )
         self.add_feature(feature_id='de.cetoni/pumps.syringepumps/PumpDriveControlService/v1',
                          servicer=self.PumpDriveControlService_servicer,
-                         data_path=data_path)
+                         meta_path=meta_path)
         #  Register de.cetoni.pumps.syringepumps.PumpUnitController
         self.PumpUnitController_servicer = PumpUnitController(
             pump=qmix_pump,
@@ -129,7 +129,7 @@ class neMESYSServer(QmixIOServer):
         )
         self.add_feature(feature_id='de.cetoni/pumps.syringepumps/PumpUnitController/v1',
                          servicer=self.PumpUnitController_servicer,
-                         data_path=data_path)
+                         meta_path=meta_path)
 
         if not isinstance(qmix_pump, qmixpump.ContiFlowPump):
             # registering features not for contiflow pumps
@@ -143,7 +143,7 @@ class neMESYSServer(QmixIOServer):
             )
             self.add_feature(feature_id='de.cetoni/pumps.syringepumps/SyringeConfigurationController/v1',
                              servicer=self.SyringeConfigurationController_servicer,
-                             data_path=data_path)
+                             meta_path=meta_path)
             #  Register de.cetoni.pumps.syringepumps.PumpFluidDosingService
             self.PumpFluidDosingService_servicer = PumpFluidDosingService(
                 pump=qmix_pump,
@@ -154,7 +154,7 @@ class neMESYSServer(QmixIOServer):
             )
             self.add_feature(feature_id='de.cetoni/pumps.syringepumps/PumpFluidDosingService/v1',
                              servicer=self.PumpFluidDosingService_servicer,
-                             data_path=data_path)
+                             meta_path=meta_path)
             if valve is not None:
                 #  Register de.cetoni.valves.ValvePositionController
                 self.ValvePositionController_servicer = ValvePositionController(
@@ -166,7 +166,7 @@ class neMESYSServer(QmixIOServer):
                 )
                 self.add_feature(feature_id='de.cetoni/valves/ValvePositionController/v1',
                                 servicer=self.ValvePositionController_servicer,
-                                data_path=data_path.replace(os.path.join('pumps', 'syringepumps'), 'valves'))
+                                meta_path=meta_path.replace(os.path.join('pumps', 'syringepumps'), 'valves'))
 
         #  Register de.cetoni.core.ShutdownController
         self.ShutdownController_servicer = ShutdownController(
@@ -181,7 +181,7 @@ class neMESYSServer(QmixIOServer):
         )
         self.add_feature(feature_id='de.cetoni/core/ShutdownController/v1',
                             servicer=self.ShutdownController_servicer,
-                            data_path=data_path.replace(os.path.join('pumps', 'syringepumps'), 'core'))
+                            meta_path=meta_path.replace(os.path.join('pumps', 'syringepumps'), 'core'))
 
         self.simulation_mode = simulation_mode
 

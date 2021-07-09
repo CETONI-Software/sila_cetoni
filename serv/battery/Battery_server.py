@@ -93,7 +93,7 @@ class BatteryServer(SiLA2Server):
         )
         self.add_feature(feature_id='de.cetoni/core/BatteryProvider/v1',
                          servicer=self.BatteryProvider_servicer,
-                         data_path=meta_path)
+                         meta_path=meta_path)
 
     # overwrite these methods, if required:
     # def pre_switch_to_simulation_mode(self) -> None:
