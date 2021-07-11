@@ -10,8 +10,8 @@ class ShutdownControllerStub(object):
     """Feature: Shutdown Controller
 
     Provides a generic way of telling a SiLA2 server that it is about to be shut down. The server implements a
-    routine to be executed before the hardware is shut down (e.g. saving device paramters or bringing the device into a safe
-    position).
+    routine to be executed before the hardware is shut down (e.g. saving device parameters or bringing the device into a
+    safe position).
 
     """
 
@@ -22,17 +22,17 @@ class ShutdownControllerStub(object):
             channel: A grpc.Channel.
         """
         self.Shutdown = channel.unary_unary(
-                '/sila2.de.cetoni.pumps.syringepumps.shutdowncontroller.v1.ShutdownController/Shutdown',
+                '/sila2.de.cetoni.core.shutdowncontroller.v1.ShutdownController/Shutdown',
                 request_serializer=ShutdownController__pb2.Shutdown_Parameters.SerializeToString,
                 response_deserializer=SiLAFramework__pb2.CommandConfirmation.FromString,
                 )
         self.Shutdown_Info = channel.unary_stream(
-                '/sila2.de.cetoni.pumps.syringepumps.shutdowncontroller.v1.ShutdownController/Shutdown_Info',
+                '/sila2.de.cetoni.core.shutdowncontroller.v1.ShutdownController/Shutdown_Info',
                 request_serializer=SiLAFramework__pb2.CommandExecutionUUID.SerializeToString,
                 response_deserializer=SiLAFramework__pb2.ExecutionInfo.FromString,
                 )
         self.Shutdown_Result = channel.unary_unary(
-                '/sila2.de.cetoni.pumps.syringepumps.shutdowncontroller.v1.ShutdownController/Shutdown_Result',
+                '/sila2.de.cetoni.core.shutdowncontroller.v1.ShutdownController/Shutdown_Result',
                 request_serializer=SiLAFramework__pb2.CommandExecutionUUID.SerializeToString,
                 response_deserializer=ShutdownController__pb2.Shutdown_Responses.FromString,
                 )
@@ -42,15 +42,15 @@ class ShutdownControllerServicer(object):
     """Feature: Shutdown Controller
 
     Provides a generic way of telling a SiLA2 server that it is about to be shut down. The server implements a
-    routine to be executed before the hardware is shut down (e.g. saving device paramters or bringing the device into a safe
-    position).
+    routine to be executed before the hardware is shut down (e.g. saving device parameters or bringing the device into a
+    safe position).
 
     """
 
     def Shutdown(self, request, context):
         """Shutdown
 
-        Initiates the shutdown routine. If no errors occured during the shutdown process the server should be
+        Initiates the shutdown routine. If no errors occurred during the shutdown process the server should be
         considered ready to be physically shutdown (i.e. the device can be shut down/powered off).
 
         """
@@ -90,7 +90,7 @@ def add_ShutdownControllerServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'sila2.de.cetoni.pumps.syringepumps.shutdowncontroller.v1.ShutdownController', rpc_method_handlers)
+            'sila2.de.cetoni.core.shutdowncontroller.v1.ShutdownController', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -99,8 +99,8 @@ class ShutdownController(object):
     """Feature: Shutdown Controller
 
     Provides a generic way of telling a SiLA2 server that it is about to be shut down. The server implements a
-    routine to be executed before the hardware is shut down (e.g. saving device paramters or bringing the device into a safe
-    position).
+    routine to be executed before the hardware is shut down (e.g. saving device parameters or bringing the device into a
+    safe position).
 
     """
 
@@ -115,7 +115,7 @@ class ShutdownController(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.pumps.syringepumps.shutdowncontroller.v1.ShutdownController/Shutdown',
+        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.core.shutdowncontroller.v1.ShutdownController/Shutdown',
             ShutdownController__pb2.Shutdown_Parameters.SerializeToString,
             SiLAFramework__pb2.CommandConfirmation.FromString,
             options, channel_credentials,
@@ -132,7 +132,7 @@ class ShutdownController(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/sila2.de.cetoni.pumps.syringepumps.shutdowncontroller.v1.ShutdownController/Shutdown_Info',
+        return grpc.experimental.unary_stream(request, target, '/sila2.de.cetoni.core.shutdowncontroller.v1.ShutdownController/Shutdown_Info',
             SiLAFramework__pb2.CommandExecutionUUID.SerializeToString,
             SiLAFramework__pb2.ExecutionInfo.FromString,
             options, channel_credentials,
@@ -149,7 +149,7 @@ class ShutdownController(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.pumps.syringepumps.shutdowncontroller.v1.ShutdownController/Shutdown_Result',
+        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.core.shutdowncontroller.v1.ShutdownController/Shutdown_Result',
             SiLAFramework__pb2.CommandExecutionUUID.SerializeToString,
             ShutdownController__pb2.Shutdown_Responses.FromString,
             options, channel_credentials,

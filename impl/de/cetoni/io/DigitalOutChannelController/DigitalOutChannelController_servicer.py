@@ -54,13 +54,11 @@ from .DigitalOutChannelController_simulation import DigitalOutChannelControllerS
 from .DigitalOutChannelController_real import DigitalOutChannelControllerReal
 
 # import SiLA Defined Error factories
-from .DigitalOutChannelController_defined_errors import InvalidChannelIndex
+from .DigitalOutChannelController_defined_errors import InvalidChannelIndexError
 
 from qmixsdk.qmixdigio import DigitalOutChannel
 
-
-METADATA_CHANNEL_INDEX = \
-    'sila-de.cetoni-io-digitaloutchannelcontroller-v1-metadata-channelindex-bin'
+from . import METADATA_CHANNEL_INDEX
 
 
 @channel_index(DigitalOutChannelController_pb2, METADATA_CHANNEL_INDEX)
@@ -145,7 +143,7 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
             elif isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )
@@ -199,7 +197,7 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
             if isinstance(err, DeviceError, DecoratorInvalidChannelIndex):
                 err = QmixSDKSiLAError(err)
             elif isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )

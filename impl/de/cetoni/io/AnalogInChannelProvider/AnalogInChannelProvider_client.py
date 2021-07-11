@@ -50,25 +50,18 @@ import sila2lib.utils.py2sila_types as p2s
 
 # import feature gRPC modules
 # Import gRPC libraries of features
-from impl.de.cetoni.io.AnalogInChannelProvider.gRPC import AnalogInChannelProvider_pb2
-from impl.de.cetoni.io.AnalogInChannelProvider.gRPC import AnalogInChannelProvider_pb2_grpc
+from .gRPC import AnalogInChannelProvider_pb2
+from .gRPC import AnalogInChannelProvider_pb2_grpc
 # import default arguments for this feature
-from impl.de.cetoni.io.AnalogInChannelProvider.AnalogInChannelProvider_default_arguments import default_dict as AnalogInChannelProvider_default_dict
-from impl.de.cetoni.io.AnalogOutChannelController.gRPC import AnalogOutChannelController_pb2
-from impl.de.cetoni.io.AnalogOutChannelController.gRPC import AnalogOutChannelController_pb2_grpc
-# import default arguments for this feature
-from impl.de.cetoni.io.AnalogOutChannelController.AnalogOutChannelController_default_arguments import default_dict as AnalogOutChannelController_default_dict
-from impl.de.cetoni.io.DigitalInChannelProvider.gRPC import DigitalInChannelProvider_pb2
-from impl.de.cetoni.io.DigitalInChannelProvider.gRPC import DigitalInChannelProvider_pb2_grpc
-# import default arguments for this feature
-from impl.de.cetoni.io.DigitalInChannelProvider.DigitalInChannelProvider_default_arguments import default_dict as DigitalInChannelProvider_default_dict
-from impl.de.cetoni.io.DigitalOutChannelController.gRPC import DigitalOutChannelController_pb2
-from impl.de.cetoni.io.DigitalOutChannelController.gRPC import DigitalOutChannelController_pb2_grpc
-# import default arguments for this feature
-from impl.de.cetoni.io.DigitalOutChannelController.DigitalOutChannelController_default_arguments import default_dict as DigitalOutChannelController_default_dict
+from .AnalogInChannelProvider_default_arguments import default_dict as AnalogInChannelProvider_default_dict
+
+from impl.common.decorators import channel_index_serializer
+
+from . import METADATA_CHANNEL_INDEX
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
+@channel_index_serializer(AnalogInChannelProvider_pb2)
 class AnalogInChannelProviderClient:
     """
         The SiLA 2 driver for Qmix I/O Devices
@@ -98,8 +91,6 @@ class AnalogInChannelProviderClient:
         self.server_display_name = ''
         self.server_description = ''
 
-
-
     def Get_NumberOfChannels(self) \
             -> AnalogInChannelProvider_pb2.Get_NumberOfChannels_Responses:
         """Wrapper to get property NumberOfChannels from the server."""
@@ -122,16 +113,23 @@ class AnalogInChannelProviderClient:
 
         return response.NumberOfChannels
 
-    def Subscribe_Value(self) \
+    def Subscribe_Value(self, channel_id: int) \
             -> AnalogInChannelProvider_pb2.Subscribe_Value_Responses:
-        """Wrapper to get property Value from the server."""
+        """
+        Wrapper to get property Value from the server.
+
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
+        """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
 
-        logging.debug("Reading observable property Value:")
+        logging.debug(f"Reading observable property Value for channel {channel_id}:")
         try:
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
             response = self.AnalogInChannelProvider_stub.Subscribe_Value(
-                AnalogInChannelProvider_pb2.Subscribe_Value_Parameters()
+                AnalogInChannelProvider_pb2.Subscribe_Value_Parameters(),
+                metadata
             )
             logging.debug(
                 'Subscribe_Value response: {response}'.format(

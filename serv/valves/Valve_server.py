@@ -74,6 +74,8 @@ class ValveServer(SiLA2Server):
             )
         )
 
+        self.simulation_mode = simulation_mode
+
         data_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                                  'features', 'de', 'cetoni', 'valves'))
 
@@ -102,8 +104,6 @@ class ValveServer(SiLA2Server):
         self.add_feature(feature_id='de.cetoni/valves/ValvePositionController/v1',
                          servicer=self.ValvePositionController_servicer,
                          meta_path=data_path)
-
-        self.simulation_mode = simulation_mode
 
 
 def parse_command_line():

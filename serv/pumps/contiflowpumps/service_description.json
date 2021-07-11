@@ -13,7 +13,6 @@
     "de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService",
     "de/cetoni/pumps/contiflowpumps/ContinuousFlowDosingService",
     "de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController",
-    "de/cetoni/core/ShutdownController"
   ],
   "communication_port": "50053",
   "IP_address": "127.0.0.1",

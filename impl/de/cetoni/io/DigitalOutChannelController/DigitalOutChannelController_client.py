@@ -50,25 +50,17 @@ import sila2lib.utils.py2sila_types as p2s
 
 # import feature gRPC modules
 # Import gRPC libraries of features
-from AnalogInChannelProvider.gRPC import AnalogInChannelProvider_pb2
-from AnalogInChannelProvider.gRPC import AnalogInChannelProvider_pb2_grpc
+from .gRPC import DigitalOutChannelController_pb2
+from .gRPC import DigitalOutChannelController_pb2_grpc
 # import default arguments for this feature
-from AnalogInChannelProvider.AnalogInChannelProvider_default_arguments import default_dict as AnalogInChannelProvider_default_dict
-from AnalogOutChannelController.gRPC import AnalogOutChannelController_pb2
-from AnalogOutChannelController.gRPC import AnalogOutChannelController_pb2_grpc
-# import default arguments for this feature
-from AnalogOutChannelController.AnalogOutChannelController_default_arguments import default_dict as AnalogOutChannelController_default_dict
-from DigitalInChannelProvider.gRPC import DigitalInChannelProvider_pb2
-from DigitalInChannelProvider.gRPC import DigitalInChannelProvider_pb2_grpc
-# import default arguments for this feature
-from DigitalInChannelProvider.DigitalInChannelProvider_default_arguments import default_dict as DigitalInChannelProvider_default_dict
-from DigitalOutChannelController.gRPC import DigitalOutChannelController_pb2
-from DigitalOutChannelController.gRPC import DigitalOutChannelController_pb2_grpc
-# import default arguments for this feature
-from DigitalOutChannelController.DigitalOutChannelController_default_arguments import default_dict as DigitalOutChannelController_default_dict
+from .DigitalOutChannelController_default_arguments import default_dict as DigitalOutChannelController_default_dict
 
+from impl.common.decorators import channel_index_serializer
+
+from . import METADATA_CHANNEL_INDEX
 
 # noinspection PyPep8Naming, PyUnusedLocal
+@channel_index_serializer(DigitalOutChannelController_pb2)
 class DigitalOutChannelControllerClient:
     """
         The SiLA 2 driver for Qmix I/O Devices
@@ -98,12 +90,12 @@ class DigitalOutChannelControllerClient:
         self.server_display_name = ''
         self.server_description = ''
 
-    def SetOutput(self,
-                State: str = 'default string'
-                     ): # -> (DigitalOutChannelController):
+    def SetOutput(self, channel_id: int, State: str = 'On'): # -> (DigitalOutChannelController):
         """
         Wrapper to call the unobservable command SetOutput on the server.
 
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
         :param parameter: The parameter gRPC construct required for this command.
 
         :returns: A gRPC object with the response that has been defined for this command.
@@ -111,19 +103,16 @@ class DigitalOutChannelControllerClient:
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
 
-        parameter = None
-        metadata = None  # add metadata generator here
-
-        logging.debug("Calling SetOutput:")
+        logging.debug(f"Calling SetOutput for channel {channel_id}:")
         try:
-            # resolve to default if no value given
-            #   TODO: Implement a more reasonable default value
-            if parameter is None:
-                parameter = DigitalOutChannelController_pb2.SetOutput_Parameters(
-                                    State=pb2.DataType_State(**default_dict['DataType_State'])
+            parameter = DigitalOutChannelController_pb2.SetOutput_Parameters(
+                State=DigitalOutChannelController_pb2.DataType_State(
+                    State=silaFW_pb2.String(value=State)
                 )
+            )
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
 
-            response = self.DigitalOutChannelController_stub.SetOutput(parameter, metadata)
+            response = self.DigitalOutChannelController_stub.SetOutput(parameter,metadata)
             logging.debug(f"SetOutput response: {response}")
 
         except grpc.RpcError as grpc_err:
@@ -156,16 +145,23 @@ class DigitalOutChannelControllerClient:
 
         return response.NumberOfChannels
 
-    def Subscribe_State(self) \
+    def Subscribe_State(self, channel_id: int) \
             -> DigitalOutChannelController_pb2.Subscribe_State_Responses:
-        """Wrapper to get property State from the server."""
+        """
+        Wrapper to get property State from the server.
+
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
+        """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
 
-        logging.debug("Reading observable property State:")
+        logging.debug(f"Reading observable property State for channel {channel_id}:")
         try:
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
             response = self.DigitalOutChannelController_stub.Subscribe_State(
-                DigitalOutChannelController_pb2.Subscribe_State_Parameters()
+                DigitalOutChannelController_pb2.Subscribe_State_Parameters(),
+                metadata
             )
             logging.debug(
                 'Subscribe_State response: {response}'.format(

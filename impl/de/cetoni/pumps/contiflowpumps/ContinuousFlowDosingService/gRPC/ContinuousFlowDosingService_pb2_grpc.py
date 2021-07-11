@@ -64,7 +64,7 @@ class ContinuousFlowDosingServiceServicer(object):
 
     def GenerateFlow(self, request, context):
         """Generate Flow
-        Generate a continous flow with the given flow rate. Dosing continues until it gets stopped manually by calling
+        Generate a continuous flow with the given flow rate. Dosing continues until it gets stopped manually by calling
         StopDosage.
 
         """

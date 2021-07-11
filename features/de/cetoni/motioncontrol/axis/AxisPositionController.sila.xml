@@ -8,7 +8,7 @@
     <Metadata>
         <Identifier>AxisIdentifier</Identifier>
         <DisplayName>Axis Identifier</DisplayName>
-        <Description>The identifier of a single axis of an axis system</Description>
+        <Description>The identifier of a single axis of an axis system. Use AvailableAxes from the AxisSystemControlService Feature to get all possible values.</Description>
         <DataType>
             <Basic>String</Basic>
         </DataType>

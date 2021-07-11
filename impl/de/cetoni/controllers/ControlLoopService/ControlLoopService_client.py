@@ -2,7 +2,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *QmixControl client*
 
@@ -50,11 +50,14 @@ import sila2lib.utils.py2sila_types as p2s
 
 # import feature gRPC modules
 # Import gRPC libraries of features
-from ControlLoopService.gRPC import ControlLoopService_pb2
-from ControlLoopService.gRPC import ControlLoopService_pb2_grpc
+from .gRPC import ControlLoopService_pb2
+from .gRPC import ControlLoopService_pb2_grpc
 # import default arguments for this feature
-from ControlLoopService.ControlLoopService_default_arguments import default_dict as ControlLoopService_default_dict
+from .ControlLoopService_default_arguments import default_dict as ControlLoopService_default_dict
 
+from impl.common.decorators import channel_index_serializer
+
+from . import METADATA_CHANNEL_INDEX
 
 # noinspection PyPep8Naming, PyUnusedLocal
 class ControlLoopServiceClient:
@@ -79,90 +82,84 @@ class ControlLoopServiceClient:
         # Create stub objects used to communicate with the server
         self.ControlLoopService_stub = \
             ControlLoopService_pb2_grpc.ControlLoopServiceStub(channel)
-        
+
 
         # initialise class variables for server information storage
         self.server_version = ''
         self.server_display_name = ''
         self.server_description = ''
 
-    def WriteSetPoint(self,
-                SetPointValue: float = 1.0
-                     ): # -> (ControlLoopService):
+    def WriteSetPoint(self, channel_id: int, SetPointValue: float = 1.0): # -> (ControlLoopService):
         """
         Wrapper to call the unobservable command WriteSetPoint on the server.
-    
-        :param parameter: The parameter gRPC construct required for this command.
-    
+
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
+        :param SetPointValue: The Set Point value to write.
+
         :returns: A gRPC object with the response that has been defined for this command.
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
-        parameter = None
-        metadata = None  # add metadata generator here 
-    
-        logging.debug("Calling WriteSetPoint:")
+
+
+        logging.debug(f"Calling WriteSetPoint for channel {channel_id}:")
         try:
-            # resolve to default if no value given
-            #   TODO: Implement a more reasonable default value
-            if parameter is None:
-                parameter = ControlLoopService_pb2.WriteSetPoint_Parameters(
-                                    SetPointValue=silaFW_pb2.Real(value=SetPointValue)
-                )
-    
+            parameter = ControlLoopService_pb2.WriteSetPoint_Parameters(
+                SetPointValue=silaFW_pb2.Real(value=SetPointValue)
+            )
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
+
             response = self.ControlLoopService_stub.WriteSetPoint(parameter, metadata)
             logging.debug(f"WriteSetPoint response: {response}")
-    
+
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
-        return 
-    
-    
-    def RunControlLoop(self,
-                      parameter: ControlLoopService_pb2.RunControlLoop_Parameters = None) \
+
+        return
+
+
+    def RunControlLoop(self, channel_id: int) \
             -> silaFW_pb2.CommandConfirmation:
         """
         Wrapper to call the observable command RunControlLoop on the server.
-    
-        :param parameter: The parameter gRPC construct required for this command.
-    
+
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
         :returns: A command confirmation object with the following information:
             commandExecutionUUID: A command id with which this observable command can be referenced in future calls
             lifetimeOfExecution (optional): The (maximum) lifetime of this command call.
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
-        logging.debug("Calling RunControlLoop:")
+
+        logging.debug(f"Calling RunControlLoop for channel {channel_id}:")
         try:
-            # resolve to default if no value given
-            #   TODO: Implement a more reasonable default value
-            if parameter is None:
-                parameter = ControlLoopService_pb2.RunControlLoop_Parameters(
-                    **ControlLoopService_default_dict['RunControlLoop_Parameters']
-                )
-    
-            response = self.ControlLoopService_stub.RunControlLoop(parameter)
-    
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
+            response = self.ControlLoopService_stub.RunControlLoop(
+                ControlLoopService_pb2.RunControlLoop_Parameters(),
+                metadata
+            )
+
             logging.debug('RunControlLoop response: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
-    def RunControlLoop_Info(self,
-                           uuid: Union[str, silaFW_pb2.CommandExecutionUUID]) \
+
+    def RunControlLoop_Info(self, channel_id: int,
+                            uuid: Union[str, silaFW_pb2.CommandExecutionUUID]) \
             -> silaFW_pb2.ExecutionInfo:
         """
         Wrapper to get an intermediate response for the observable command RunControlLoop on the server.
-    
+
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
         :param uuid: The UUID that has been returned with the first command call. Can be given as string or as the
                      corresponding SiLA2 gRPC object.
-    
+
         :returns: A gRPC object with the status information that has been defined for this command. The following fields
                   are defined:
                     * *commandStatus*: Status of the command (enumeration)
@@ -172,98 +169,96 @@ class ControlLoopServiceClient:
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         if type(uuid) is str:
             uuid = silaFW_pb2.CommandExecutionUUID(value=uuid)
-    
+
         logging.debug(
-            "Requesting status information for command RunControlLoop (UUID={uuid}):".format(
+            "Requesting status information for command RunControlLoop for channel {channel_id} (UUID={uuid}):".format(
                 uuid=uuid.value
             )
         )
         try:
-            response = self.ControlLoopService_stub.RunControlLoop_Info(uuid)
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
+            response = self.ControlLoopService_stub.RunControlLoop_Info(uuid, metadata)
             logging.debug('RunControlLoop status information: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
-    def RunControlLoop_Result(self,
-                             uuid: Union[str, silaFW_pb2.CommandExecutionUUID]) \
+
+    def RunControlLoop_Result(self, channel_id: int,
+                              uuid: Union[str, silaFW_pb2.CommandExecutionUUID]) \
             -> ControlLoopService_pb2.RunControlLoop_Responses:
         """
         Wrapper to get an intermediate response for the observable command RunControlLoop on the server.
-    
+
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
         :param uuid: The UUID that has been returned with the first command call. Can be given as string or as the
                      corresponding SiLA2 gRPC object.
-    
+
         :returns: A gRPC object with the result response that has been defined for this command.
-    
+
         .. note:: Whether the result is available or not can and should be evaluated by calling the
                   :meth:`RunControlLoop_Info` method of this call.
         """
         if type(uuid) is str:
             uuid = silaFW_pb2.CommandExecutionUUID(value=uuid)
-    
+
         logging.debug(
-            "Requesting status information for command RunControlLoop (UUID={uuid}):".format(
+            "Requesting final result for command RunControlLoop for channel {channel_id} (UUID={uuid}):".format(
+                channel_id=channel_id,
                 uuid=uuid.value
             )
         )
-    
+
         try:
-            response = self.ControlLoopService_stub.RunControlLoop_Result(uuid)
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
+            response = self.ControlLoopService_stub.RunControlLoop_Result(uuid, metadata)
             logging.debug('RunControlLoop result response: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
-    def StopControlLoop(self,
-                EmptyParameter: bytes = b''
-                     ): # -> (ControlLoopService):
+
+    def StopControlLoop(self, channel_id: int): # -> (ControlLoopService):
         """
         Wrapper to call the unobservable command StopControlLoop on the server.
-    
-        :param parameter: The parameter gRPC construct required for this command.
-    
+
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
         :returns: A gRPC object with the response that has been defined for this command.
         """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
-        parameter = None
-        metadata = None  # add metadata generator here 
-    
-        logging.debug("Calling StopControlLoop:")
+
+        logging.debug(f"Calling StopControlLoop for channel {channel_id}:")
         try:
-            # resolve to default if no value given
-            #   TODO: Implement a more reasonable default value
-            if parameter is None:
-                parameter = ControlLoopService_pb2.StopControlLoop_Parameters(
-                                    
-                )
-    
-            response = self.ControlLoopService_stub.StopControlLoop(parameter, metadata)
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
+
+            response = self.ControlLoopService_stub.StopControlLoop(
+                ControlLoopService_pb2.StopControlLoop_Parameters(),
+                metadata
+            )
             logging.debug(f"StopControlLoop response: {response}")
-    
+
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
-        return 
-    
-    
+
+        return
+
+
 
     def Get_NumberOfChannels(self) \
             -> ControlLoopService_pb2.Get_NumberOfChannels_Responses:
         """Wrapper to get property NumberOfChannels from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Reading unobservable property NumberOfChannels:")
         try:
             response = self.ControlLoopService_stub.Get_NumberOfChannels(
@@ -277,19 +272,26 @@ class ControlLoopServiceClient:
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response.NumberOfChannels
-    
-    def Subscribe_ControllerValue(self) \
+
+    def Subscribe_ControllerValue(self, channel_id: int) \
             -> ControlLoopService_pb2.Subscribe_ControllerValue_Responses:
-        """Wrapper to get property ControllerValue from the server."""
+        """
+        Wrapper to get property ControllerValue from the server.
+
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
+        """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
-        logging.debug("Reading observable property ControllerValue:")
+
+        logging.debug(f"Reading observable property ControllerValue for channel {channel_id}:")
         try:
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
             response = self.ControlLoopService_stub.Subscribe_ControllerValue(
-                ControlLoopService_pb2.Subscribe_ControllerValue_Parameters()
+                ControlLoopService_pb2.Subscribe_ControllerValue_Parameters(),
+                metadata
             )
             logging.debug(
                 'Subscribe_ControllerValue response: {response}'.format(
@@ -299,18 +301,25 @@ class ControlLoopServiceClient:
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    def Subscribe_SetPointValue(self) \
+    def Subscribe_SetPointValue(self, channel_id: int) \
             -> ControlLoopService_pb2.Subscribe_SetPointValue_Responses:
-        """Wrapper to get property SetPointValue from the server."""
+        """
+        Wrapper to get property SetPointValue from the server.
+
+        :param channel_id: The index of the controller channel to use (this value is 0-indexed)
+                           Will be sent along as metadata of the call
+        """
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
-        logging.debug("Reading observable property SetPointValue:")
+
+        logging.debug(f"Reading observable property SetPointValue for channel {channel_id}:")
         try:
+            metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
             response = self.ControlLoopService_stub.Subscribe_SetPointValue(
-                ControlLoopService_pb2.Subscribe_SetPointValue_Parameters()
+                ControlLoopService_pb2.Subscribe_SetPointValue_Parameters(),
+                metadata
             )
             logging.debug(
                 'Subscribe_SetPointValue response: {response}'.format(
@@ -320,16 +329,16 @@ class ControlLoopServiceClient:
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response
-    
+
 
     def Get_FCPAffectedByMetadata_ChannelIndex(self) \
             -> ControlLoopService_pb2.Get_FCPAffectedByMetadata_ChannelIndex_Responses:
         """Wrapper to get property FCPAffectedByMetadata_ChannelIndex from the server."""
         # noinspection PyUnusedLocal - type definition, just for convenience
         grpc_err: grpc.Call
-    
+
         logging.debug("Reading unobservable property FCPAffectedByMetadata_ChannelIndex:")
         try:
             response = self.ControlLoopService_stub.Get_FCPAffectedByMetadata_ChannelIndex(
@@ -343,10 +352,10 @@ class ControlLoopServiceClient:
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
             return None
-    
+
         return response.AffectedCalls
-    
-    
+
+
 
     @staticmethod
     def grpc_error_handling(error_object: grpc.Call) -> None:
@@ -361,7 +370,7 @@ class ControlLoopServiceClient:
         if grpc_error.error_type == client_err.SiLAError.DEFINED_EXECUTION_ERROR:
           if grpc_error.message.errorIdentifier == 'InvalidChannelIndex' :
             raise InvalidChannelIndexError(grpc_error.message.message)
-        
+
 
 class InvalidChannelIndexError(SiLAClientError):
     """Invalid Channel Index

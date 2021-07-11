@@ -48,6 +48,8 @@ from .gRPC import ControlLoopService_pb2 as ControlLoopService_pb2
 from .ControlLoopService_default_arguments import default_dict
 
 from qmixsdk.qmixcontroller import ControllerChannel
+
+
 # noinspection PyPep8Naming,PyUnusedLocal
 class ControlLoopServiceReal:
     """
@@ -58,7 +60,7 @@ class ControlLoopServiceReal:
     def __init__(self):
         """Class initialiser"""
 
-        self.loop_run_uuid: silaFW_pb2.CommandExecutionUUID = None
+        self.controller_to_run_uuid: dict(silaFW_pb2.CommandExecutionUUID) = None
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
@@ -102,20 +104,24 @@ class ControlLoopServiceReal:
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
 
-        if self.loop_run_uuid is not None:
-            raise SiLAFrameworkError(
-                error_type=SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_ACCEPTED,
-                msg="There is a running control loop already. Cannot start a new loop!"
-            )
+        try:
+            if self.controller_to_run_uuid[controller] is not None:
+                raise SiLAFrameworkError(
+                    error_type=SiLAFrameworkErrorType.COMMAND_EXECUTION_NOT_ACCEPTED,
+                    msg="There is a running control loop already. Cannot start a new loop!"
+                )
+        except KeyError:
+            # this is the first ever run for this controller channel
+            pass
 
         controller.enable_control_loop(True)
         result = ('' if controller.is_control_loop_enabled() else 'not ') + 'successful'
         logging.debug(f"Starting control loop with set point {controller.get_setpoint()} was {result}")
 
         # respond with UUID and lifetime of execution
-        self.loop_run_uuid = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
+        self.controller_to_run_uuid[controller] = silaFW_pb2.CommandExecutionUUID(value=str(uuid.uuid4()))
         return silaFW_pb2.CommandConfirmation(
-            commandExecutionUUID=self.loop_run_uuid
+            commandExecutionUUID=self.controller_to_run_uuid[controller]
         )
 
     def RunControlLoop_Info(self, request, controller: ControllerChannel, context: grpc.ServicerContext) \
@@ -137,7 +143,7 @@ class ControlLoopServiceReal:
         # Get the UUID of the command
         command_uuid = request.value
 
-        if command_uuid != self.loop_run_uuid.value:
+        if command_uuid != self.controller_to_run_uuid[controller].value:
             raise SiLAFrameworkError(
                 error_type=SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID,
                 msg="There is no command execution with the given UUID!"
@@ -163,19 +169,21 @@ class ControlLoopServiceReal:
                 commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully
             )
 
-    def RunControlLoop_Result(self, request, context: grpc.ServicerContext) \
+    def RunControlLoop_Result(self, request, controller: ControllerChannel, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.RunControlLoop_Responses:
         """
         Returns the final result of the command call :meth:`~.RunControlLoop`.
 
         :param request: A request object with the following properties
             CommandExecutionUUID: The UUID of the command executed.
+        :param controller: The controller to operate on
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: The return object defined for the command with the following fields:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
+        self.controller_to_run_uuid[controller] = None
         return ControlLoopService_pb2.RunControlLoop_Responses()
 
 
@@ -194,7 +202,7 @@ class ControlLoopServiceReal:
         """
 
         controller.enable_control_loop(False)
-        self.loop_run_uuid = None
+        self.controller_to_run_uuid[controller] = None
 
         return ControlLoopService_pb2.StopControlLoop_Responses()
 

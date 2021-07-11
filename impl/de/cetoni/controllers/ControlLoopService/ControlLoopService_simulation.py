@@ -91,7 +91,7 @@ class ControlLoopServiceSimulation:
             )
         )
 
-    def WriteSetPoint(self, request, context: grpc.ServicerContext) \
+    def WriteSetPoint(self, request, controller, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.WriteSetPoint_Responses:
         """
         Executes the unobservable command "Write Set Point"
@@ -99,6 +99,7 @@ class ControlLoopServiceSimulation:
 
         :param request: gRPC request containing the parameters passed:
             request.SetPointValue (Set Point Value): The Set Point value to write
+        :param controller: The controller to operate on
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: The return object defined for the command with the following fields:
@@ -121,14 +122,14 @@ class ControlLoopServiceSimulation:
         return return_value
 
 
-    def RunControlLoop(self, request, context: grpc.ServicerContext) \
+    def RunControlLoop(self, request, controller, context: grpc.ServicerContext) \
             -> silaFW_pb2.CommandConfirmation:
         """
         Executes the observable command "Run Control Loop"
             Run the Control Loop
 
-        :param request: gRPC request containing the parameters passed:
-            request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
+        :param request: gRPC request containing the parameters passed
+        :param controller: The controller to operate on
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: A command confirmation object with the following information:
@@ -156,13 +157,14 @@ class ControlLoopServiceSimulation:
                 commandExecutionUUID=command_uuid
             )
 
-    def RunControlLoop_Info(self, request, context: grpc.ServicerContext) \
+    def RunControlLoop_Info(self, request, controller, context: grpc.ServicerContext) \
             -> silaFW_pb2.ExecutionInfo:
         """
         Returns execution information regarding the command call :meth:`~.RunControlLoop`.
 
         :param request: A request object with the following properties
             commandId: The UUID of the command executed.
+        :param controller: The controller to operate on
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: An ExecutionInfo response stream for the command with the following fields:
@@ -220,13 +222,14 @@ class ControlLoopServiceSimulation:
             # one last time yield the status
             yield silaFW_pb2.ExecutionInfo(**return_values)
 
-    def RunControlLoop_Result(self, request, context: grpc.ServicerContext) \
+    def RunControlLoop_Result(self, request, controller, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.RunControlLoop_Responses:
         """
         Returns the final result of the command call :meth:`~.RunControlLoop`.
 
         :param request: A request object with the following properties
             CommandExecutionUUID: The UUID of the command executed.
+        :param controller: The controller to operate on
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: The return object defined for the command with the following fields:
@@ -252,14 +255,14 @@ class ControlLoopServiceSimulation:
         return return_value
 
 
-    def StopControlLoop(self, request, context: grpc.ServicerContext) \
+    def StopControlLoop(self, request, controller, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.StopControlLoop_Responses:
         """
         Executes the unobservable command "Stop Control Loop"
             Stops the Control Loop (has no effect, if no Loop is currently running)
 
-        :param request: gRPC request containing the parameters passed:
-            request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
+        :param request: gRPC request containing the parameters passed
+        :param controller: The controller to operate on
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: The return object defined for the command with the following fields:
@@ -282,13 +285,14 @@ class ControlLoopServiceSimulation:
         return return_value
 
 
-    def Subscribe_ControllerValue(self, request, context: grpc.ServicerContext) \
+    def Subscribe_ControllerValue(self, request, controller, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.Subscribe_ControllerValue_Responses:
         """
         Requests the observable property Controller Value
             The actual value from the Device
 
         :param request: An empty gRPC request object (properties have no parameters)
+        :param controller: The controller to operate on
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: A response object with the following fields:
@@ -315,13 +319,14 @@ class ControlLoopServiceSimulation:
             yield return_value
 
 
-    def Subscribe_SetPointValue(self, request, context: grpc.ServicerContext) \
+    def Subscribe_SetPointValue(self, request, controller, context: grpc.ServicerContext) \
             -> ControlLoopService_pb2.Subscribe_SetPointValue_Responses:
         """
         Requests the observable property Set Point Value
             The current SetPoint value of the Device
 
         :param request: An empty gRPC request object (properties have no parameters)
+        :param controller: The controller to operate on
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: A response object with the following fields:

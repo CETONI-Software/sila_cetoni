@@ -67,6 +67,8 @@ class ContiflowServer(neMESYSServer):
         """Class initialiser"""
         super().__init__(cmd_args, qmix_pump)
 
+        self.simulation_mode = simulation_mode
+
         data_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', '..',
                                                  'features', 'de', 'cetoni', 'pumps', 'contiflowpumps'))
 
@@ -110,8 +112,6 @@ class ContiflowServer(neMESYSServer):
         self.add_feature(feature_id='de.cetoni/pumps.contiflowpumps/ContinuousFlowDosingService/v1',
                          servicer=self.ContinuousFlowDosingService_servicer,
                          meta_path=data_path)
-
-        self.simulation_mode = simulation_mode
 
 
 def parse_command_line():

@@ -1,7 +1,7 @@
 """
 ________________________________________________________________________
 
-:PROJECT: SiLA2_python
+:PROJECT: sila_cetoni
 
 *Control Loop Service_defined_errors*
 
@@ -31,7 +31,7 @@ __version__ = "0.1.0"
 # import general packages
 from sila2lib.error_handling.server_err import SiLAExecutionError
 
-class InvalidChannelIndex(SiLAExecutionError):
+class InvalidChannelIndexError(SiLAExecutionError):
     """
     The sent channel index is not known.
     """
@@ -46,6 +46,6 @@ class InvalidChannelIndex(SiLAExecutionError):
             index=f" ({channel_id})" if channel_id else "",
             extra_message='\n'+extra_message if extra_message else ""
         )
-        super().__init__(error_identifier="sila2.de.cetoni/controllers/ControlLoopService/v1/DefinedError/InvalidChannelIndex",
+        super().__init__(error_identifier="de.cetoni/controllers/ControlLoopService/v1/DefinedError/InvalidChannelIndex",
                          msg=msg)
 

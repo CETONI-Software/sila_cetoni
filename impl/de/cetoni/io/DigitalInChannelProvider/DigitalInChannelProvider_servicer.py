@@ -54,13 +54,11 @@ from .DigitalInChannelProvider_simulation import DigitalInChannelProviderSimulat
 from .DigitalInChannelProvider_real import DigitalInChannelProviderReal
 
 # import SiLA Defined Error factories
-from .DigitalInChannelProvider_defined_errors import InvalidChannelIndex
+from .DigitalInChannelProvider_defined_errors import InvalidChannelIndexError
 
 from qmixsdk.qmixdigio import DigitalInChannel
 
-
-METADATA_CHANNEL_INDEX = \
-    'sila-de.cetoni-io-digitalinchannelprovider-v1-metadata-channelindex-bin'
+from . import METADATA_CHANNEL_INDEX
 
 
 @channel_index(DigitalInChannelProvider_pb2, METADATA_CHANNEL_INDEX)
@@ -159,7 +157,7 @@ class DigitalInChannelProvider(DigitalInChannelProvider_pb2_grpc.DigitalInChanne
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
             elif isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )

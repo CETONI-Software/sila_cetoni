@@ -53,13 +53,11 @@ from .AnalogInChannelProvider_simulation import AnalogInChannelProviderSimulatio
 from .AnalogInChannelProvider_real import AnalogInChannelProviderReal
 
 # import SiLA Defined Error factories
-from .AnalogInChannelProvider_defined_errors import InvalidChannelIndex
+from .AnalogInChannelProvider_defined_errors import InvalidChannelIndexError
 
 from qmixsdk.qmixanalogio import AnalogInChannel
 
-
-METADATA_CHANNEL_INDEX = \
-    'sila-de.cetoni-io-analoginchannelprovider-v1-metadata-channelindex-bin'
+from . import METADATA_CHANNEL_INDEX
 
 
 @channel_index(AnalogInChannelProvider_pb2, METADATA_CHANNEL_INDEX)
@@ -159,7 +157,7 @@ class AnalogInChannelProvider(AnalogInChannelProvider_pb2_grpc.AnalogInChannelPr
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
             elif isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )

@@ -1,0 +1,3 @@
+[submodule "mobdos_test"]
+	path = mobdos_test
+	url = git@software-06:cetoni/sila_qmix/snippets/1.git

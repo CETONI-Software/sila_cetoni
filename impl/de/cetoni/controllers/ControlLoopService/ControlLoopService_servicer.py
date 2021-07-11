@@ -53,13 +53,11 @@ from .ControlLoopService_simulation import ControlLoopServiceSimulation
 from .ControlLoopService_real import ControlLoopServiceReal
 
 # import SiLA Defined Error factories
-from .ControlLoopService_defined_errors import InvalidChannelIndex
+from .ControlLoopService_defined_errors import InvalidChannelIndexError
 
 from qmixsdk.qmixcontroller import ControllerChannel
 
-
-METADATA_CHANNEL_INDEX = \
-    'sila-de.cetoni-controllers-controlloopservice-v1-metadata-channelindex-bin'
+from . import METADATA_CHANNEL_INDEX
 
 
 @channel_index(ControlLoopService_pb2, METADATA_CHANNEL_INDEX)
@@ -79,6 +77,8 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
         """
 
         self.channels = controller_channels
+        self.num_channels = len(self.channels)
+
         self.simulation_mode = simulation_mode
         if simulation_mode:
             self.switch_to_simulation_mode()
@@ -142,7 +142,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             if isinstance(err, QmixSDKSiLAError):
                 err = QmixSDKSiLAError(err)
             elif isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )
@@ -180,7 +180,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             return self.implementation.RunControlLoop(request, controller, context)
         except (SiLAError, DecoratorInvalidChannelIndex) as err:
             if isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )
@@ -212,7 +212,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             return self.implementation.RunControlLoop_Info(request, controller, context)
         except (SiLAError, DecoratorInvalidChannelIndex) as err:
             if isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )
@@ -237,8 +237,14 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             )
         )
         try:
-            return self.implementation.RunControlLoop_Result(request, context)
-        except SiLAError as err:
+            controller = self._get_channel(context.invocation_metadata(), "Command")
+            return self.implementation.RunControlLoop_Result(request, controller, context)
+        except (SiLAError, DecoratorInvalidChannelIndex) as err:
+            if isinstance(err, DecoratorInvalidChannelIndex):
+                err = InvalidChannelIndexError(
+                    err.invalid_index,
+                    f"The index has to be between 0 and {self.num_channels - 1}."
+                )
             err.raise_rpc_error(context=context)
 
 
@@ -273,7 +279,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             return self.implementation.StopControlLoop(request, controller, context)
         except (SiLAError, DecoratorInvalidChannelIndex) as err:
             if isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )
@@ -324,7 +330,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             return self.implementation.Subscribe_ControllerValue(request, controller, context)
         except (SiLAError, DecoratorInvalidChannelIndex) as err:
             if isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )
@@ -354,7 +360,7 @@ class ControlLoopService(ControlLoopService_pb2_grpc.ControlLoopServiceServicer)
             return self.implementation.Subscribe_SetPointValue(request, controller, context)
         except (SiLAError, DecoratorInvalidChannelIndex) as err:
             if isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )

@@ -54,13 +54,11 @@ from .AnalogOutChannelController_simulation import AnalogOutChannelControllerSim
 from .AnalogOutChannelController_real import AnalogOutChannelControllerReal
 
 # import SiLA Defined Error factories
-from .AnalogOutChannelController_defined_errors import InvalidChannelIndex
+from .AnalogOutChannelController_defined_errors import InvalidChannelIndexError
 
 from qmixsdk.qmixanalogio import AnalogOutChannel
 
-
-METADATA_CHANNEL_INDEX = \
-    'sila-de.cetoni-io-analogoutchannelcontroller-v1-metadata-channelindex-bin'
+from . import METADATA_CHANNEL_INDEX
 
 
 @channel_index(AnalogOutChannelController_pb2, METADATA_CHANNEL_INDEX)
@@ -145,7 +143,7 @@ class AnalogOutChannelController(AnalogOutChannelController_pb2_grpc.AnalogOutCh
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
             elif isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )
@@ -199,7 +197,7 @@ class AnalogOutChannelController(AnalogOutChannelController_pb2_grpc.AnalogOutCh
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
             elif isinstance(err, DecoratorInvalidChannelIndex):
-                err = InvalidChannelIndex(
+                err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
                 )
