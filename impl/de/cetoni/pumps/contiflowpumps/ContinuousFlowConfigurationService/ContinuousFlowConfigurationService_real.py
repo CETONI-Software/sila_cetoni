@@ -83,7 +83,7 @@ class ContinuousFlowConfigurationServiceReal:
             self._restore_last_drive_position_counters()
             self._restore_last_contiflow_params()
         except NoSectionError as err:
-            logging.error("No section for %s in SiLA2 config file: %s", pump_name, err)
+            logging.error("No section for %s in SiLA2 config file: %s", self.pump.get_pump_name(), err)
         except (NoOptionError, KeyError) as err:
             logging.error("Cannot read config file option in %s", err)
             logging.error("Couldn't restore drive position counters and contiflow parameters. You'll need to re-configure the contiflow!")
@@ -155,7 +155,7 @@ class ContinuousFlowConfigurationServiceReal:
             )
         except KeyError:
             raise SiLAValidationError(
-                'SwitchingMode',
+                'de.cetoni/pumps.contiflowpumps/ContinuousFlowConfigurationService/v1/Command/SetSwitchingMode/Parameter/SwitchingMode',
                 'The given value for the Contiflow Switching Mode is invalid. Allowed values are: {}'.format(
                     ', '.join(self.ALLOWED_SWITCHING_MODES.keys())
                 )

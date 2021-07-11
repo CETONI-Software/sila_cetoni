@@ -26,7 +26,7 @@ from sila2lib.framework import SiLAFramework_pb2 as silaFW_pb2
 # import SiLA errors
 from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType
 
-class InvalidChannelIndex(Exception):
+class InvalidChannelIndexError(Exception):
     def __init__(self, invalid_index: int):
         """
         :param invalid_index: The channel index that is invalid
@@ -89,7 +89,7 @@ def channel_index(pb2, metadata_key):
         if 0 <= channel_id < len(self.channels):
             return self.channels[channel_id]
 
-        raise InvalidChannelIndex(channel_id)
+        raise InvalidChannelIndexError(channel_id)
 
     def decorator_channel_index(cls):
         @functools.wraps(cls)

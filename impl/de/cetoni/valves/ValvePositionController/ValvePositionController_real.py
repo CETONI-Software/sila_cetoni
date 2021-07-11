@@ -113,10 +113,9 @@ class ValvePositionControllerReal:
 
         if requested_valve_pos < 0 or requested_valve_pos >= num_of_valve_pos:
             raise ValvePositionOutOfRangeError(
-                ("The given position is not in the range for this valve. "
-                 "Adjust the valve position to fit in the range between 0 and "
-                 f"{num_of_valve_pos - 1}!"
-                )
+                f"The given position ({requested_valve_pos}) is not in the range "
+                "for this valve. Adjust the valve position to fit in the range "
+                f"between 0 and {num_of_valve_pos - 1}!"
             )
 
         valve.switch_valve_to_position(requested_valve_pos)

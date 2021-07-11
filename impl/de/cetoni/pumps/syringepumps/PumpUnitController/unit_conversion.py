@@ -6,10 +6,11 @@ from impl.common.qmix_errors import UnitConversionError
 from qmixsdk import qmixpump
 
 
-def evaluate_units(requested_volume_unit, requested_time_unit=None):
+def evaluate_units(command: str, requested_volume_unit, requested_time_unit=None):
     """
     Converts the given volume and time unit from strings to qmixpump units
     and returns a 2-tuple or a 3-tuple (if a time unit is provided).
+        :param command: the command that needs the conversion
         :param requested_volume_unit: the volume unit to convert to a string
         :param requested_time_unit: the time unit to convert to a string
     """

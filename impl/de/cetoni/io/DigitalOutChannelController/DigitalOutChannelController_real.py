@@ -34,6 +34,8 @@ import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
 
+from sila2lib.error_handling.server_err import SiLAValidationError
+
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
@@ -82,6 +84,13 @@ class DigitalOutChannelControllerReal:
         """
 
         state = request.State.State.value
+
+        if state not in self.states.values():
+            raise SiLAValidationError(
+                parameter='de.cetoni/io/DigitalOutChannelController/v1/Command/SetOutput/Parameter/State',
+                msg=f"The parameter State ({state}) is invalid! It has to be either 'On' or 'Off'."
+            )
+
         logging.info(f"Setting output state to {state}")
         channel.write_on(state == 'On')
 

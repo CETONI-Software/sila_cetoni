@@ -42,7 +42,7 @@ import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 from impl.common.qmix_errors import QmixSDKSiLAError, DeviceError, SiLAError
 
 # import helpers
-from impl.common.decorators import channel_index, InvalidChannelIndex as DecoratorInvalidChannelIndex
+from impl.common.decorators import channel_index, InvalidChannelIndexError as DecoratorInvalidChannelIndex
 
 # import gRPC modules for this feature
 from .gRPC import ControlLoopService_pb2 as ControlLoopService_pb2

@@ -98,10 +98,13 @@ class PumpUnitControllerReal:
             flow_unit = request.FlowUnit
             requested_volume_unit = flow_unit.VolumeUnit.VolumeUnit.value
             requested_time_unit = flow_unit.TimeUnit.TimeUnit.value
-            prefix, volume_unit, time_unit = uc.evaluate_units(requested_volume_unit,
-                                                               requested_time_unit)
+            prefix, volume_unit, time_unit = uc.evaluate_units(
+                command='SetFlowUnit',
+                requested_volume_unit=requested_volume_unit,
+                requested_time_unit=requested_time_unit)
         except ValueError:
             raise UnitConversionError(
+                command='SetFlowUnit',
                 parameter="FlowUnit",
                 msg="The given flow unit is malformed. It has to be something like 'ml/s', for instance."
             )
@@ -132,7 +135,9 @@ class PumpUnitControllerReal:
         }
         """
 
-        prefix, volume_unit = uc.evaluate_units(request.VolumeUnit.VolumeUnit.value)
+        prefix, volume_unit = uc.evaluate_units(
+            command='SetFlowUnit',
+            requested_volume_unit=request.VolumeUnit.VolumeUnit.value)
         self.pump.set_volume_unit(prefix, volume_unit)
 
         return PumpUnitController_pb2.SetVolumeUnit_Responses()

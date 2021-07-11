@@ -91,8 +91,8 @@ class SyringeConfigurationControllerReal:
             """
             if param < 0:
                 raise SiLAValidationError(
-                    parameter=param_str,
-                    msg=f"The {param_str} cannot be less than 0",
+                    parameter=f"de.cetoni/pumps.syringepumps/SyringeConfigurationController/v1/Command/SetSyringeParameters/Parameter/{param_str}",
+                    msg=f"The {param_str} ({param}) is invalid! It cannot be less than 0",
                 )
 
         requested_inner_diameter = request.InnerDiameter.value

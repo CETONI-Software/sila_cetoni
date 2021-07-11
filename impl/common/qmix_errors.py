@@ -40,9 +40,13 @@ class FlowRateOutOfRangeError(SiLAValidationError):
     The requested flow rate is not in a valid range for this pump.
     """
 
-    def __init__(self, msg: str):
+    def __init__(self, command: str, msg: str):
+        """
+        :param command: The command where the error occurred
+        :param msg: The description of the error and possible actions to resolve it
+        """
         super().__init__(
-            parameter="sila2.de.cetoni.pumps.syringepumps.pumpfluiddosingservice.v1.FlowRate",
+            parameter=f"de.cetoni/pumps.syringepumps/PumpFluidDosingService/v1/Command/{command}/FlowRate",
             msg=msg
         )
 
@@ -51,9 +55,13 @@ class FillLevelOutOfRangeError(SiLAValidationError):
     The requested fill level is not in a valid range for this pump.
     """
 
-    def __init__(self, msg: str):
+    def __init__(self, command: str, msg: str):
+        """
+        :param command: The command where the error occurred
+        :param msg: The description of the error and possible actions to resolve it
+        """
         super().__init__(
-            parameter="sila2.de.cetoni.pumps.syringepumps.pumpfluiddosingservice.v1.Filllevel",
+            parameter=f"de.cetoni/pumps.syringepumps/PumpFluidDosingService/v1/Command/{command}/Filllevel",
             msg=msg
         )
 
@@ -62,9 +70,13 @@ class VolumeOutOfRangeError(SiLAValidationError):
     The requested volume is not in a valid range for this pump.
     """
 
-    def __init__(self, msg: str):
+    def __init__(self, command: str, msg: str):
+        """
+        :param command: The command where the error occurred
+        :param msg: The description of the error and possible actions to resolve it
+        """
         super().__init__(
-            parameter="sila2.de.cetoni.pumps.syringepumps.pumpfluiddosingservice.v1.Volume",
+            parameter=f"de.cetoni/pumps.syringepumps/PumpFluidDosingService/v1/Command/{command}/Volume",
             msg=msg
         )
 
@@ -83,9 +95,14 @@ class UnitConversionError(SiLAValidationError):
     The given unit could not be converted properly due to malformed input.
     """
 
-    def __init__(self, parameter, msg: str):
+    def __init__(self, command: str, parameter: str, msg: str):
+        """
+        :param command: The command where the error occurred
+        :param parameter: The parameter which is invalid
+        :param msg: The description of the error and possible actions to resolve it
+        """
         super().__init__(
-            parameter=f"sila2.de.cetoni.pumps.syringepumps.pumpunitcontroller.v1.{parameter}",
+            parameter=f"de.cetoni/pumps.syringepumps/PumpUnitController/v1/Command/{command}/Parameter/{parameter}",
             msg=msg
         )
 
@@ -98,6 +115,6 @@ class ValvePositionOutOfRangeError(SiLAValidationError):
 
     def __init__(self, msg: str = None):
         super().__init__(
-            parameter="sila2.de.cetoni.valves.valvepositioncontroller.v1.Position",
+            parameter="de.cetoni/valves/ValvePositionController/v1/Command/SwitchToPosition/Parameter/Position",
             msg=msg
         )

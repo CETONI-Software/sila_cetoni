@@ -39,8 +39,8 @@ import grpc         # used for type hinting only
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 # import SiLA errors
-from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType, QmixSDKSiLAError, \
-    FlowRateOutOfRangeError
+from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType, \
+    QmixSDKSiLAError, SiLAValidationError
 
 # import gRPC modules for this feature
 from .gRPC import ContinuousFlowDosingService_pb2 as ContinuousFlowDosingService_pb2
@@ -94,13 +94,14 @@ class ContinuousFlowDosingServiceReal:
             # wait for the currently running dosage to catch up
             time.sleep(0.25)
 
-        msg = "The requested {param} ({requested_val} {unit}) has to be in the range \
+        msg = "The requested flow rate ({requested_val} {unit}) has to be in the range \
             between 0 {unit} and {max_val} {unit} for this pump."
         max_flow_rate = self.pump.get_flow_rate_max()
         if requested_flow_rate < 0 or requested_flow_rate > max_flow_rate:
             unit = uc.flow_unit_to_string(self.pump.get_flow_unit())
-            raise FlowRateOutOfRangeError(
-                msg.format(param="flow rate", unit=unit, requested_val=requested_flow_rate, max_val=max_flow_rate)
+            raise SiLAValidationError(
+                parameter=f"de.cetoni/pumps.contiflowpumps/ContinuousFlowDosingService/v1/Command/GenerateFlow/FlowRate",
+                msg=msg.format(requested_val=requested_flow_rate, unit=unit, max_val=max_flow_rate)
             )
 
         self.dosage_uuid = str(uuid.uuid4())

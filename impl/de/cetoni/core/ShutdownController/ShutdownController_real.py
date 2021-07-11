@@ -31,7 +31,7 @@ ________________________________________________________________________
 __version__ = "0.1.0"
 
 # import general packages
-import logging
+import os, logging
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only

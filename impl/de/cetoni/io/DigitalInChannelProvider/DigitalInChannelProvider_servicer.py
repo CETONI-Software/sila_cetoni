@@ -43,7 +43,7 @@ from sila2lib.error_handling.server_err import SiLAError
 from impl.common.qmix_errors import QmixSDKSiLAError, DeviceError, SiLAError
 
 # import helpers
-from impl.common.decorators import channel_index, InvalidChannelIndex as DecoratorInvalidChannelIndex
+from impl.common.decorators import channel_index, InvalidChannelIndexError as DecoratorInvalidChannelIndexError
 
 # import gRPC modules for this feature
 from .gRPC import DigitalInChannelProvider_pb2 as DigitalInChannelProvider_pb2
@@ -153,10 +153,10 @@ class DigitalInChannelProvider(DigitalInChannelProvider_pb2_grpc.DigitalInChanne
             channel = self._get_channel(context.invocation_metadata(), "Property")
             for value in self.implementation.Subscribe_State(request, channel, context):
                 yield value
-        except (SiLAError, DeviceError, DecoratorInvalidChannelIndex) as err:
+        except (SiLAError, DeviceError, DecoratorInvalidChannelIndexError) as err:
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
-            elif isinstance(err, DecoratorInvalidChannelIndex):
+            elif isinstance(err, DecoratorInvalidChannelIndexError):
                 err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."

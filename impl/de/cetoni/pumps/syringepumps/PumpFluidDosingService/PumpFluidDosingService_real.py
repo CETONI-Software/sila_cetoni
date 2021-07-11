@@ -73,9 +73,10 @@ class PumpFluidDosingServiceReal:
 
         self.dosage_uuid = ""
 
-    def _check_pre_dosage(self, flow_rate, fill_level=None, volume=None):
+    def _check_pre_dosage(self, command: str, flow_rate, fill_level=None, volume=None):
         """
         Checks if the given flow rate and fill level or volume are in the correct ranges for this pump
+            :param command: The command where the error occurred
             :param flow_rate: The flow rate to check, if it's in the bounds for this pump
             :param fill_level: The fill level to check, if it's in the bounds for this pump
             :param volume: The volume to check, if it's in the bounds for this pump
@@ -96,17 +97,26 @@ class PumpFluidDosingServiceReal:
         if flow_rate <= 0 or flow_rate > max_flow_rate:
             unit = uc.flow_unit_to_string(self.pump.get_flow_unit())
             raise FlowRateOutOfRangeError(
-                msg.format(param="flow rate", unit=unit, exclusive="(exclusive)", requested_val=flow_rate, max_val=max_flow_rate)
+                command=command,
+                msg=msg.format(param="flow rate", unit=unit,
+                               exclusive="(exclusive)", requested_val=flow_rate,
+                               max_val=max_flow_rate)
             )
         if fill_level is not None and (fill_level < 0 or fill_level > max_fill_level):
             unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
             raise FillLevelOutOfRangeError(
-                msg.format(param="fill level", unit=unit, exclusive="", requested_val=fill_level, max_val=max_fill_level)
+                command=command,
+                msg=msg.format(param="fill level", unit=unit,
+                               exclusive="", requested_val=fill_level,
+                               max_val=max_fill_level)
             )
         if volume is not None and (volume <= 0 or volume > max_fill_level):
             unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
             raise VolumeOutOfRangeError(
-                msg.format(param="volume", unit=unit, exclusive="(exclusive)", requested_val=volume, max_val=max_fill_level)
+                command=command,
+                msg=msg.format(param="volume", unit=unit,
+                               exclusive="(exclusive)", requested_val=volume,
+                               max_val=max_fill_level)
             )
 
 
@@ -189,7 +199,8 @@ class PumpFluidDosingServiceReal:
         requested_fill_level = request.FillLevel.value
         requested_flow_rate = request.FlowRate.value
 
-        self._check_pre_dosage(flow_rate=requested_flow_rate, fill_level=requested_fill_level)
+        self._check_pre_dosage(command='SetFillLevel', flow_rate=requested_flow_rate,
+                               fill_level=requested_fill_level)
 
         self.dosage_uuid = str(uuid.uuid4())
         command_uuid = silaFW_pb2.CommandExecutionUUID(value=self.dosage_uuid)
@@ -285,10 +296,11 @@ class PumpFluidDosingServiceReal:
         requested_volume = request.Volume.value
         requested_flow_rate = request.FlowRate.value
 
-        # requested_volume is neagtive to indicate aspiration of fluid.
+        # requested_volume is negative to indicate aspiration of fluid.
         # Since the pre dosage checks test against 0 and the max flow rate of
         # the pump, we pass the absolute value of the requested_flow_rate.
-        self._check_pre_dosage(flow_rate=requested_flow_rate, volume=abs(requested_volume))
+        self._check_pre_dosage(command='DoseVolume', flow_rate=requested_flow_rate,
+                               volume=abs(requested_volume))
 
         # Give clearer error messages:
         # QmixSDK would just start and immediately stop dosing in case of dispense
@@ -296,12 +308,14 @@ class PumpFluidDosingServiceReal:
         pump_fill_level = self.pump.get_fill_level()
         if requested_volume > pump_fill_level:
             raise VolumeOutOfRangeError(
+                command='DoseVolume',
                 msg="There is too less fluid in the syringe! Aspirate some fluid before dispensing!"
             )
         # negative to indicate that there is still space for mor fluid
         free_volume = pump_fill_level - self.pump.get_volume_max()
         if requested_volume < free_volume:
             raise VolumeOutOfRangeError(
+                command='DoseVolume',
                 msg="There is too much fluid in the syringe! Dispense some fluid before aspirating!"
             )
 
@@ -396,7 +410,7 @@ class PumpFluidDosingServiceReal:
         # requested_flow_rate is negative to indicate aspiration of fluid.
         # Since the pre dosage checks test against 0 and the max flow rate of
         # the pump, we pass the absolute value of the requested_flow_rate.
-        self._check_pre_dosage(flow_rate=abs(requested_flow_rate))
+        self._check_pre_dosage(command='GenerateFlow', flow_rate=abs(requested_flow_rate))
 
         # NOTE:
         # _check_pre_dosage throws an error if the flow rate is <= 0
@@ -407,10 +421,12 @@ class PumpFluidDosingServiceReal:
         # from empty syringe or aspirate to full syringe.
         if requested_flow_rate > 0 and self.pump.get_fill_level() == 0:
             raise FlowRateOutOfRangeError(
+                command='GenerateFlow', 
                 msg="Cannot dispense from an empty syringe! Aspirate some fluid before dispensing!"
             )
         if requested_flow_rate < 0 and self.pump.get_fill_level() == self.pump.get_volume_max():
             raise FlowRateOutOfRangeError(
+                command='GenerateFlow', 
                 msg="Cannot aspirate to a full syringe! Dispense some fluid before aspirating!"
             )
 

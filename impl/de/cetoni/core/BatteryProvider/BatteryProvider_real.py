@@ -75,9 +75,6 @@ class BatteryProviderReal:
             BatteryVoltage (Battery Voltage): The current voltage of the battery
         """
 
-        # initialise the return value
-        return_value: BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses = None
-
         while True:
 
             yield BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses(

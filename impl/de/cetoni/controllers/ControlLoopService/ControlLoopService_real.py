@@ -81,8 +81,6 @@ class ControlLoopServiceReal:
 
         setpoint = request.SetPointValue.value
 
-        # TODO validate SetPoint!!
-
         logging.info(f"Writing SetPoint {setpoint} to device")
         controller.write_setpoint(setpoint)
 

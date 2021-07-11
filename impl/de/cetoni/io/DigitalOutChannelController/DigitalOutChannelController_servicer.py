@@ -43,7 +43,7 @@ from sila2lib.error_handling.server_err import SiLAError
 from impl.common.qmix_errors import QmixSDKSiLAError, DeviceError, SiLAError
 
 # import helpers
-from impl.common.decorators import channel_index, InvalidChannelIndex as DecoratorInvalidChannelIndex
+from impl.common.decorators import channel_index, InvalidChannelIndexError as DecoratorInvalidChannelIndexError
 
 # import gRPC modules for this feature
 from .gRPC import DigitalOutChannelController_pb2 as DigitalOutChannelController_pb2
@@ -139,10 +139,10 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
         try:
             channel = self._get_channel(context.invocation_metadata(), "Command")
             return self.implementation.SetOutput(request, channel, context)
-        except (SiLAError, DeviceError, DecoratorInvalidChannelIndex) as err:
+        except (SiLAError, DeviceError, DecoratorInvalidChannelIndexError) as err:
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
-            elif isinstance(err, DecoratorInvalidChannelIndex):
+            elif isinstance(err, DecoratorInvalidChannelIndexError):
                 err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
@@ -194,9 +194,9 @@ class DigitalOutChannelController(DigitalOutChannelController_pb2_grpc.DigitalOu
             for value in self.implementation.Subscribe_State(request, channel, context):
                 yield value
         except (SiLAError, DeviceError) as err:
-            if isinstance(err, DeviceError, DecoratorInvalidChannelIndex):
+            if isinstance(err, DeviceError, DecoratorInvalidChannelIndexError):
                 err = QmixSDKSiLAError(err)
-            elif isinstance(err, DecoratorInvalidChannelIndex):
+            elif isinstance(err, DecoratorInvalidChannelIndexError):
                 err = InvalidChannelIndexError(
                     err.invalid_index,
                     f"The index has to be between 0 and {self.num_channels - 1}."
