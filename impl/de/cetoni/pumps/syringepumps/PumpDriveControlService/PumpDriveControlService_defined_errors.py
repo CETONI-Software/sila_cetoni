@@ -50,7 +50,7 @@ class InitializationFailedError(SiLAExecutionError):
         """
 
         msg = f"The initialization did not end properly." \
-            + f'\n{extra_message}' if extra_message else ""
+            + (f'\n{extra_message}' if extra_message else "")
         super.__init__(error_identifier="de.cetoni/pumps.syringepumps/PumpDriveControlService/v1/DefinedError/ShutdownFailed",
                        msg=msg)
 

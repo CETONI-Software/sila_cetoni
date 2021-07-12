@@ -47,8 +47,8 @@ class ShutdownFailedError(SiLAExecutionError):
         """
 
         msg = "The shutdown routine could not be executed properly." \
-            "Thus the server might not be ready to be physically shutdown." \
-            + f'\n{extra_message}' if extra_message else ""
+              "Thus the server might not be ready to be physically shutdown." \
+              + (f'\n{extra_message}' if extra_message else "")
         super.__init__(error_identifier="de.cetoni/core/ShutdownController/v1/DefinedError/ShutdownFailed",
                         msg=msg)
 

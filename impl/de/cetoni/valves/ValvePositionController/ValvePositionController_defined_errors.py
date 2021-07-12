@@ -47,7 +47,7 @@ class ValveNotToggleableError(SiLAExecutionError):
         """
 
         msg = "The current valve does not support toggling because it has more than only two possible positions." \
-              + f'\n{extra_message}' if extra_message else ""
+              + (f'\n{extra_message}' if extra_message else "")
         super().__init__(
             error_identifier="de.cetoni/valves/ValvePositionController/v1/DefinedError/ValveNotToggleable",
             msg=msg
@@ -67,7 +67,7 @@ class ValvePositionNotAvailableError(SiLAExecutionError):
 
         msg = "The actual position of the current valve cannot be retrieved. " \
               "This is most likely a temporary error that can be fixed by setting a specific valve position." \
-               + f'\n{extra_message}' if extra_message else ""
+               + (f'\n{extra_message}' if extra_message else "")
         super().__init__(
             error_identifier="de.cetoni/valves/ValvePositionController/v1/DefinedError/ValvePositionNotAvailable",
             msg=msg
