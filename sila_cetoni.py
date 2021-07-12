@@ -483,6 +483,11 @@ if __name__ == '__main__':
         args.server_name = device.replace("_", " ")
         args.description = "Allows to control Qmix Controller Channels"
 
+        # a controller has I/O channels assigned to it but these are actually
+        # used by the controller internally already
+        if device in device_to_io_channels:
+            del device_to_io_channels[device]
+
         from serv.controllers.QmixControl_server import QmixControlServer
         server = QmixControlServer(cmd_args=args, controller_channels=channels, simulation_mode=False)
         server.run(block=False)
