@@ -33,6 +33,7 @@ import logging
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
+from typing import Dict
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
@@ -60,7 +61,7 @@ class ControlLoopServiceReal:
     def __init__(self):
         """Class initialiser"""
 
-        self.controller_to_run_uuid: dict(silaFW_pb2.CommandExecutionUUID) = None
+        self.controller_to_run_uuid: Dict[ControllerChannel, silaFW_pb2.CommandExecutionUUID] = dict()
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
