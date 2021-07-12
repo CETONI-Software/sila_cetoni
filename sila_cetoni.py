@@ -43,6 +43,7 @@ from lxml import etree, objectify
 
 # adjust PATH to point to QmixSDK
 sys.path.append("C:/QmixSDK/lib/python")
+sys.path.append("C:/CETONI_SDK/lib/python")
 
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion, qmixvalve
