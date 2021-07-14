@@ -48,7 +48,7 @@ from qmixsdk import qmixpump
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
 # import SiLA errors
-from impl.common.qmix_errors import DeviceError, SiLAExecutionError
+from impl.common.errors import DeviceError, SiLAExecutionError
 
 # import gRPC modules for this feature
 from .gRPC import PumpDriveControlService_pb2 as PumpDriveControlService_pb2

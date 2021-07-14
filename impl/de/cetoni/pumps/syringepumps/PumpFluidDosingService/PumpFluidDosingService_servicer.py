@@ -43,7 +43,7 @@ from typing import Union
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 # import SiLA errors
-from impl.common.qmix_errors import SiLAError, QmixSDKSiLAError, DeviceError
+from impl.common.errors import SiLAError, QmixSDKSiLAError, DeviceError
 
 # import gRPC modules for this feature
 from .gRPC import PumpFluidDosingService_pb2 as PumpFluidDosingService_pb2

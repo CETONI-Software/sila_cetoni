@@ -1,7 +1,7 @@
 import logging
 
 # import SiLA errors
-from impl.common.qmix_errors import UnitConversionError
+from impl.common.errors import UnitConversionError
 
 from qmixsdk import qmixpump
 

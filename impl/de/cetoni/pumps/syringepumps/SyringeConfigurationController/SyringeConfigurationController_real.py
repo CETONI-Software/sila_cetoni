@@ -42,7 +42,7 @@ from .gRPC import SyringeConfigurationController_pb2 as SyringeConfigurationCont
 # from .gRPC import SyringeConfigurationController_pb2_grpc as SyringeConfigurationController_pb2_grpc
 
 # import SiLA errors
-from impl.common.qmix_errors import SiLAValidationError
+from impl.common.errors import SiLAValidationError
 
 # import default arguments
 from .SyringeConfigurationController_default_arguments import default_dict

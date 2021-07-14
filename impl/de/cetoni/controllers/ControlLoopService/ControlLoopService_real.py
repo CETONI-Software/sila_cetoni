@@ -39,7 +39,7 @@ from typing import Dict
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
 # import SiLA errors
-from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType
+from impl.common.errors import SiLAFrameworkError, SiLAFrameworkErrorType
 
 # import gRPC modules for this feature
 from .gRPC import ControlLoopService_pb2 as ControlLoopService_pb2

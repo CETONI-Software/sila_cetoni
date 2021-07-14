@@ -3,12 +3,12 @@ ________________________________________________________________________
 
 :PROJECT: sila_cetoni
 
-*Qmix Error*
+*Errors*
 
-:details: Qmix Error:
-    Provides a bridge from a DeviceError from QmixSDK to a SiLA Execution Error
+:details: Errors:
+    Provides a bridge from a DeviceError from CETONI SDK to a SiLA Execution Error
 
-:file:    qmix_error.py
+:file:    errors.py
 :authors: Florian Meinicke
 :date (creation)          2020-10-09
 :date (last modification) 2020-10-09
@@ -24,12 +24,12 @@ from qmixsdk.qmixbus import DeviceError
 # Common
 class QmixSDKSiLAError(SiLAExecutionError):
     """
-    An unexpected error that was thrown by the QmixSDK during the execution of a command.
-    Basically maps an error from QmixSDK to a SiLA Undefined Execution Error.
+    An unexpected error that was thrown by the CETONI SDK during the execution of a command.
+    Basically maps an error from CETONI SDK to a SiLA Undefined Execution Error.
     """
 
-    def __init__(self, qmixsdk_error: DeviceError = None):
-        msg = f"The QmixSDK threw an unexpected error {qmixsdk_error}"
+    def __init__(self, sdk_error: DeviceError = None):
+        msg = f"The CETONI SDK threw an unexpected error {sdk_error}"
 
         super().__init__(msg=msg, error_identifier=None)
 

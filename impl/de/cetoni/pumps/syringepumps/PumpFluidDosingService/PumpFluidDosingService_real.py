@@ -52,7 +52,7 @@ from .gRPC import PumpFluidDosingService_pb2 as PumpFluidDosingService_pb2
 # import default arguments
 from .PumpFluidDosingService_default_arguments import default_dict
 # import SiLA errors
-from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType, \
+from impl.common.errors import SiLAFrameworkError, SiLAFrameworkErrorType, \
     FlowRateOutOfRangeError, FillLevelOutOfRangeError, VolumeOutOfRangeError
 
 from ..PumpUnitController import unit_conversion as uc
@@ -421,12 +421,12 @@ class PumpFluidDosingServiceReal:
         # from empty syringe or aspirate to full syringe.
         if requested_flow_rate > 0 and self.pump.get_fill_level() == 0:
             raise FlowRateOutOfRangeError(
-                command='GenerateFlow', 
+                command='GenerateFlow',
                 msg="Cannot dispense from an empty syringe! Aspirate some fluid before dispensing!"
             )
         if requested_flow_rate < 0 and self.pump.get_fill_level() == self.pump.get_volume_max():
             raise FlowRateOutOfRangeError(
-                command='GenerateFlow', 
+                command='GenerateFlow',
                 msg="Cannot aspirate to a full syringe! Dispense some fluid before aspirating!"
             )
 

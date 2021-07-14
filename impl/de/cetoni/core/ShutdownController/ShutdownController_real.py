@@ -49,7 +49,7 @@ from .gRPC import ShutdownController_pb2 as ShutdownController_pb2
 # from .gRPC import ShutdownController_pb2_grpc as ShutdownController_pb2_grpc
 
 # import SiLA errors
-from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType
+from impl.common.errors import SiLAFrameworkError, SiLAFrameworkErrorType
 
 # import default arguments
 from .ShutdownController_default_arguments import default_dict

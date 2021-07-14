@@ -39,7 +39,7 @@ from typing import Union, List, Tuple
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
 # import SiLA errors
-from impl.common.qmix_errors import QmixSDKSiLAError, DeviceError, SiLAError
+from impl.common.errors import QmixSDKSiLAError, DeviceError, SiLAError
 
 # import helpers
 from impl.common.decorators import channel_index, InvalidChannelIndexError as DecoratorInvalidChannelIndex

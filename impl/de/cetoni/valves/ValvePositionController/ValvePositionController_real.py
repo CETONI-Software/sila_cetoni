@@ -38,7 +38,7 @@ import grpc         # used for type hinting only
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 # import SiLA errors
-from impl.common.qmix_errors import DeviceError, QmixSDKSiLAError, \
+from impl.common.errors import DeviceError, QmixSDKSiLAError, \
     ValvePositionOutOfRangeError
 
 # import gRPC modules for this feature

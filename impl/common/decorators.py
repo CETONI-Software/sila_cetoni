@@ -24,7 +24,7 @@ from typing import Tuple
 from sila2lib.framework import SiLAFramework_pb2 as silaFW_pb2
 
 # import SiLA errors
-from impl.common.qmix_errors import SiLAFrameworkError, SiLAFrameworkErrorType
+from impl.common.errors import SiLAFrameworkError, SiLAFrameworkErrorType
 
 class InvalidChannelIndexError(Exception):
     def __init__(self, invalid_index: int):

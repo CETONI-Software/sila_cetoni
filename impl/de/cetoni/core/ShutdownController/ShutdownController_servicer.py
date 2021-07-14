@@ -45,7 +45,7 @@ from .gRPC import ShutdownController_pb2 as ShutdownController_pb2
 from .gRPC import ShutdownController_pb2_grpc as ShutdownController_pb2_grpc
 
 # import SiLA errors
-from impl.common.qmix_errors import SiLAError, DeviceError, QmixSDKSiLAError
+from impl.common.errors import SiLAError, DeviceError, QmixSDKSiLAError
 
 # import simulation and real implementation
 from .ShutdownController_simulation import ShutdownControllerSimulation

@@ -42,7 +42,7 @@ from . import unit_conversion as uc
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 # import SiLA errors
-from impl.common.qmix_errors import UnitConversionError
+from impl.common.errors import UnitConversionError
 
 # import gRPC modules for this feature
 from .gRPC import PumpUnitController_pb2 as PumpUnitController_pb2

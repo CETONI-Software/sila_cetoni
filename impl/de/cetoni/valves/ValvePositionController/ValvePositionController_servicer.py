@@ -44,7 +44,7 @@ from .gRPC import ValvePositionController_pb2 as ValvePositionController_pb2
 from .gRPC import ValvePositionController_pb2_grpc as ValvePositionController_pb2_grpc
 
 # import SiLA errors
-from impl.common.qmix_errors import SiLAFrameworkError, DeviceError, QmixSDKSiLAError, \
+from impl.common.errors import SiLAFrameworkError, DeviceError, QmixSDKSiLAError, \
     ValvePositionOutOfRangeError
 
 # import simulation and real implementation
