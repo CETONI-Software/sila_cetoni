@@ -34,8 +34,6 @@ import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
 
-from raspi.zero2go import Zero2Go
-
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
@@ -46,7 +44,9 @@ from .gRPC import BatteryProvider_pb2 as BatteryProvider_pb2
 # import default arguments
 from .BatteryProvider_default_arguments import default_dict
 
+from qmixsdk.qmixanalogio import AnalogInChannel
 
+from application.application import ApplicationSystem
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class BatteryProviderReal:
@@ -58,7 +58,7 @@ class BatteryProviderReal:
     def __init__(self):
         """Class initialiser"""
 
-        self.zero2go = Zero2Go()
+        self.system = ApplicationSystem()
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
@@ -75,9 +75,19 @@ class BatteryProviderReal:
             BatteryVoltage (Battery Voltage): The current voltage of the battery
         """
 
-        while True:
+        # The only battery powered device we have is our mobile dosage unit (MobDos).
+        # This will always only have a single pump where the first analog in channel
+        # provides the current voltage of the system (i.e. the voltage of the battery).
+        channel: AnalogInChannel = self.system.pumps[0].io_channels[0]
+        # The value we get from the analog in channel has been divided by
+        # a voltage divider so we have to multiply by this factor to get
+        # the actual voltage value.
+        VOLTAGE_DIVIDER_FACTOR = 0.00558
 
+        while True:
             yield BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses(
-                BatteryVoltage=silaFW_pb2.Real(value=self.zero2go.voltage_for_channel('C'))
+                BatteryVoltage=silaFW_pb2.Real(
+                    value=channel.read_input() * VOLTAGE_DIVIDER_FACTOR
+                )
             )
             time.sleep(0.5) # give client some time to catch up

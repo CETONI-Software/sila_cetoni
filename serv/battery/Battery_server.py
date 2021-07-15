@@ -44,7 +44,7 @@ from impl.de.cetoni.core.BatteryProvider.BatteryProvider_default_arguments impor
 # Import the servicer modules for each feature
 from impl.de.cetoni.core.BatteryProvider.BatteryProvider_servicer import BatteryProvider
 
-from raspi.zero2go import Zero2Go
+from application.application import ApplicationSystem
 
 class BatteryServer(SystemStatusProviderServer):
     """
@@ -67,8 +67,8 @@ class BatteryServer(SystemStatusProviderServer):
             )
         )
 
-        if not Zero2Go.is_available():
-            logging.debug("This device does not seem to be battery powered...")
+        if not ApplicationSystem().device_config.has_battery:
+            logging.debug("This device does not have a battery")
             return
 
         meta_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
