@@ -42,7 +42,15 @@ from .device import DeviceConfiguration, Device, PumpDevice, AxisSystemDevice, \
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
-class Application:
+# taken from https://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class Application(metaclass=Singleton):
     """
     Encompasses the main application logic
     """
@@ -61,7 +69,10 @@ class Application:
     system_operational: bool
     shutting_down: bool
 
-    def __init__(self, device_config_path: str):
+    def __init__(self, device_config_path: str = ""):
+        if not device_config_path:
+            return
+
         self.device_config = DeviceConfiguration(device_config_path)
 
         self.bus = qmixbus.Bus()
