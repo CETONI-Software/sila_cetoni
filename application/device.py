@@ -137,6 +137,7 @@ class DeviceConfiguration:
 
     path: str
     devices: List[Device]
+    has_battery: bool
 
     def __init__(self, path: str):
         """
@@ -155,11 +156,10 @@ class DeviceConfiguration:
         """
         Parses the device configuration
         """
-        tree: etree.ElementTree
+        tree: objectify.ObjectifiedElement
         with open(os.path.join(self.path, 'device_properties.xml')) as f:
             tree = objectify.parse(f)
         root = tree.getroot()
-
         for plugin in root.Core.PluginList.iterchildren():
             if plugin.text in ('qmixelements', 'scriptingsystem', 'labbcanservice',
                                'canopentools', 'qmixdevices', 'datalogger'):
@@ -168,36 +168,48 @@ class DeviceConfiguration:
                 # we can skip them
                 continue
 
-            logging.debug(f"Parsing configuration for {plugin.text} plugin")
-            # we need to create a new parser that parses our 'broken' XML files
-            # (they are regarded as 'broken' because they contain multiple root tags)
-            parser = objectify.makeparser(recover=True)
-            with open(os.path.join(self.path, plugin.text + '.xml')) as f:
-                # wrap the 'broken' XML in a new <root> so that we can parse the
-                # whole document instead of just the first root
-                lines = f.readlines()
-                fixed_xml = bytes(lines[0] + '<root>' + ''.join(lines[1:]) + '</root>', 'utf-8')
-
-                plugin_tree: etree.ElementTree = objectify.fromstring(fixed_xml, parser)
-                print(etree.tostring(plugin_tree, pretty_print=True))
-                plugin_root = plugin_tree.Plugin
-                try:
-                    for device in plugin_root.labbCAN.DeviceList.iterchildren():
-                        self.devices += [Device(device.get('Name'))]
-                except AttributeError as err:
-                    print(err)
-                    pass
-
-                if 'rotaxys' in plugin.text:
-                    # no possibility to find the jib length elsewhere
-                    for device in plugin_root.DeviceList.iterchildren():
-                        self.device_by_name(device.get('Name')).set_device_property(
-                            'jib_length', abs(int(device.JibLength.text)))
+            self._parse_plugin(plugin.text)
 
         filtered_devices = [device for device in filter(self.__unneeded_devices, self.devices)]
         self.devices = [device for device in map(self.__fix_device_name, filtered_devices)]
 
         logging.debug(f"Found the following devices: {self.devices}")
+
+        try:
+            self.has_battery = bool(root.SiLA.BatteryPowered)
+        except AttributeError:
+            self.has_battery = False
+
+
+    def _parse_plugin(self, plugin_name: str):
+        """
+        Parses the configuration for the plugin named `plugin_name`
+
+        :param plugin_name: The name of the plugin to parse
+        """
+        logging.debug(f"Parsing configuration for {plugin_name} plugin")
+        # we need to create a new parser that parses our 'broken' XML files
+        # (they are regarded as 'broken' because they contain multiple root tags)
+        parser = objectify.makeparser(recover=True)
+        with open(os.path.join(self.path, plugin_name + '.xml')) as f:
+            # wrap the 'broken' XML in a new <root> so that we can parse the
+            # whole document instead of just the first root
+            lines = f.readlines()
+            fixed_xml = bytes(lines[0] + '<root>' + ''.join(lines[1:]) + '</root>', 'utf-8')
+
+            plugin_tree: objectify.ObjectifiedElement = objectify.fromstring(fixed_xml, parser)
+            plugin_root = plugin_tree.Plugin
+            try:
+                for device in plugin_root.labbCAN.DeviceList.iterchildren():
+                    self.devices += [Device(device.get('Name'))]
+            except AttributeError:
+                pass
+
+            if 'rotaxys' in plugin_name:
+                # no possibility to find the jib length elsewhere
+                for device in plugin_root.DeviceList.iterchildren():
+                    self.device_by_name(device.get('Name')).set_device_property(
+                        'jib_length', abs(int(device.JibLength.text)))
 
     @staticmethod
     def __unneeded_devices(device: Device):
