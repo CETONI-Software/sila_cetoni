@@ -50,13 +50,14 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
-class Application(metaclass=Singleton):
+class ApplicationSystem(metaclass=Singleton):
     """
-    Encompasses the main application logic
+    The whole application system containing all devices and all configuration
     """
 
     device_config: DeviceConfiguration
     bus: qmixbus.Bus
+    monitoring_thread: threading.Thread
 
     pumps: List[PumpDevice]
     axis_systems: List[AxisSystemDevice]
@@ -64,9 +65,7 @@ class Application(metaclass=Singleton):
     controllers: List[ControllerDevice]
     io_devices: List[IODevice]
 
-    servers: List[SiLA2Server]
-
-    system_operational: bool
+    is_operational: bool
     shutting_down: bool
 
     def __init__(self, device_config_path: str = ""):
@@ -100,19 +99,12 @@ class Application(metaclass=Singleton):
         logging.debug(f"controller devices: {repr(self.controller_devices)}")
         logging.debug(f"io devices: {repr(self.io_devices)}")
 
-        logging.debug("Creating SiLA 2 servers...")
-        self.servers = self.create_servers()
-
-        self.system_operational = True
+        self.is_operational = True
         self.shutting_down = False
 
-    def run(self):
+    def start(self):
         """
-        Run the main application loop
-
-        Starts the CAN bus communications and the bus monitoring
-        Starts all SiLA 2 servers
-        Runs until Ctrl-C is pressed on the command line or `stop()` has been called
+        Starts the CAN bus communications and the bus monitoring and enables devices
         """
         logging.debug("Starting bus and enabling devices...")
         self.bus.start()
@@ -121,44 +113,12 @@ class Application(metaclass=Singleton):
 
         self._start_bus_monitoring()
 
-        self.start_servers()
-
-        print("Press Ctrl-C to stop...")
-        try:
-            while not self.shutting_down:
-                time.sleep(_ONE_DAY_IN_SECONDS)
-        except KeyboardInterrupt:
-            print()
-            self.stop()
-
     def stop(self):
         """
-        Stops the application
-
-        Stops all SiLA 2 servers
         Stops the CAN bus monitoring and the bus communication
         """
         self.shutting_down = True
-        self.stop_servers()
         self.stop_and_close_bus()
-
-    def start_servers(self):
-        """
-        Starts all SiLA 2 servers
-        """
-        logging.debug("Starting SiLA 2 servers...")
-        for server in self.servers:
-            server.run(block=False)
-        logging.info("All servers started!")
-
-    def stop_servers(self):
-        """
-        Stops all SiLA 2 servers
-        """
-        logging.debug("Shutting down servers...")
-        for server in self.servers:
-            server.stop_grpc_server()
-        logging.info("Done!")
 
     def _start_bus_monitoring(self):
         """
@@ -215,8 +175,6 @@ class Application(metaclass=Singleton):
             return event.event_id == qmixbus.EventId.device_guard.value \
                 and event.data[0] == qmixbus.GuardEventId.heartbear_err_resolved.value
 
-        self.system_operational = True
-
         while not self.shutting_down:
             time.sleep(1)
 
@@ -226,12 +184,12 @@ class Application(metaclass=Singleton):
             logging.debug(f"event id: {event.event_id}, device: {event.device}, "
                           f"data: {event.data}, message: {event.string}")
 
-            if self.system_operational and (is_dc_link_under_voltage_event(event) \
+            if self.is_operational and (is_dc_link_under_voltage_event(event) \
                 or is_heartbeat_err_occurred_event(event)):
-                self.system_operational = False
+                self.is_operational = False
 
-            if not self.system_operational and is_heartbeat_err_resolved_event(event):
-                self.system_operational = True
+            if not self.is_operational and is_heartbeat_err_resolved_event(event):
+                self.is_operational = True
 
     #-------------------------------------------------------------------------
     # Pumps
@@ -404,8 +362,70 @@ class Application(metaclass=Singleton):
 
         return self.device_config.add_channels_to_device(channels)
 
-    #-------------------------------------------------------------------------
-    # SiLA 2
+class Application(metaclass=Singleton):
+    """
+    Encompasses the main application logic
+    """
+
+    system: ApplicationSystem
+
+    servers: List[SiLA2Server]
+
+    def __init__(self, device_config_path: str = ""):
+        if not device_config_path:
+            return
+
+        self.system = ApplicationSystem(device_config_path)
+
+        logging.debug("Creating SiLA 2 servers...")
+        self.servers = self.create_servers()
+
+    def run(self):
+        """
+        Run the main application loop
+
+        Starts the whole system (i.e. all devices) and all SiLA 2 servers
+        Runs until Ctrl-C is pressed on the command line or `stop()` has been called
+        """
+        self.system.start()
+
+        self.start_servers()
+
+        print("Press Ctrl-C to stop...")
+        try:
+            while not self.system.shutting_down:
+                time.sleep(_ONE_DAY_IN_SECONDS)
+        except KeyboardInterrupt:
+            print()
+            self.stop()
+
+    def stop(self):
+        """
+        Stops the application
+
+        Shuts down all SiLA 2 servers and stops the whole system
+        """
+        self.stop_servers()
+        self.system.stop()
+
+    def start_servers(self):
+        """
+        Starts all SiLA 2 servers
+        """
+        logging.debug("Starting SiLA 2 servers...")
+        for server in self.servers:
+            server.run(block=False)
+        logging.info("All servers started!")
+
+    def stop_servers(self):
+        """
+        Stops all SiLA 2 servers
+        """
+        logging.debug("Shutting down servers...")
+        for server in self.servers:
+            server.stop_grpc_server()
+        logging.info("Done!")
+
     def create_servers(self):
         """
         Creates a corresponding SiLA 2 server for every device connected to the bus
@@ -422,7 +442,7 @@ class Application(metaclass=Singleton):
 
         #---------------------------------------------------------------------
         # pumps
-        for pump in self.pumps:
+        for pump in self.system.pumps:
             args.port += 1
             args.server_name = pump.name.replace("_", " ")
             args.description = "Allows to control a {contiflow_descr} neMESYS syringe pump".format(
@@ -449,7 +469,7 @@ class Application(metaclass=Singleton):
 
         #---------------------------------------------------------------------
         # axis systems
-        for axis_system in self.axis_systems:
+        for axis_system in self.system.axis_systems:
             args.port += 1
             args.server_name = axis_system.name.replace("_", " ")
             args.description = "Allows to control motion systems like axis systems"
@@ -466,7 +486,7 @@ class Application(metaclass=Singleton):
 
         #---------------------------------------------------------------------
         # valves
-        for valve_device in self.valves:
+        for valve_device in self.system.valves:
             args.port += 1
             args.server_name = valve_device.name.replace("_", " ")
             args.description = "Allows to control valve devices"
@@ -481,7 +501,7 @@ class Application(metaclass=Singleton):
 
         #---------------------------------------------------------------------
         # controller
-        for controller_device in self.controller_devices:
+        for controller_device in self.system.controller_devices:
             args.port += 1
             args.server_name = controller_device.name.replace("_", " ")
             args.description = "Allows to control Qmix Controller Channels"
@@ -496,7 +516,7 @@ class Application(metaclass=Singleton):
 
         #---------------------------------------------------------------------
         # I/O
-        for io_device in self.io_devices:
+        for io_device in self.system.io_devices:
             args.port += 1
             args.server_name = io_device.name.replace("_", " ")
             args.description = "Allows to control Qmix I/O Channels"
