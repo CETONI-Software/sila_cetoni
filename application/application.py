@@ -434,16 +434,17 @@ class Application(metaclass=Singleton):
         servers = []
         # common args for all servers
         args = argparse.Namespace(
-            port=50051, # base port
+            server_port=50051, # base port
             server_type="TestServer",
             encryption_key=None,
-            encryption_cert=None
+            encryption_cert=None,
+            meta_dir=None
         )
 
         #---------------------------------------------------------------------
         # pumps
         for pump in self.system.pumps:
-            args.port += 1
+            args.server_port += 1
             args.server_name = pump.name.replace("_", " ")
             args.description = "Allows to control a {contiflow_descr} neMESYS syringe pump".format(
                 contiflow_descr="contiflow pump made up of two" if isinstance(pump, qmixpump.ContiFlowPump) else ""
@@ -470,7 +471,7 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # axis systems
         for axis_system in self.system.axis_systems:
-            args.port += 1
+            args.server_port += 1
             args.server_name = axis_system.name.replace("_", " ")
             args.description = "Allows to control motion systems like axis systems"
 
@@ -487,7 +488,7 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # valves
         for valve_device in self.system.valves:
-            args.port += 1
+            args.server_port += 1
             args.server_name = valve_device.name.replace("_", " ")
             args.description = "Allows to control valve devices"
 
@@ -502,7 +503,7 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # controller
         for controller_device in self.system.controller_devices:
-            args.port += 1
+            args.server_port += 1
             args.server_name = controller_device.name.replace("_", " ")
             args.description = "Allows to control Qmix Controller Channels"
 
@@ -517,7 +518,7 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # I/O
         for io_device in self.system.io_devices:
-            args.port += 1
+            args.server_port += 1
             args.server_name = io_device.name.replace("_", " ")
             args.description = "Allows to control Qmix I/O Channels"
 

@@ -32,8 +32,8 @@ import os
 import logging
 import argparse
 
-# Import the main SiLA library
-from sila2lib.sila_server import SiLA2Server
+# Import our server base class
+from ..core.SystemStatusProvider_server import SystemStatusProviderServer
 
 # Import gRPC libraries of features
 from impl.de.cetoni.valves.ValveGatewayService.gRPC import ValveGatewayService_pb2
@@ -49,24 +49,14 @@ from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_defau
 from impl.de.cetoni.valves.ValveGatewayService.ValveGatewayService_servicer import ValveGatewayService
 from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_servicer import ValvePositionController
 
-from ..local_ip import LOCAL_IP
-
-class ValveServer(SiLA2Server):
+class ValveServer(SystemStatusProviderServer):
     """
     Allows to control valve devices
     """
 
     def __init__(self, cmd_args, valves, simulation_mode: bool = True):
         """Class initialiser"""
-        super().__init__(
-            name=cmd_args.server_name, description=cmd_args.description,
-            server_type=cmd_args.server_type, server_uuid=None,
-            version=__version__,
-            vendor_url="cetoni.de",
-            ip=LOCAL_IP, port=int(cmd_args.port),
-            key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert,
-            simulation_mode=simulation_mode
-        )
+        super().__init__(cmd_args=cmd_args, simulation_mode=simulation_mode)
 
         logging.info(
             "Starting SiLA2 server with server name: {server_name}".format(
