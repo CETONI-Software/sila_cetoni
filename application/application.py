@@ -106,11 +106,7 @@ class ApplicationSystem(metaclass=Singleton):
         """
         Starts the CAN bus communications and the bus monitoring and enables devices
         """
-        logging.debug("Starting bus and enabling devices...")
-        self.bus.start()
-        self.enable_pumps()
-        self.enable_axis_systems()
-
+        self.start_bus_and_enable_devices()
         self._start_bus_monitoring()
 
     def stop(self):
@@ -127,7 +123,6 @@ class ApplicationSystem(metaclass=Singleton):
         self.monitoring_thread = threading.Thread(target=self.monitor_events)
         self.monitoring_thread.start()
 
-
     #-------------------------------------------------------------------------
     # Bus
     def open_bus(self):
@@ -140,6 +135,15 @@ class ApplicationSystem(metaclass=Singleton):
         except qmixbus.DeviceError as err:
             logging.error("Could not open the bus communication: %s", err)
             sys.exit(1)
+
+    def start_bus_and_enable_devices(self):
+        """
+        Starts the bus communication and enables all devices
+        """
+        logging.debug("Starting bus and enabling devices...")
+        self.bus.start()
+        self.enable_pumps()
+        self.enable_axis_systems()
 
     def stop_and_close_bus(self):
         """

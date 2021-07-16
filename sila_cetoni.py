@@ -60,11 +60,11 @@ def parse_command_line():
 
 if __name__ == '__main__':
     logging_level = logging.DEBUG # or use logging.ERROR for less output
+    LOGGING_FORMAT = '%(asctime)s [%(threadName)-12.12s] %(levelname)-8s| %(module)s.%(funcName)s: %(message)s'
     try:
-        coloredlogs.install(fmt='%(asctime)s %(levelname)-8s| %(module)s.%(funcName)s: %(message)s',
-                            level=logging_level)
+        coloredlogs.install(fmt=LOGGING_FORMAT, level=logging_level)
     except NameError:
-        logging.basicConfig(format='%(levelname)-8s| %(module)s.%(funcName)s: %(message)s', level=logging_level)
+        logging.basicConfig(format=LOGGING_FORMAT, level=logging_level)
 
     parsed_args = parse_command_line()
 
