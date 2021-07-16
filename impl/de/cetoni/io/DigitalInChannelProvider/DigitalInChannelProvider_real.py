@@ -46,6 +46,8 @@ from .DigitalInChannelProvider_default_arguments import default_dict
 
 from qmixsdk.qmixdigio import DigitalInChannel
 
+from application.application import ApplicationSystem
+
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class DigitalInChannelProviderReal:
@@ -60,6 +62,7 @@ class DigitalInChannelProviderReal:
         """
 
         self.states = {True: 'On', False: 'Off'}
+        self.system = ApplicationSystem()
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
@@ -80,7 +83,9 @@ class DigitalInChannelProviderReal:
         while True:
             yield DigitalInChannelProvider_pb2.Subscribe_State_Responses(
                 State=DigitalInChannelProvider_pb2.DataType_State(
-                    State=silaFW_pb2.String(value=self.states[channel.is_on()])
+                    State=silaFW_pb2.String(
+                        value=self.states[channel.is_on() and self.system.is_operational]
+                    )
                 )
             )
             time.sleep(0.5) # give client some time to catch up

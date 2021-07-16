@@ -57,6 +57,8 @@ from impl.de.cetoni.valves.ValveGatewayService.ValveGatewayService_servicer impo
 # import qmixsdk
 from qmixsdk.qmixvalve import Valve
 
+from application.application import ApplicationSystem
+
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class ValvePositionControllerReal:
@@ -72,6 +74,7 @@ class ValvePositionControllerReal:
 
         self.valve = valve
         self.valve_gateway: ValveGatewayService = valve_gateway
+        self.system = ApplicationSystem()
 
     def _get_valve(self, invocation_metadata, type: str) -> Valve:
         """
@@ -91,6 +94,23 @@ class ValvePositionControllerReal:
             return self.valve
 
         return self.valve_gateway.get_valve(invocation_metadata, type)
+
+    def _get_valve_position(self, valve: Valve) -> int:
+        """
+        Helper to get the current position of `valve`
+
+        Throws the Defined Execution Error "ValvePositionNotAvailable" if the
+        position cannot be obtained
+
+        :param valve: The valve to get the position for
+        """
+        try:
+            return valve.actual_valve_position()
+        except DeviceError as err:
+            if err.errorcode == -2:
+                raise ValvePositionNotAvailableError()
+            raise err
+
 
     def SwitchToPosition(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.SwitchToPosition_Responses:
@@ -148,6 +168,7 @@ class ValvePositionControllerReal:
         except DeviceError as err:
             if err.errorcode == -2:
                 raise ValvePositionNotAvailableError()
+            raise err
 
     def Get_NumberOfPositions(self, request, context: grpc.ServicerContext) \
             -> ValvePositionController_pb2.Get_NumberOfPositions_Responses:
@@ -183,14 +204,12 @@ class ValvePositionControllerReal:
 
         valve = self._get_valve(context.invocation_metadata(), "Property")
 
+        valve_position = self._get_valve_position(valve)
         while True:
-            try:
-                yield ValvePositionController_pb2.Subscribe_Position_Responses(
-                    Position=silaFW_pb2.Integer(value=valve.actual_valve_position())
-                )
-            except DeviceError as err:
-                if err.errorcode == -2:
-                    raise ValvePositionNotAvailableError()
-
+            if self.system.is_operational:
+                valve_position = self._get_valve_position(valve)
+            yield ValvePositionController_pb2.Subscribe_Position_Responses(
+                Position=silaFW_pb2.Integer(value=valve_position)
+            )
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)

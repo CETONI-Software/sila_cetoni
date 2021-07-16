@@ -55,6 +55,8 @@ from .PumpFluidDosingService_default_arguments import default_dict
 from impl.common.errors import SiLAFrameworkError, SiLAFrameworkErrorType, \
     FlowRateOutOfRangeError, FillLevelOutOfRangeError, VolumeOutOfRangeError
 
+from application.application import ApplicationSystem
+
 from ..PumpUnitController import unit_conversion as uc
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -70,8 +72,8 @@ class PumpFluidDosingServiceReal:
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
         self.pump = pump
-
-        self.dosage_uuid = ""
+        self.dosage_uuid = str()
+        self.system = ApplicationSystem()
 
     def _check_pre_dosage(self, command: str, flow_rate, fill_level=None, volume=None):
         """
@@ -526,12 +528,14 @@ class PumpFluidDosingServiceReal:
         :returns: A response object with the following fields:
             MaxSyringeFillLevel (Maximum Syringe Fill Level): The maximum amount of fluid that the syringe can hold.
         """
+        max_fill_level = self.pump.get_volume_max()
         while True:
+            if self.system.is_operational:
+                max_fill_level = self.pump.get_volume_max()
             yield PumpFluidDosingService_pb2.Subscribe_MaxSyringeFillLevel_Responses(
-                MaxSyringeFillLevel=silaFW_pb2.Real(value=self.pump.get_volume_max())
+                MaxSyringeFillLevel=silaFW_pb2.Real(value=max_fill_level)
             )
-
-            # we add a small delay to give the client a chance to keep up.
+        # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
 
 
@@ -547,12 +551,13 @@ class PumpFluidDosingServiceReal:
         :returns: A response object with the following fields:
             SyringeFillLevel (Syringe Fill Level): The current amount of fluid left in the syringe.
         """
-
+        fill_level = self.pump.get_fill_level()
         while True:
+            if self.system.is_operational:
+                fill_level = self.pump.get_fill_level()
             yield PumpFluidDosingService_pb2.Subscribe_SyringeFillLevel_Responses(
-                SyringeFillLevel=silaFW_pb2.Real(value=self.pump.get_fill_level())
+                SyringeFillLevel=silaFW_pb2.Real(value=fill_level)
             )
-
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
 
@@ -569,12 +574,13 @@ class PumpFluidDosingServiceReal:
         :returns: A response object with the following fields:
             MaxFlowRate (Maximum Flow Rate): The maximum value of the flow rate at which this pump can dose a fluid.
         """
-
+        max_flow_rate = self.pump.get_flow_rate_max()
         while True:
+            if self.system.is_operational:
+                max_flow_rate = self.pump.get_flow_rate_max()
             yield PumpFluidDosingService_pb2.Subscribe_MaxFlowRate_Responses(
-                MaxFlowRate=silaFW_pb2.Real(value=self.pump.get_flow_rate_max())
+                MaxFlowRate=silaFW_pb2.Real(value=max_flow_rate)
             )
-
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
 
@@ -594,8 +600,9 @@ class PumpFluidDosingServiceReal:
 
         while True:
             yield PumpFluidDosingService_pb2.Subscribe_FlowRate_Responses(
-                FlowRate=silaFW_pb2.Real(value=self.pump.get_flow_is())
+                FlowRate=silaFW_pb2.Real(
+                    value=self.pump.get_flow_is() if self.system.is_operational else 0
+                )
             )
-
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)

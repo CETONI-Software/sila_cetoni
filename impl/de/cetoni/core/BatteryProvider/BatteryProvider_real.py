@@ -88,6 +88,7 @@ class BatteryProviderReal:
             yield BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses(
                 BatteryVoltage=silaFW_pb2.Real(
                     value=channel.read_input() * VOLTAGE_DIVIDER_FACTOR
+                          if self.system.is_operational else 0
                 )
             )
             time.sleep(0.5) # give client some time to catch up

@@ -50,6 +50,8 @@ from .SyringeConfigurationController_default_arguments import default_dict
 # import qmixsdk
 from qmixsdk import qmixpump
 
+from application.application import ApplicationSystem
+
 # noinspection PyPep8Naming,PyUnusedLocal
 class SyringeConfigurationControllerReal:
     """
@@ -63,6 +65,7 @@ class SyringeConfigurationControllerReal:
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
         self.pump = pump
+        self.system = ApplicationSystem()
 
     def SetSyringeParameters(self, request, context: grpc.ServicerContext) \
             -> SyringeConfigurationController_pb2.SetSyringeParameters_Responses:
@@ -80,19 +83,19 @@ class SyringeConfigurationControllerReal:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
-        def check_less_than_zero(param, param_str: str):
+        def check_less_than_zero(param_value, param_str: str):
             """
-            Checks if the given param is less than zero. If this is the case,
-            an appropriate validation error is raised indicating to the client
-            which parameter should be adjusted.
+            Checks if the given `param_value` is less than zero. If this is the
+            case, an appropriate validation error is raised indicating to the
+            client which parameter should be adjusted.
 
-                :param param: The parameter to check against zero
+                :param param_value: The parameter to check against zero
                 :param param_str: A string description of the given param
             """
-            if param < 0:
+            if param_value < 0:
                 raise SiLAValidationError(
                     parameter=f"de.cetoni/pumps.syringepumps/SyringeConfigurationController/v1/Command/SetSyringeParameters/Parameter/{param_str}",
-                    msg=f"The {param_str} ({param}) is invalid! It cannot be less than 0",
+                    msg=f"The {param_str} ({param_value}) is invalid! It cannot be less than 0",
                 )
 
         requested_inner_diameter = request.InnerDiameter.value
@@ -116,12 +119,13 @@ class SyringeConfigurationControllerReal:
         :returns: A response object with the following fields:
             InnerDiameter (Inner Diameter): Inner diameter of the syringe tube in millimetres.
         """
-
+        inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
         while True:
+            if self.system.is_operational:
+                inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
             yield SyringeConfigurationController_pb2.Subscribe_InnerDiameter_Responses(
-                InnerDiameter=silaFW_pb2.Real(value=self.pump.get_syringe_param().inner_diameter_mm)
+                InnerDiameter=silaFW_pb2.Real(value=inner_diameter)
             )
-
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)
 
@@ -138,13 +142,12 @@ class SyringeConfigurationControllerReal:
         :returns: A response object with the following fields:
             MaxPistonStroke (Max Piston Stroke): The maximum piston stroke defines the maximum position the piston can be moved to before it slips out of the syringe tube. The maximum piston stroke limits the maximum travel range of the syringe pump pusher.
         """
-
+        max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
         while True:
+            if self.system.is_operational:
+                max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
             yield SyringeConfigurationController_pb2.Subscribe_MaxPistonStroke_Responses(
-                MaxPistonStroke=silaFW_pb2.Real(
-                    value=self.pump.get_syringe_param().max_piston_stroke_mm
-                )
+                MaxPistonStroke=silaFW_pb2.Real(value=max_piston_stroke)
             )
-
             # we add a small delay to give the client a chance to keep up.
             time.sleep(0.5)

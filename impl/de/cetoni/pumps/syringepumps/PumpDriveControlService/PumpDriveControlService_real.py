@@ -60,6 +60,8 @@ from .PumpDriveControlService_default_arguments import default_dict
 # import SiLA Defined Error factories
 from .PumpDriveControlService_defined_errors import InitializationFailedError
 
+from application.application import ApplicationSystem
+
 # noinspection PyPep8Naming,PyUnusedLocal
 class PumpDriveControlServiceReal:
     """
@@ -74,6 +76,7 @@ class PumpDriveControlServiceReal:
 
         self.pump = pump
         self.sila2_conf = sila2_conf
+        self.system = ApplicationSystem()
 
         self._restore_last_drive_position_counter()
 
@@ -190,7 +193,9 @@ class PumpDriveControlServiceReal:
 
         while True:
             yield PumpDriveControlService_pb2.Subscribe_PumpDriveState_Responses(
-                PumpDriveState=silaFW_pb2.String(value='Enabled' if self.pump.is_enabled() else 'Disabled')
+                PumpDriveState=silaFW_pb2.String(
+                    value='Enabled' if self.system.is_operational and self.pump.is_enabled() else 'Disabled'
+                )
             )
 
             # we add a small delay to give the client a chance to keep up.

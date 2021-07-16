@@ -51,6 +51,8 @@ from .gRPC import PumpUnitController_pb2 as PumpUnitController_pb2
 # import default arguments
 from .PumpUnitController_default_arguments import default_dict
 
+from application.application import ApplicationSystem
+
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class PumpUnitControllerReal:
@@ -65,6 +67,7 @@ class PumpUnitControllerReal:
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
         self.pump = pump
+        self.system = ApplicationSystem()
 
     def SetFlowUnit(self, request, context: grpc.ServicerContext) \
             -> PumpUnitController_pb2.SetFlowUnit_Responses:
@@ -154,9 +157,10 @@ class PumpUnitControllerReal:
         :returns: A response object with the following fields:
             FlowUnit (Flow Unit): The currently used flow unit.
         """
-
+        volume_unit, time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
         while True:
-            volume_unit, time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
+            if self.system.is_operational:
+                volume_unit, time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
             yield PumpUnitController_pb2.Subscribe_FlowUnit_Responses(
                 FlowUnit=PumpUnitController_pb2.Subscribe_FlowUnit_Responses.FlowUnit_Struct(
                     VolumeUnit=PumpUnitController_pb2.DataType_VolumeUnit(
@@ -182,13 +186,13 @@ class PumpUnitControllerReal:
         :returns: A response object with the following fields:
             VolumeUnit (Volume Unit): The currently used volume unit.
         """
-
+        volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
         while True:
+            if self.system.is_operational:
+                volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
             yield PumpUnitController_pb2.Subscribe_VolumeUnit_Responses(
                 VolumeUnit=PumpUnitController_pb2.DataType_VolumeUnit(
-                    VolumeUnit=silaFW_pb2.String(
-                        value=uc.volume_unit_to_string(self.pump.get_volume_unit())
-                    )
+                    VolumeUnit=silaFW_pb2.String(value=volume_unit)
                 )
             )
             # we add a small delay to give the client a chance to keep up.
