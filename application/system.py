@@ -199,6 +199,8 @@ class ApplicationSystem(metaclass=Singleton):
 
             if self.state.is_stopped() and is_heartbeat_err_resolved_event(event):
                 self.state = SystemState.OPERATIONAL
+                for device in self.device_config.devices:
+                    device.set_operational()
 
     #-------------------------------------------------------------------------
     # Pumps

@@ -30,7 +30,8 @@ from typing import Any, Dict, List, Union
 from lxml import etree, objectify
 
 # import qmixsdk
-from qmixsdk import qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion, qmixvalve
+from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, \
+                    qmixmotion, qmixvalve
 
 
 class Device():
@@ -69,6 +70,13 @@ class Device():
         """
         self.properties[name] = value
 
+    def set_operational(self):
+        """
+        Set the device (and all of its valves, if present) into operational state
+        """
+        for valve in self.valves:
+            valve.set_communication_state(qmixbus.CommState.operational)
+
     @classmethod
     def convert_to_class(cls, obj, **kwargs):
         """
@@ -78,7 +86,7 @@ class Device():
             >>> device = Device("pump")
                 pump = qmixpump.Pump()
                 pump.lookup_by_device_index(0)
-                PumpDevice.convert_to_class(device, hanlde=pump.handle)
+                PumpDevice.convert_to_class(device, handle=pump.handle)
 
         :param cls: The class to convert `obj` to
         :param obj: The object to convert
@@ -96,6 +104,12 @@ class PumpDevice(qmixpump.Pump, Device):
     def __init__(self, name: str):
         super().__init__(name)
 
+    def set_operational(self):
+        super().set_operational()
+        self.set_communication_state(qmixbus.CommState.operational)
+        self.clear_fault()
+        self.enable(True)
+
 class AxisSystemDevice(qmixmotion.AxisSystem, Device):
     """
     Simple wrapper around `qmixmotion.AxisSystem` with additional information
@@ -103,6 +117,11 @@ class AxisSystemDevice(qmixmotion.AxisSystem, Device):
     """
     def __init__(self, name: str):
         super().__init__(name)
+
+    def set_operational(self):
+        super().set_operational()
+        self.set_communication_state(qmixbus.CommState.operational)
+        self.enable(True)
 
 class ValveDevice(Device):
     """
