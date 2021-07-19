@@ -260,7 +260,7 @@ class PumpFluidDosingServiceReal:
         command_uuid = request.value
 
         # catch invalid CommandExecutionUUID:
-        if not command_uuid and self.dosage_uuid != command_uuid:
+        if not command_uuid or self.dosage_uuid != command_uuid:
             raise SiLAFrameworkError(
                 SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
@@ -375,7 +375,7 @@ class PumpFluidDosingServiceReal:
         command_uuid = request.value
 
         # catch invalid CommandExecutionUUID:
-        if not command_uuid and self.dosage_uuid != command_uuid:
+        if not command_uuid or self.dosage_uuid != command_uuid:
             raise SiLAFrameworkError(
                 SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
@@ -483,7 +483,7 @@ class PumpFluidDosingServiceReal:
         command_uuid = request.value
 
         # catch invalid CommandExecutionUUID:
-        if not command_uuid and self.dosage_uuid != command_uuid:
+        if not command_uuid or self.dosage_uuid != command_uuid:
             raise SiLAFrameworkError(
                 SiLAFrameworkErrorType.INVALID_COMMAND_EXECUTION_UUID
             )
