@@ -44,7 +44,7 @@ from .gRPC import SystemStatusProvider_pb2 as SystemStatusProvider_pb2
 # import default arguments
 from .SystemStatusProvider_default_arguments import default_dict
 
-from application.application import ApplicationSystem
+from application.system import ApplicationSystem, SystemState
 
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -66,20 +66,20 @@ class SystemStatusProviderReal:
             -> SystemStatusProvider_pb2.Subscribe_SystemState_Responses:
         """
         Requests the observable property System State
-            The state of the system, i.e. if the system is operational or not. Operational means that the system can process Commands and that all Property values are read from the device. Non-operational means that the system is unable to process Commands (i.e. all Execution will result in errors) and that Property values are not read from the device and might have outdated values.
+            The state of the system, e.g. if the system is operational or not. 'Operational' means that the system can process Commands and that all Property values are read from the device. 'Stopped' means that the system is unable to process Commands (i.e. all Execution will result in errors) and that Property values are not read from the device and might have outdated values.
 
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
 
         :returns: A response object with the following fields:
-            SystemState (System State): The state of the system, i.e. if the system is operational or not. Operational means that the system can process Commands and that all Property values are read from the device. Non-operational means that the system is unable to process Commands (i.e. all Execution will result in errors) and that Property values are not read from the device and might have outdated values.
+            SystemState (System State): The state of the system, e.g. if the system is operational or not. 'Operational' means that the system can process Commands and that all Property values are read from the device. 'Stopped' means that the system is unable to process Commands (i.e. all Execution will result in errors) and that Property values are not read from the device and might have outdated values.
         """
 
         while True:
 
             yield SystemStatusProvider_pb2.Subscribe_SystemState_Responses(
                     SystemState=silaFW_pb2.String(
-                        value='Operational' if self.system.is_operational else 'Non-operational')
+                        value=self.system.state.value)
             )
             time.sleep(0.5) # give client some time to catch up
 

@@ -8,7 +8,7 @@
     <Property>
         <Identifier>SystemState</Identifier>
         <DisplayName>System State</DisplayName>
-        <Description>The state of the system, i.e. if the system is operational or not. Operational means that the system can process Commands and that all Property values are read from the device. Non-operational means that the system is unable to process Commands (i.e. all Execution will result in errors) and that Property values are not read from the device and might have outdated values.</Description>
+        <Description>The state of the system, e.g. if the system is operational or not. 'Operational' means that the system can process Commands and that all Property values are read from the device. 'Stopped' means that the system is unable to process Commands (i.e. all Execution will result in errors) and that Property values are not read from the device and might have outdated values.</Description>
         <Observable>Yes</Observable>
         <DataType>
             <Basic>String</Basic>

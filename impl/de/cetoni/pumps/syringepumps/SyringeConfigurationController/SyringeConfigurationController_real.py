@@ -50,7 +50,7 @@ from .SyringeConfigurationController_default_arguments import default_dict
 # import qmixsdk
 from qmixsdk import qmixpump
 
-from application.application import ApplicationSystem
+from application.system import ApplicationSystem, SystemState
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class SyringeConfigurationControllerReal:
@@ -121,7 +121,7 @@ class SyringeConfigurationControllerReal:
         """
         inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
         while True:
-            if self.system.is_operational:
+            if self.system.state.is_operational():
                 inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
             yield SyringeConfigurationController_pb2.Subscribe_InnerDiameter_Responses(
                 InnerDiameter=silaFW_pb2.Real(value=inner_diameter)
@@ -144,7 +144,7 @@ class SyringeConfigurationControllerReal:
         """
         max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
         while True:
-            if self.system.is_operational:
+            if self.system.state.is_operational():
                 max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
             yield SyringeConfigurationController_pb2.Subscribe_MaxPistonStroke_Responses(
                 MaxPistonStroke=silaFW_pb2.Real(value=max_piston_stroke)

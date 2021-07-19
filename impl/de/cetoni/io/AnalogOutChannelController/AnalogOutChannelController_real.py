@@ -46,7 +46,7 @@ from .AnalogOutChannelController_default_arguments import default_dict
 
 from qmixsdk.qmixanalogio import AnalogOutChannel
 
-from application.application import ApplicationSystem
+from application.system import ApplicationSystem, SystemState
 
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -102,6 +102,6 @@ class AnalogOutChannelControllerReal:
 
         while True:
             yield AnalogOutChannelController_pb2.Subscribe_Value_Responses(
-                Value=silaFW_pb2.Real(value=channel.get_output_value() if self.system.is_operational else 0)
+                Value=silaFW_pb2.Real(value=channel.get_output_value() if self.system.state.is_operational() else 0)
             )
             time.sleep(0.5) # give client some time to catch up

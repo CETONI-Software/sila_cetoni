@@ -51,7 +51,7 @@ from .gRPC import PumpUnitController_pb2 as PumpUnitController_pb2
 # import default arguments
 from .PumpUnitController_default_arguments import default_dict
 
-from application.application import ApplicationSystem
+from application.system import ApplicationSystem, SystemState
 
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -159,7 +159,7 @@ class PumpUnitControllerReal:
         """
         volume_unit, time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
         while True:
-            if self.system.is_operational:
+            if self.system.state.is_operational():
                 volume_unit, time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
             yield PumpUnitController_pb2.Subscribe_FlowUnit_Responses(
                 FlowUnit=PumpUnitController_pb2.Subscribe_FlowUnit_Responses.FlowUnit_Struct(
@@ -188,7 +188,7 @@ class PumpUnitControllerReal:
         """
         volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
         while True:
-            if self.system.is_operational:
+            if self.system.state.is_operational():
                 volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
             yield PumpUnitController_pb2.Subscribe_VolumeUnit_Responses(
                 VolumeUnit=PumpUnitController_pb2.DataType_VolumeUnit(

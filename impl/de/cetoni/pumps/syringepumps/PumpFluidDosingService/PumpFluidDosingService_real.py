@@ -55,7 +55,7 @@ from .PumpFluidDosingService_default_arguments import default_dict
 from impl.common.errors import SiLAFrameworkError, SiLAFrameworkErrorType, \
     FlowRateOutOfRangeError, FillLevelOutOfRangeError, VolumeOutOfRangeError
 
-from application.application import ApplicationSystem
+from application.system import ApplicationSystem, SystemState
 
 from ..PumpUnitController import unit_conversion as uc
 
@@ -530,7 +530,7 @@ class PumpFluidDosingServiceReal:
         """
         max_fill_level = self.pump.get_volume_max()
         while True:
-            if self.system.is_operational:
+            if self.system.state.is_operational():
                 max_fill_level = self.pump.get_volume_max()
             yield PumpFluidDosingService_pb2.Subscribe_MaxSyringeFillLevel_Responses(
                 MaxSyringeFillLevel=silaFW_pb2.Real(value=max_fill_level)
@@ -553,7 +553,7 @@ class PumpFluidDosingServiceReal:
         """
         fill_level = self.pump.get_fill_level()
         while True:
-            if self.system.is_operational:
+            if self.system.state.is_operational():
                 fill_level = self.pump.get_fill_level()
             yield PumpFluidDosingService_pb2.Subscribe_SyringeFillLevel_Responses(
                 SyringeFillLevel=silaFW_pb2.Real(value=fill_level)
@@ -576,7 +576,7 @@ class PumpFluidDosingServiceReal:
         """
         max_flow_rate = self.pump.get_flow_rate_max()
         while True:
-            if self.system.is_operational:
+            if self.system.state.is_operational():
                 max_flow_rate = self.pump.get_flow_rate_max()
             yield PumpFluidDosingService_pb2.Subscribe_MaxFlowRate_Responses(
                 MaxFlowRate=silaFW_pb2.Real(value=max_flow_rate)
@@ -601,7 +601,7 @@ class PumpFluidDosingServiceReal:
         while True:
             yield PumpFluidDosingService_pb2.Subscribe_FlowRate_Responses(
                 FlowRate=silaFW_pb2.Real(
-                    value=self.pump.get_flow_is() if self.system.is_operational else 0
+                    value=self.pump.get_flow_is() if self.system.state.is_operational() else 0
                 )
             )
             # we add a small delay to give the client a chance to keep up.

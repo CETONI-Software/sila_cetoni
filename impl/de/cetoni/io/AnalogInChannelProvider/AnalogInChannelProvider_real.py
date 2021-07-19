@@ -47,7 +47,7 @@ from .AnalogInChannelProvider_default_arguments import default_dict
 from qmixsdk.qmixanalogio import AnalogInChannel
 
 
-from application.application import ApplicationSystem
+from application.system import ApplicationSystem, SystemState
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class AnalogInChannelProviderReal:
@@ -81,6 +81,6 @@ class AnalogInChannelProviderReal:
 
         while True:
             yield AnalogInChannelProvider_pb2.Subscribe_Value_Responses(
-                Value=silaFW_pb2.Real(value=channel.read_input() if self.system.is_operational else 0)
+                Value=silaFW_pb2.Real(value=channel.read_input() if self.system.state.is_operational() else 0)
             )
             time.sleep(0.5) # give client some time to catch up

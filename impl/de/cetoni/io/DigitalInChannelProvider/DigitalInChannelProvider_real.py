@@ -46,7 +46,7 @@ from .DigitalInChannelProvider_default_arguments import default_dict
 
 from qmixsdk.qmixdigio import DigitalInChannel
 
-from application.application import ApplicationSystem
+from application.system import ApplicationSystem, SystemState
 
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -84,7 +84,7 @@ class DigitalInChannelProviderReal:
             yield DigitalInChannelProvider_pb2.Subscribe_State_Responses(
                 State=DigitalInChannelProvider_pb2.DataType_State(
                     State=silaFW_pb2.String(
-                        value=self.states[channel.is_on() and self.system.is_operational]
+                        value=self.states[channel.is_on() and self.system.state.is_operational()]
                     )
                 )
             )

@@ -30,6 +30,8 @@ import logging
 import threading
 from typing import List
 
+from enum import Enum
+
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion, qmixvalve
 
@@ -37,6 +39,20 @@ from .device import DeviceConfiguration, Device, PumpDevice, AxisSystemDevice, \
                     ValveDevice, ControllerDevice, IODevice
 
 from .singleton import Singleton
+
+
+class SystemState(Enum):
+    """
+    The state of the overall application system
+    """
+    OPERATIONAL = "Operational"
+    STOPPED = "Stopped"
+
+    def is_operational(self):
+        return self.value == self.OPERATIONAL.value
+
+    def is_stopped(self):
+        return self.value == self.STOPPED.value
 
 
 class ApplicationSystem(metaclass=Singleton):
@@ -54,7 +70,7 @@ class ApplicationSystem(metaclass=Singleton):
     controllers: List[ControllerDevice]
     io_devices: List[IODevice]
 
-    is_operational: bool
+    state: SystemState
     shutting_down: bool
 
     def __init__(self, device_config_path: str = ""):
@@ -88,7 +104,7 @@ class ApplicationSystem(metaclass=Singleton):
         logging.debug(f"controller devices: {repr(self.controller_devices)}")
         logging.debug(f"io devices: {repr(self.io_devices)}")
 
-        self.is_operational = True
+        self.state = SystemState.OPERATIONAL
         self.shutting_down = False
 
     def start(self):
@@ -177,14 +193,12 @@ class ApplicationSystem(metaclass=Singleton):
             logging.debug(f"event id: {event.event_id}, device: {event.device}, "
                           f"data: {event.data}, message: {event.string}")
 
-            if self.is_operational and (is_dc_link_under_voltage_event(event) \
+            if self.state.is_operational() and (is_dc_link_under_voltage_event(event) \
                 or is_heartbeat_err_occurred_event(event)):
-                self.is_operational = False
+                self.state = SystemState.STOPPED
 
-            if not self.is_operational and is_heartbeat_err_resolved_event(event):
-                self.is_operational = True
-                self.enable_pumps()
-                self.enable_axis_systems()
+            if self.state.is_stopped() and is_heartbeat_err_resolved_event(event):
+                self.state = SystemState.OPERATIONAL
 
     #-------------------------------------------------------------------------
     # Pumps

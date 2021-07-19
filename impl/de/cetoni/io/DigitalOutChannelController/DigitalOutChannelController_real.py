@@ -48,7 +48,7 @@ from .DigitalOutChannelController_default_arguments import default_dict
 
 from qmixsdk.qmixdigio import DigitalOutChannel
 
-from application.application import ApplicationSystem
+from application.system import ApplicationSystem, SystemState
 
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -117,7 +117,7 @@ class DigitalOutChannelControllerReal:
             yield DigitalOutChannelController_pb2.Subscribe_State_Responses(
                 State=DigitalOutChannelController_pb2.DataType_State(
                     State=silaFW_pb2.String(
-                        value=self.states[channel.is_output_on() and self.system.is_operational]
+                        value=self.states[channel.is_output_on() and self.system.state.is_operational()]
                     )
                 )
             )

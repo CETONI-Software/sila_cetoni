@@ -57,7 +57,7 @@ from impl.de.cetoni.valves.ValveGatewayService.ValveGatewayService_servicer impo
 # import qmixsdk
 from qmixsdk.qmixvalve import Valve
 
-from application.application import ApplicationSystem
+from application.system import ApplicationSystem, SystemState
 
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -206,7 +206,7 @@ class ValvePositionControllerReal:
 
         valve_position = self._get_valve_position(valve)
         while True:
-            if self.system.is_operational:
+            if self.system.state.is_operational():
                 valve_position = self._get_valve_position(valve)
             yield ValvePositionController_pb2.Subscribe_Position_Responses(
                 Position=silaFW_pb2.Integer(value=valve_position)
