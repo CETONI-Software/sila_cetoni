@@ -37,6 +37,8 @@ import grpc         # used for type hinting only
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
+from impl.common.errors import SystemNotOperationalError
+
 # import gRPC modules for this feature
 from .gRPC import AnalogOutChannelController_pb2 as AnalogOutChannelController_pb2
 # from .gRPC import AnalogOutChannelController_pb2_grpc as AnalogOutChannelController_pb2_grpc
@@ -79,6 +81,9 @@ class AnalogOutChannelControllerReal:
         :returns: The return object defined for the command with the following fields:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
+
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/io/AnalogOutChannelController/v1/Command/SetOutputValue')
 
         value = request.Value.value
         logging.info(f"Setting output value to {value}")

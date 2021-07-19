@@ -42,7 +42,7 @@ from . import unit_conversion as uc
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 # import SiLA errors
-from impl.common.errors import UnitConversionError
+from impl.common.errors import UnitConversionError, SystemNotOperationalError
 
 # import gRPC modules for this feature
 from .gRPC import PumpUnitController_pb2 as PumpUnitController_pb2
@@ -97,6 +97,10 @@ class PumpUnitControllerReal:
             }
         }
         """
+
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/PumpUnitController/v1/Command/SetFlowUnit')
+
         try:
             flow_unit = request.FlowUnit
             requested_volume_unit = flow_unit.VolumeUnit.VolumeUnit.value
@@ -129,6 +133,9 @@ class PumpUnitControllerReal:
         :returns: The return object defined for the command with the following fields:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
+
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/PumpUnitController/v1/Command/SetVolumeUnit')
 
         """
         VolumeUnit {

@@ -39,6 +39,8 @@ from sila2lib.error_handling.server_err import SiLAValidationError
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
+from impl.common.errors import SystemNotOperationalError
+
 # import gRPC modules for this feature
 from .gRPC import DigitalOutChannelController_pb2 as DigitalOutChannelController_pb2
 # from .gRPC import DigitalOutChannelController_pb2_grpc as DigitalOutChannelController_pb2_grpc
@@ -85,6 +87,9 @@ class DigitalOutChannelControllerReal:
         :returns: The return object defined for the command with the following fields:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
+
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/io/DigitalOutChannelController/v1/Command/SetOutput')
 
         state = request.State.State.value
 

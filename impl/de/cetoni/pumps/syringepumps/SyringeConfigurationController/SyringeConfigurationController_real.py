@@ -42,7 +42,7 @@ from .gRPC import SyringeConfigurationController_pb2 as SyringeConfigurationCont
 # from .gRPC import SyringeConfigurationController_pb2_grpc as SyringeConfigurationController_pb2_grpc
 
 # import SiLA errors
-from impl.common.errors import SiLAValidationError
+from impl.common.errors import SiLAValidationError, SystemNotOperationalError
 
 # import default arguments
 from .SyringeConfigurationController_default_arguments import default_dict
@@ -82,6 +82,9 @@ class SyringeConfigurationControllerReal:
         :returns: The return object defined for the command with the following fields:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
+
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/SyringeConfigurationController/v1/Command/SetSyringeParameters')
 
         def check_less_than_zero(param_value, param_str: str):
             """

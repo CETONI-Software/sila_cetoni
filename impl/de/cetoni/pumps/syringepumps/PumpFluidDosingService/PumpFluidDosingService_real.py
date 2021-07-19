@@ -45,15 +45,17 @@ from qmixsdk import qmixbus, qmixpump
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
+# import SiLA errors
+from impl.common.errors import SiLAFrameworkError, SiLAFrameworkErrorType, \
+                               FlowRateOutOfRangeError, FillLevelOutOfRangeError, \
+                               VolumeOutOfRangeError, SystemNotOperationalError
+
 # import gRPC modules for this feature
 from .gRPC import PumpFluidDosingService_pb2 as PumpFluidDosingService_pb2
 # from .gRPC import PumpFluidDosingService_pb2_grpc as PumpFluidDosingService_pb2_grpc
 
 # import default arguments
 from .PumpFluidDosingService_default_arguments import default_dict
-# import SiLA errors
-from impl.common.errors import SiLAFrameworkError, SiLAFrameworkErrorType, \
-    FlowRateOutOfRangeError, FillLevelOutOfRangeError, VolumeOutOfRangeError
 
 from application.system import ApplicationSystem, SystemState
 
@@ -90,7 +92,7 @@ class PumpFluidDosingServiceReal:
         # We only allow one dosage at a time.
         # -> Stop the currently running dosage and after that start the new one.
         if self.dosage_uuid:
-            self.StopDosage(0, 0)
+            self.StopDosage(None, None)
             # wait for the currently running dosage to catch up
             time.sleep(0.25)
 
@@ -198,6 +200,9 @@ class PumpFluidDosingServiceReal:
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
 
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/v1/Command/SetFillLevel')
+
         requested_fill_level = request.FillLevel.value
         requested_flow_rate = request.FlowRate.value
 
@@ -294,6 +299,9 @@ class PumpFluidDosingServiceReal:
             commandId: A command id with which this observable command can be referenced in future calls
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
+
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/v1/Command/DoseVolume')
 
         requested_volume = request.Volume.value
         requested_flow_rate = request.FlowRate.value
@@ -407,6 +415,9 @@ class PumpFluidDosingServiceReal:
             lifetimeOfExecution: The (maximum) lifetime of this command call.
         """
 
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/v1/Command/GenerateFlow')
+
         requested_flow_rate = request.FlowRate.value
 
         # requested_flow_rate is negative to indicate aspiration of fluid.
@@ -512,6 +523,9 @@ class PumpFluidDosingServiceReal:
         :returns: The return object defined for the command with the following fields:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
+
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/v1/Command/StopDosage')
 
         self.pump.stop_pumping()
         return PumpFluidDosingService_pb2.StopDosage_Responses()

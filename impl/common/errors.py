@@ -33,6 +33,23 @@ class QmixSDKSiLAError(SiLAExecutionError):
 
         super().__init__(msg=msg, error_identifier=None)
 
+class SystemNotOperationalError(SiLAExecutionError):
+    """
+    A Command could not be executed or a Property value could not be obtained
+    because the system is not in an operational state.
+    """
+    def __init__(self, identifier: str):
+        """
+        Constructs an error message for the failed Command Execution or Property Read
+
+        :param identifier: The Fully Qualified Identifier of the Command or Property
+                           that could not be executed resp. read
+        """
+        operation = 'read from' if 'Property' in identifier else 'execute'
+        super().__init__(
+            msg=f"Cannot {operation} '{identifier}' because the system is not in an operational state."
+        )
+
 #-----------------------------------------------------------------------------
 # Pumps
 class FlowRateOutOfRangeError(SiLAValidationError):

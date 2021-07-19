@@ -48,7 +48,7 @@ from qmixsdk import qmixpump
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 
 # import SiLA errors
-from impl.common.errors import DeviceError, SiLAExecutionError
+from impl.common.errors import DeviceError, SystemNotOperationalError
 
 # import gRPC modules for this feature
 from .gRPC import PumpDriveControlService_pb2 as PumpDriveControlService_pb2
@@ -123,6 +123,9 @@ class PumpDriveControlServiceReal:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/PumpDriveControlService/v1/Command/InitializePumpDrive')
+
         self.pump.calibrate()
         time.sleep(0.2)
         try:
@@ -152,6 +155,9 @@ class PumpDriveControlServiceReal:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/PumpDriveControlService/v1/Command/EnablePumpDrive')
+
         if self.pump.is_in_fault_state():
             self.pump.clear_fault()
         self.pump.enable(True)
@@ -171,6 +177,9 @@ class PumpDriveControlServiceReal:
         :returns: The return object defined for the command with the following fields:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
+
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/pumps.syringepumps/PumpDriveControlService/v1/Command/DisablePumpDrive')
 
         self.pump.enable(False)
 

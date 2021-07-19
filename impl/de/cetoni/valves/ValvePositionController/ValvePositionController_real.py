@@ -34,12 +34,12 @@ import logging
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
+from typing import Dict
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
 # import SiLA errors
-from impl.common.errors import DeviceError, QmixSDKSiLAError, \
-    ValvePositionOutOfRangeError
+from impl.common.errors import DeviceError, ValvePositionOutOfRangeError, SystemNotOperationalError
 
 # import gRPC modules for this feature
 from .gRPC import ValvePositionController_pb2 as ValvePositionController_pb2
@@ -74,6 +74,7 @@ class ValvePositionControllerReal:
 
         self.valve = valve
         self.valve_gateway: ValveGatewayService = valve_gateway
+        self.valve_positions: Dict[Valve, int] = dict()
         self.system = ApplicationSystem()
 
     def _get_valve(self, invocation_metadata, type: str) -> Valve:
@@ -126,6 +127,9 @@ class ValvePositionControllerReal:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
 
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/valves/ValvePositionController/v1/Command/SwitchToPosition')
+
         valve = self._get_valve(context.invocation_metadata(), "Command")
 
         requested_valve_pos = request.Position.value
@@ -154,6 +158,9 @@ class ValvePositionControllerReal:
         :returns: The return object defined for the command with the following fields:
             EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
+
+        if not self.system.state.is_operational():
+            raise SystemNotOperationalError('de.cetoni/valves/ValvePositionController/v1/Command/TogglePosition')
 
         valve = self._get_valve(context.invocation_metadata(), "Command")
 
@@ -184,9 +191,11 @@ class ValvePositionControllerReal:
         """
 
         valve = self._get_valve(context.invocation_metadata(), "Property")
+        if valve not in self.valve_positions:
+            self.valve_positions[valve] = valve.number_of_valve_positions()
 
         return ValvePositionController_pb2.Get_NumberOfPositions_Responses(
-            NumberOfPositions=silaFW_pb2.Integer(value=valve.number_of_valve_positions())
+            NumberOfPositions=silaFW_pb2.Integer(value=self.valve_positions[valve])
         )
 
     def Subscribe_Position(self, request, context: grpc.ServicerContext) \
