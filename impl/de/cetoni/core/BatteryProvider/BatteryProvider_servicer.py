@@ -37,7 +37,9 @@ from typing import Union
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
-from sila2lib.error_handling.server_err import SiLAError, SiLAValidationError
+
+# import error handling
+from impl.common.errors import QmixSDKSiLAError, SiLAError, DeviceError
 
 # import gRPC modules for this feature
 from .gRPC import BatteryProvider_pb2 as BatteryProvider_pb2
@@ -116,5 +118,7 @@ class BatteryProvider(BatteryProvider_pb2_grpc.BatteryProviderServicer):
         )
         try:
             return self.implementation.Subscribe_BatteryVoltage(request, context)
-        except SiLAError as err:
+        except (DeviceError, SiLAError) as err:
+            if isinstance(err, DeviceError):
+                err = QmixSDKSiLAError(err)
             err.raise_rpc_error(context=context)
