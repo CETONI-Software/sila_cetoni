@@ -24,6 +24,7 @@ ________________________________________________________________________
 ________________________________________________________________________
 """
 
+import os
 import sys
 import time
 import logging
@@ -73,6 +74,8 @@ class ApplicationSystem(metaclass=Singleton):
     state: SystemState
     shutting_down: bool
 
+    MAX_SECONDS_WITHOUT_BATTERY = 20
+
     def __init__(self, device_config_path: str = ""):
         if not device_config_path:
             return
@@ -118,8 +121,19 @@ class ApplicationSystem(metaclass=Singleton):
         """
         Stops the CAN bus monitoring and the bus communication
         """
+        logging.debug("Stopping application system...")
         self.shutting_down = True
         self.stop_and_close_bus()
+
+    def shutdown(self):
+        """
+        Stops the application and shuts down the operating system if we are
+        battery powered otherwise it only stops the application
+        """
+        self.stop()
+        if self.device_config.has_battery:
+            logging.debug("Shutting down...")
+            os.system("sudo shutdown now")
 
     def _start_bus_monitoring(self):
         """
@@ -184,6 +198,7 @@ class ApplicationSystem(metaclass=Singleton):
             return event.event_id == qmixbus.EventId.device_guard.value \
                 and event.data[0] == qmixbus.GuardEventId.heartbear_err_resolved.value
 
+        seconds_stopped = 0
         while not self.shutting_down:
             time.sleep(1)
 
@@ -197,6 +212,12 @@ class ApplicationSystem(metaclass=Singleton):
                 or is_heartbeat_err_occurred_event(event)):
                 self.state = SystemState.STOPPED
                 logging.debug("System entered 'Stopped' state")
+
+            if self.device_config.has_battery and self.state.is_stopped():
+                seconds_stopped += 1
+
+            if seconds_stopped > self.MAX_SECONDS_WITHOUT_BATTERY:
+                self.shutdown()
 
             if self.state.is_stopped() and is_heartbeat_err_resolved_event(event):
                 self.state = SystemState.OPERATIONAL
