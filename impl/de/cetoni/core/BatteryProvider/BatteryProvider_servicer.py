@@ -117,7 +117,8 @@ class BatteryProvider(BatteryProvider_pb2_grpc.BatteryProviderServicer):
             )
         )
         try:
-            return self.implementation.Subscribe_BatteryVoltage(request, context)
+            for value in self.implementation.Subscribe_BatteryVoltage(request, context):
+                yield value
         except (DeviceError, SiLAError) as err:
             if isinstance(err, DeviceError):
                 err = QmixSDKSiLAError(err)
