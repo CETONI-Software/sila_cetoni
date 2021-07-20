@@ -31,7 +31,7 @@ export LD_LIBRARY_PATH="$CETONI_SDK_PATH/lib":"$LD_LIBRARY_PATH"
 curr_dir=$(pwd)
 
 DISABLE_LOG=${SILA_CETONI_NO_LOG_FILE:-0}
-if [ "$DISABLE_LOG" != 0 ]; then
+if [ "$DISABLE_LOG" = 0 ]; then
     # use runtime dir if available which is mounted as tmpfs to save some writes to the SD card
     ${RUNTIME_DIRECTORY:=$XDG_RUNTIME_DIR} 2>/dev/null # RUNTIME_DIRECTORY might come from systemd
     LOG_DIR="${RUNTIME_DIRECTORY:-$curr_dir}/log"
