@@ -8,8 +8,8 @@
 #
 # By default this script creates a log file for each run in the sila_cetoni/log/
 # directory. To prevent this (e.g. because logging to the systemd-journal is 
-# sufficient) you can set the SILA_CETONI_NO_LOG_FILE environment variable to
-# any value (e.g. 1).
+# sufficient) you can set the SILA_CETONI_NO_LOG_FILE environment variable to a
+# non-zero value.
 #
 #set -x
 
@@ -30,7 +30,8 @@ export LD_LIBRARY_PATH="$CETONI_SDK_PATH/lib":"$LD_LIBRARY_PATH"
 
 curr_dir=$(pwd)
 
-if [ -z $SILA_CETONI_NO_LOG_FILE ]; then
+DISABLE_LOG=${SILA_CETONI_NO_LOG_FILE:-0}
+if [ "$DISABLE_LOG" != 0 ]; then
     # use runtime dir if available which is mounted as tmpfs to save some writes to the SD card
     ${RUNTIME_DIRECTORY:=$XDG_RUNTIME_DIR} 2>/dev/null # RUNTIME_DIRECTORY might come from systemd
     LOG_DIR="${RUNTIME_DIRECTORY:-$curr_dir}/log"
