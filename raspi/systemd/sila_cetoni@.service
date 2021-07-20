@@ -5,6 +5,7 @@ After=sys-subsystem-net-devices-can0.device
 
 [Service]
 Type=simple
+Environment="SILA_CETONI_NO_LOG_FILE=1"
 ExecStartPre=+-/sbin/ip link set can0 up type can bitrate 500000
 ExecStartPre=+/bin/sh -c '/sbin/ip addr show can0 | grep UP'
 ExecStart=/home/pi/sila_cetoni/sila_cetoni.sh /home/pi/sila_cetoni/configs/%i
