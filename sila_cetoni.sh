@@ -7,7 +7,7 @@
 # Parameters to this script are passed right on to the sila_cetoni.py script
 #
 # By default this script creates a log file for each run in the sila_cetoni/log/
-# directory. To prevent this (e.g. because logging to the systemd-journal is 
+# directory. To prevent this (e.g. because logging to the systemd-journal is
 # sufficient) you can set the SILA_CETONI_NO_LOG_FILE environment variable to a
 # non-zero value.
 #
@@ -28,7 +28,7 @@ export PATH="$CETONI_SDK_PATH":"$PATH"
 export PYTHONPATH="$CETONI_SDK_PATH/python":"$PYTHONPATH"
 export LD_LIBRARY_PATH="$CETONI_SDK_PATH/lib":"$LD_LIBRARY_PATH"
 
-curr_dir=$(pwd)
+curr_dir=${0%/*}
 
 DISABLE_LOG=${SILA_CETONI_NO_LOG_FILE:-0}
 if [ "$DISABLE_LOG" = 0 ]; then
@@ -43,7 +43,7 @@ if [ "$DISABLE_LOG" = 0 ]; then
     exec 2>&1
 fi
 
-python3 sila_cetoni.py $@
+python3 $curr_dir/sila_cetoni.py $@
 cd $curr_dir
 
 # write log to SD card if it's in RUNTIME_DIRECTORY
