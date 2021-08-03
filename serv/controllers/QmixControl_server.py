@@ -32,8 +32,8 @@ import logging
 import argparse
 import os
 
-# Import the main SiLA library
-from sila2lib.sila_server import SiLA2Server
+# Import our server base class
+from ..core.SystemStatusProvider_server import SystemStatusProviderServer
 
 # Import gRPC libraries of features
 from impl.de.cetoni.controllers.ControlLoopService.gRPC import ControlLoopService_pb2
@@ -43,9 +43,8 @@ from impl.de.cetoni.controllers.ControlLoopService.ControlLoopService_default_ar
 
 # Import the servicer modules for each feature
 from impl.de.cetoni.controllers.ControlLoopService.ControlLoopService_servicer import ControlLoopService
-from ..local_ip import LOCAL_IP
 
-class QmixControlServer(SiLA2Server):
+class QmixControlServer(SystemStatusProviderServer):
     """
     The SiLA 2 driver for Qmix Control Devices
     """
@@ -58,23 +57,15 @@ class QmixControlServer(SiLA2Server):
             :param controller_channels: The qmixcontroller.Controller objects that this server shall use
             :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode
         """
-        super().__init__(
-            name=cmd_args.server_name, description=cmd_args.description,
-            server_type=cmd_args.server_type, server_uuid=None,
-            version=__version__,
-            vendor_url="cetoni.de",
-            ip=LOCAL_IP, port=int(cmd_args.port),
-            key_file=cmd_args.encryption_key, cert_file=cmd_args.encryption_cert,
-            simulation_mode=simulation_mode
-        )
+        super().__init__(cmd_args=cmd_args, simulation_mode=simulation_mode)
+
+        self.simulation_mode = simulation_mode
 
         logging.info(
             "Starting SiLA2 server with server name: {server_name}".format(
                 server_name=cmd_args.server_name
             )
         )
-
-        self.simulation_mode = simulation_mode
 
         meta_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
                                                  'features', 'de', 'cetoni', 'controllers'))
