@@ -112,7 +112,7 @@ class DigitalOutChannelControllerClient:
             )
             metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
 
-            response = self.DigitalOutChannelController_stub.SetOutput(parameter,metadata)
+            response = self.DigitalOutChannelController_stub.SetOutput(parameter, metadata=metadata)
             logging.debug(f"SetOutput response: {response}")
 
         except grpc.RpcError as grpc_err:

@@ -110,7 +110,7 @@ class ControlLoopServiceClient:
             )
             metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
 
-            response = self.ControlLoopService_stub.WriteSetPoint(parameter, metadata)
+            response = self.ControlLoopService_stub.WriteSetPoint(parameter, metadata=metadata)
             logging.debug(f"WriteSetPoint response: {response}")
 
         except grpc.RpcError as grpc_err:
@@ -180,7 +180,7 @@ class ControlLoopServiceClient:
         )
         try:
             metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
-            response = self.ControlLoopService_stub.RunControlLoop_Info(uuid, metadata)
+            response = self.ControlLoopService_stub.RunControlLoop_Info(uuid, metadata=metadata)
             logging.debug('RunControlLoop status information: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)
@@ -216,7 +216,7 @@ class ControlLoopServiceClient:
 
         try:
             metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
-            response = self.ControlLoopService_stub.RunControlLoop_Result(uuid, metadata)
+            response = self.ControlLoopService_stub.RunControlLoop_Result(uuid, metadata=metadata)
             logging.debug('RunControlLoop result response: {response}'.format(response=response))
         except grpc.RpcError as grpc_err:
             self.grpc_error_handling(grpc_err)

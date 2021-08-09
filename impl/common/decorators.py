@@ -111,7 +111,7 @@ def channel_index_serializer(pb2):
         >>> def MyCommand(self, channel_id: int):
                 parameter = ...
                 metadata = ((METADATA_IDENTIFIER, self._serialize_channel_id(channel_id)),)
-                response = self.stub.MyCommand(parameter, metadata)
+                response = self.stub.MyCommand(parameter, metadata=metadata)
     """
     def _serialize_channel_id(self, channel_id: int) -> bytes:
         """

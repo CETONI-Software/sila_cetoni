@@ -111,7 +111,7 @@ class AnalogOutChannelControllerClient:
             )
             metadata = ((METADATA_CHANNEL_INDEX, self._serialize_channel_id(channel_id)),)
 
-            response = self.AnalogOutChannelController_stub.SetOutputValue(parameter, metadata)
+            response = self.AnalogOutChannelController_stub.SetOutputValue(parameter, metadata=metadata)
             logging.debug(f"SetOutputValue response: {response}")
 
         except grpc.RpcError as grpc_err:

@@ -118,7 +118,7 @@ class ValvePositionControllerClient:
             )
             metadata = ((METADATA_VALVE_INDEX, self._serialize_valve_id(valve_id)),)
 
-            response = self.ValvePositionController_stub.SwitchToPosition(parameter, metadata)
+            response = self.ValvePositionController_stub.SwitchToPosition(parameter, metadata=metadata)
             logging.debug(f"SwitchToPosition response: {response}")
 
         except grpc.RpcError as grpc_err:

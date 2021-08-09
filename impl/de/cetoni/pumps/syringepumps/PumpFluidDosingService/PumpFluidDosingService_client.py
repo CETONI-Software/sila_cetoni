@@ -408,7 +408,7 @@ class PumpFluidDosingServiceClient:
 
                 )
 
-            response = self.PumpFluidDosingService_stub.StopDosage(parameter, metadata)
+            response = self.PumpFluidDosingService_stub.StopDosage(parameter, metadata=metadata)
             logging.debug(f"StopDosage response: {response}")
 
         except grpc.RpcError as grpc_err:
