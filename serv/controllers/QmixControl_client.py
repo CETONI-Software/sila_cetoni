@@ -68,7 +68,7 @@ class QmixControlClient(SystemStatusClient):
               compare the default dictionary that is stored in the directory of the corresponding feature.
     """
 
-    controlLoopService_client =  None
+    control_loop_service =  None
 
     # The following variables will be filled when run() is executed
     #: Storage for the connected servers version
@@ -102,7 +102,7 @@ class QmixControlClient(SystemStatusClient):
             f"Starting SiLA2 service client for service QmixControl with service name: {name}"
         )
 
-        self.controlLoopService_client = ControlLoopServiceClient(self.channel)
+        self.control_loop_service = ControlLoopServiceClient(self.channel)
 
 
         # initialise class variables for server information storage

@@ -99,92 +99,92 @@ if __name__ == '__main__':
     # ------------- command calls -------------------
 
     # ----- de/cetoni/pumps/syringepumps/PumpDriveControlService
-    # results = sila_client.pumpDriveControlService_client.InitializePumpDrive(EmptyParameter: bytes = b'')
+    # results = sila_client.pump_drive_control_service.InitializePumpDrive(EmptyParameter: bytes = b'')
     # print("InitializePumpDrive res: ", results)
 
-    # results = sila_client.pumpDriveControlService_client.EnablePumpDrive(EmptyParameter: bytes = b'')
+    # results = sila_client.pump_drive_control_service.EnablePumpDrive(EmptyParameter: bytes = b'')
     # print("EnablePumpDrive res: ", results)
 
-    # results = sila_client.pumpDriveControlService_client.DisablePumpDrive(EmptyParameter: bytes = b'')
+    # results = sila_client.pump_drive_control_service.DisablePumpDrive(EmptyParameter: bytes = b'')
     # print("DisablePumpDrive res: ", results)
 
     # ----- de/cetoni/pumps/syringepumps/PumpUnitController
-    # results = sila_client.pumpUnitController_client.SetFlowUnit(FlowUnit = None)
+    # results = sila_client.pump_unit_controller.SetFlowUnit(FlowUnit = None)
     # print("SetFlowUnit res: ", results)
 
-    # results = sila_client.pumpUnitController_client.SetVolumeUnit(VolumeUnit: str = 'default string')
+    # results = sila_client.pump_unit_controller.SetVolumeUnit(VolumeUnit: str = 'default string')
     # print("SetVolumeUnit res: ", results)
 
     # ----- de/cetoni/pumps/syringepumps/PumpFluidDosingService
-    # results = sila_client.pumpFluidDosingService_client.SetFillLevel(FillLevel: float = 1.0,FlowRate: float = 1.0)
+    # results = sila_client.pump_fluid_dosing_service.SetFillLevel(FillLevel: float = 1.0,FlowRate: float = 1.0)
     # print("SetFillLevel res: ", results)
 
-    # results = sila_client.pumpFluidDosingService_client.DoseVolume(Volume: float = 1.0,FlowRate: float = 1.0)
+    # results = sila_client.pump_fluid_dosing_service.DoseVolume(Volume: float = 1.0,FlowRate: float = 1.0)
     # print("DoseVolume res: ", results)
 
-    # results = sila_client.pumpFluidDosingService_client.GenerateFlow(FlowRate: float = 1.0)
+    # results = sila_client.pump_fluid_dosing_service.GenerateFlow(FlowRate: float = 1.0)
     # print("GenerateFlow res: ", results)
 
-    # results = sila_client.pumpFluidDosingService_client.StopDosage(EmptyParameter: bytes = b'')
+    # results = sila_client.pump_fluid_dosing_service.StopDosage(EmptyParameter: bytes = b'')
     # print("StopDosage res: ", results)
 
     # ----- de/cetoni/pumps/syringepumps/SyringeConfigurationController
-    # results = sila_client.syringeConfigurationController_client.SetSyringeParameters(InnerDiameter: float = 1.0,MaxPistonStroke: float = 1.0)
+    # results = sila_client.syringe_configuration_controller.SetSyringeParameters(InnerDiameter: float = 1.0,MaxPistonStroke: float = 1.0)
     # print("SetSyringeParameters res: ", results)
 
     # ----- de/cetoni/valves/ValvePositionController
-    # results = sila_client.valvePositionController_client.SwitchToPosition(Position: int = 1)
+    # results = sila_client.valve_position_controller.SwitchToPosition(Position: int = 1)
     # print("SwitchToPosition res: ", results)
 
-    # results = sila_client.valvePositionController_client.TogglePosition(EmptyParameter: bytes = b'')
+    # results = sila_client.valve_position_controller.TogglePosition(EmptyParameter: bytes = b'')
     # print("TogglePosition res: ", results)
 
     # ----- de/cetoni/core/ShutdownController
-    # results = sila_client.shutdownController_client.Shutdown(EmptyParameter: bytes = b'')
+    # results = sila_client.shutdown_controller.Shutdown(EmptyParameter: bytes = b'')
     # print("Shutdown res: ", results)
 
 
     # ------------- property calls -------------------
 
     # ----- de/cetoni/pumps/syringepumps/PumpDriveControlService
-    # results = sila_client.pumpDriveControlService_client.Subscribe_PumpDriveState()
+    # results = sila_client.pump_drive_control_service.Subscribe_PumpDriveState()
     # print("PumpDriveState res: ", results)
 
-    # results = sila_client.pumpDriveControlService_client.Subscribe_FaultState()
+    # results = sila_client.pump_drive_control_service.Subscribe_FaultState()
     # print("FaultState res: ", results)
 
     # ----- de/cetoni/pumps/syringepumps/PumpUnitController
-    # results = sila_client.pumpUnitController_client.Subscribe_FlowUnit()
+    # results = sila_client.pump_unit_controller.Subscribe_FlowUnit()
     # print("FlowUnit res: ", results)
 
-    # results = sila_client.pumpUnitController_client.Subscribe_VolumeUnit()
+    # results = sila_client.pump_unit_controller.Subscribe_VolumeUnit()
     # print("VolumeUnit res: ", results)
 
     # ----- de/cetoni/pumps/syringepumps/PumpFluidDosingService
-    # results = sila_client.pumpFluidDosingService_client.Subscribe_MaxSyringeFillLevel()
+    # results = sila_client.pump_fluid_dosing_service.Subscribe_MaxSyringeFillLevel()
     # print("MaxSyringeFillLevel res: ", results)
 
-    # results = sila_client.pumpFluidDosingService_client.Subscribe_SyringeFillLevel()
+    # results = sila_client.pump_fluid_dosing_service.Subscribe_SyringeFillLevel()
     # print("SyringeFillLevel res: ", results)
 
-    # results = sila_client.pumpFluidDosingService_client.Subscribe_MaxFlowRate()
+    # results = sila_client.pump_fluid_dosing_service.Subscribe_MaxFlowRate()
     # print("MaxFlowRate res: ", results)
 
-    # results = sila_client.pumpFluidDosingService_client.Subscribe_FlowRate()
+    # results = sila_client.pump_fluid_dosing_service.Subscribe_FlowRate()
     # print("FlowRate res: ", results)
 
     # ----- de/cetoni/pumps/syringepumps/SyringeConfigurationController
-    # results = sila_client.syringeConfigurationController_client.Subscribe_InnerDiameter()
+    # results = sila_client.syringe_configuration_controller.Subscribe_InnerDiameter()
     # print("InnerDiameter res: ", results)
 
-    # results = sila_client.syringeConfigurationController_client.Subscribe_MaxPistonStroke()
+    # results = sila_client.syringe_configuration_controller.Subscribe_MaxPistonStroke()
     # print("MaxPistonStroke res: ", results)
 
     # ----- de/cetoni/valves/ValvePositionController
-    # results = sila_client.valvePositionController_client.Get_NumberOfPositions()
+    # results = sila_client.valve_position_controller.Get_NumberOfPositions()
     # print("NumberOfPositions res: ", results)
 
-    # results = sila_client.valvePositionController_client.Subscribe_Position()
+    # results = sila_client.valve_position_controller.Subscribe_Position()
     # print("Position res: ", results)
 
     # ----- de/cetoni/core/ShutdownController

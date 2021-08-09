@@ -72,8 +72,8 @@ class ValveClient(SystemStatusClient):
               compare the default dictionary that is stored in the directory of the corresponding feature.
     """
 
-    valvePositionController_client =  None
-    valveGatewayService_client =  None
+    valve_position_controller =  None
+    valve_gateway_service =  None
 
     # The following variables will be filled when run() is executed
     #: Storage for the connected servers version
@@ -107,8 +107,8 @@ class ValveClient(SystemStatusClient):
             f"Starting SiLA2 service client for service Valve with service name: {name}"
         )
 
-        self.valvePositionController_client = ValvePositionControllerClient(self.channel)
-        self.valveGatewayService_client = ValveGatewayServiceClient(self.channel)
+        self.valve_position_controller = ValvePositionControllerClient(self.channel)
+        self.valve_gateway_service = ValveGatewayServiceClient(self.channel)
 
 
         # initialise class variables for server information storage

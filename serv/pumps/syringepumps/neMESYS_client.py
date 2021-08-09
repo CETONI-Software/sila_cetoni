@@ -92,12 +92,12 @@ class neMESYSClient(QmixIOClient):
               compare the default dictionary that is stored in the directory of the corresponding feature.
     """
 
-    pumpDriveControlService_client =  None
-    pumpUnitController_client =  None
-    pumpFluidDosingService_client =  None
-    syringeConfigurationController_client =  None
-    valvePositionController_client =  None
-    shutdownController_client =  None
+    pump_drive_control_service =  None
+    pump_unit_controller =  None
+    pump_fluid_dosing_service =  None
+    syringe_configuration_controller =  None
+    valve_position_controller =  None
+    shutdown_controller =  None
 
     # The following variables will be filled when run() is executed
     #: Storage for the connected servers version
@@ -131,12 +131,12 @@ class neMESYSClient(QmixIOClient):
             f"Starting SiLA2 service client for service neMESYS with service name: {name}"
         )
 
-        self.pumpDriveControlService_client = PumpDriveControlServiceClient(self.channel)
-        self.pumpUnitController_client = PumpUnitControllerClient(self.channel)
-        self.pumpFluidDosingService_client = PumpFluidDosingServiceClient(self.channel)
-        self.syringeConfigurationController_client = SyringeConfigurationControllerClient(self.channel)
-        self.valvePositionController_client = ValvePositionControllerClient(self.channel)
-        self.shutdownController_client = ShutdownControllerClient(self.channel)
+        self.pump_drive_control_service = PumpDriveControlServiceClient(self.channel)
+        self.pump_unit_controller = PumpUnitControllerClient(self.channel)
+        self.pump_fluid_dosing_service = PumpFluidDosingServiceClient(self.channel)
+        self.syringe_configuration_controller = SyringeConfigurationControllerClient(self.channel)
+        self.valve_position_controller = ValvePositionControllerClient(self.channel)
+        self.shutdown_controller = ShutdownControllerClient(self.channel)
 
 
         # initialise class variables for server information storage

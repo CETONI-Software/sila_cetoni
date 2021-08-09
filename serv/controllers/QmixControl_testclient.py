@@ -99,26 +99,26 @@ if __name__ == '__main__':
     # ------------- command calls -------------------
 
     # ----- de/cetoni/controllers/ControlLoopService
-    # results = sila_client.controlLoopService_client.WriteSetPoint(SetPointValue: float = 1.0)
+    # results = sila_client.control_loop_service.WriteSetPoint(SetPointValue: float = 1.0)
     # print("WriteSetPoint res: ", results)
 
-    # results = sila_client.controlLoopService_client.RunControlLoop()
+    # results = sila_client.control_loop_service.RunControlLoop()
     # print("RunControlLoop res: ", results)
 
-    # results = sila_client.controlLoopService_client.StopControlLoop()
+    # results = sila_client.control_loop_service.StopControlLoop()
     # print("StopControlLoop res: ", results)
 
 
     # ------------- property calls -------------------
 
     # ----- de/cetoni/controllers/ControlLoopService
-    # results = sila_client.controlLoopService_client.Get_NumberOfChannels()
+    # results = sila_client.control_loop_service.Get_NumberOfChannels()
     # print("NumberOfChannels res: ", results)
 
-    # results = sila_client.controlLoopService_client.Subscribe_ControllerValue()
+    # results = sila_client.control_loop_service.Subscribe_ControllerValue()
     # print("ControllerValue res: ", results)
 
-    # results = sila_client.controlLoopService_client.Subscribe_SetPointValue()
+    # results = sila_client.control_loop_service.Subscribe_SetPointValue()
     # print("SetPointValue res: ", results)
 
 

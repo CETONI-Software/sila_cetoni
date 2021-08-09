@@ -68,7 +68,7 @@ class BatteryClient(SystemStatusClient):
               compare the default dictionary that is stored in the directory of the corresponding feature.
     """
 
-    batteryProvider_client =  None
+    battery_provider =  None
 
     # The following variables will be filled when run() is executed
     #: Storage for the connected servers version
@@ -102,7 +102,7 @@ class BatteryClient(SystemStatusClient):
             f"Starting SiLA2 service client for service Battery with service name: {name}"
         )
 
-        self.batteryProvider_client = BatteryProviderClient(self.channel)
+        self.battery_provider = BatteryProviderClient(self.channel)
 
 
         # initialise class variables for server information storage

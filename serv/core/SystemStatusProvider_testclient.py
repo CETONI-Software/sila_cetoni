@@ -103,7 +103,7 @@ if __name__ == '__main__':
     # ------------- property calls -------------------
 
     # ----- de/cetoni/core/SystemStatusProvider
-    # results = sila_client.systemStatusProvider_client.Subscribe_SystemState()
+    # results = sila_client.system_status_provider.Subscribe_SystemState()
     # print("SystemState res: ", results)
 
 

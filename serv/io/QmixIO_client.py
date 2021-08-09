@@ -83,10 +83,10 @@ class QmixIOClient(BatteryClient):
               compare the default dictionary that is stored in the directory of the corresponding feature.
     """
 
-    AnalogInChannelProvider_client =  None
-    AnalogOutChannelController_client =  None
-    DigitalInChannelProvider_client =  None
-    DigitalOutChannelController_client =  None
+    analog_in_channel_provider =  None
+    analog_out_channel_controller =  None
+    digital_in_channel_provider =  None
+    digital_out_channel_controller =  None
 
     # The following variables will be filled when run() is executed
     #: Storage for the connected servers version
@@ -120,10 +120,10 @@ class QmixIOClient(BatteryClient):
             f"Starting SiLA2 service client for service QmixIO with service name: {name}"
         )
 
-        self.AnalogInChannelProvider_client = AnalogInChannelProviderClient(self.channel)
-        self.AnalogOutChannelController_client = AnalogOutChannelControllerClient(self.channel)
-        self.DigitalInChannelProvider_client = DigitalInChannelProviderClient(self.channel)
-        self.DigitalOutChannelController_client = DigitalOutChannelControllerClient(self.channel)
+        self.analog_in_channel_provider = AnalogInChannelProviderClient(self.channel)
+        self.analog_out_channel_controller = AnalogOutChannelControllerClient(self.channel)
+        self.digital_in_channel_provider = DigitalInChannelProviderClient(self.channel)
+        self.digital_out_channel_controller = DigitalOutChannelControllerClient(self.channel)
 
 
         # initialise class variables for server information storage

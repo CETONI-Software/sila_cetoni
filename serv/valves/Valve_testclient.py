@@ -99,10 +99,10 @@ if __name__ == '__main__':
     # ------------- command calls -------------------
 
     # ----- de/cetoni/valves/ValvePositionController
-    # results = sila_client.valvePositionController_client.SwitchToPosition(Position: int = 1)
+    # results = sila_client.valve_position_controller.SwitchToPosition(Position: int = 1)
     # print("SwitchToPosition res: ", results)
 
-    # results = sila_client.valvePositionController_client.TogglePosition(EmptyParameter: bytes = b'')
+    # results = sila_client.valve_position_controller.TogglePosition(EmptyParameter: bytes = b'')
     # print("TogglePosition res: ", results)
 
     # ----- de/cetoni/valves/ValveGatewayService
@@ -110,14 +110,14 @@ if __name__ == '__main__':
     # ------------- property calls -------------------
 
     # ----- de/cetoni/valves/ValvePositionController
-    # results = sila_client.valvePositionController_client.Get_NumberOfPositions()
+    # results = sila_client.valve_position_controller.Get_NumberOfPositions()
     # print("NumberOfPositions res: ", results)
 
-    # results = sila_client.valvePositionController_client.Subscribe_Position()
+    # results = sila_client.valve_position_controller.Subscribe_Position()
     # print("Position res: ", results)
 
     # ----- de/cetoni/valves/ValveGatewayService
-    # results = sila_client.valveGatewayService_client.Get_NumberOfValves()
+    # results = sila_client.valve_gateway_service.Get_NumberOfValves()
     # print("NumberOfValves res: ", results)
 
 

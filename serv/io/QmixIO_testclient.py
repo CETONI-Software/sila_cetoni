@@ -141,16 +141,16 @@ if __name__ == '__main__':
 
     # ------------- metadata calls -------------------
 
-    # results = sila_client.AnalogInChannelProvider_client.Get_FCPAffectedByMetadata_ChannelIndex()
+    # results = sila_client.analog_in_channel_provider.Get_FCPAffectedByMetadata_ChannelIndex()
     # print("AnalogInChannelProvider FCPAffectedByMetadata_ChannelIndex res: ", results)
 
-    # results = sila_client.AnalogOutChannelController_client.Get_FCPAffectedByMetadata_ChannelIndex()
+    # results = sila_client.analog_out_channel_controller.Get_FCPAffectedByMetadata_ChannelIndex()
     # print("AnalogOutChannelController FCPAffectedByMetadata_ChannelIndex res: ", results)
 
-    # results = sila_client.DigitalInChannelProvider_client.Get_FCPAffectedByMetadata_ChannelIndex()
+    # results = sila_client.digital_in_channel_provider.Get_FCPAffectedByMetadata_ChannelIndex()
     # print("DigitalInChannelProvider FCPAffectedByMetadata_ChannelIndex res: ", results)
 
-    # results = sila_client.DigitalOutChannelController_client.Get_FCPAffectedByMetadata_ChannelIndex()
+    # results = sila_client.digital_out_channel_controller.Get_FCPAffectedByMetadata_ChannelIndex()
     # print("DigitalOutChannelController FCPAffectedByMetadata_ChannelIndex res: ", results)
 
 

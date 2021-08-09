@@ -103,7 +103,7 @@ if __name__ == '__main__':
     # ------------- property calls -------------------
 
     # ----- de/cetoni/core/BatteryProvider
-    # results = sila_client.batteryProvider_client.Subscribe_BatteryVoltage()
+    # results = sila_client.battery_provider.Subscribe_BatteryVoltage()
     # print("BatteryVoltage res: ", results)
 
 

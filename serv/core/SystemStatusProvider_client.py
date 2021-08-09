@@ -66,7 +66,7 @@ class SystemStatusClient(SiLA2Client):
               compare the default dictionary that is stored in the directory of the corresponding feature.
     """
 
-    systemStatusProvider_client =  None
+    system_status_provider =  None
 
     # The following variables will be filled when run() is executed
     #: Storage for the connected servers version
@@ -100,7 +100,7 @@ class SystemStatusClient(SiLA2Client):
             f"Starting SiLA2 service client for service SystemStatusProvider with service name: {name}"
         )
 
-        self.systemStatusProvider_client = SystemStatusProviderClient(self.channel)
+        self.system_status_provider = SystemStatusProviderClient(self.channel)
 
 
         # initialise class variables for server information storage

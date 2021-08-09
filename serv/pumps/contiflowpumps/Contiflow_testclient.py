@@ -99,64 +99,64 @@ if __name__ == '__main__':
     # ------------- command calls -------------------
 
     # ----- de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService
-    # results = sila_client.continuousFlowConfigurationService_client.SetSwitchingMode(SwitchingMode: str = 'default string')
+    # results = sila_client.continuous_flow_configuration_service.SetSwitchingMode(SwitchingMode: str = 'default string')
     # print("SetSwitchingMode res: ", results)
 
-    # results = sila_client.continuousFlowConfigurationService_client.SetRefillFlowRate(RefillFlowRate: float = 1.0)
+    # results = sila_client.continuous_flow_configuration_service.SetRefillFlowRate(RefillFlowRate: float = 1.0)
     # print("SetRefillFlowRate res: ", results)
 
-    # results = sila_client.continuousFlowConfigurationService_client.SetCrossFlowDuration(CrossFlowDuration: float = 1.0)
+    # results = sila_client.continuous_flow_configuration_service.SetCrossFlowDuration(CrossFlowDuration: float = 1.0)
     # print("SetCrossFlowDuration res: ", results)
 
-    # results = sila_client.continuousFlowConfigurationService_client.SetOverlapDuration(OverlapDuration: float = 1.0)
+    # results = sila_client.continuous_flow_configuration_service.SetOverlapDuration(OverlapDuration: float = 1.0)
     # print("SetOverlapDuration res: ", results)
 
     # ----- de/cetoni/pumps/contiflowpumps/ContinuousFlowDosingService
-    # results = sila_client.continuousFlowDosingService_client.GenerateFlow(FlowRate: float = 1.0)
+    # results = sila_client.continuous_flow_dosing_service.GenerateFlow(FlowRate: float = 1.0)
     # print("GenerateFlow res: ", results)
 
-    # results = sila_client.continuousFlowDosingService_client.StopDosage(EmptyParameter: bytes = b'')
+    # results = sila_client.continuous_flow_dosing_service.StopDosage(EmptyParameter: bytes = b'')
     # print("StopDosage res: ", results)
 
     # ----- de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController
-    # results = sila_client.continuousFlowInitializationController_client.InitializeContiflow(EmptyParameter: bytes = b'')
+    # results = sila_client.continuous_flow_initialization_controller.InitializeContiflow(EmptyParameter: bytes = b'')
     # print("InitializeContiflow res: ", results)
 
     # ----- de/cetoni/core/ShutdownController
-    # results = sila_client.shutdownController_client.Shutdown(EmptyParameter: bytes = b'')
+    # results = sila_client.shutdown_controller.Shutdown(EmptyParameter: bytes = b'')
     # print("Shutdown res: ", results)
 
 
     # ------------- property calls -------------------
 
     # ----- de/cetoni/pumps/contiflowpumps/ContinuousFlowConfigurationService
-    # results = sila_client.continuousFlowConfigurationService_client.Subscribe_SwitchingMode()
+    # results = sila_client.continuous_flow_configuration_service.Subscribe_SwitchingMode()
     # print("SwitchingMode res: ", results)
 
-    # results = sila_client.continuousFlowConfigurationService_client.Subscribe_MaxRefillFlowRate()
+    # results = sila_client.continuous_flow_configuration_service.Subscribe_MaxRefillFlowRate()
     # print("MaxRefillFlowRate res: ", results)
 
-    # results = sila_client.continuousFlowConfigurationService_client.Subscribe_RefillFlowRate()
+    # results = sila_client.continuous_flow_configuration_service.Subscribe_RefillFlowRate()
     # print("RefillFlowRate res: ", results)
 
-    # results = sila_client.continuousFlowConfigurationService_client.Subscribe_MinFlowRate()
+    # results = sila_client.continuous_flow_configuration_service.Subscribe_MinFlowRate()
     # print("MinFlowRate res: ", results)
 
-    # results = sila_client.continuousFlowConfigurationService_client.Subscribe_CrossFlowDuration()
+    # results = sila_client.continuous_flow_configuration_service.Subscribe_CrossFlowDuration()
     # print("CrossFlowDuration res: ", results)
 
-    # results = sila_client.continuousFlowConfigurationService_client.Subscribe_OverlapDuration()
+    # results = sila_client.continuous_flow_configuration_service.Subscribe_OverlapDuration()
     # print("OverlapDuration res: ", results)
 
     # ----- de/cetoni/pumps/contiflowpumps/ContinuousFlowDosingService
-    # results = sila_client.continuousFlowDosingService_client.Subscribe_MaxFlowRate()
+    # results = sila_client.continuous_flow_dosing_service.Subscribe_MaxFlowRate()
     # print("MaxFlowRate res: ", results)
 
-    # results = sila_client.continuousFlowDosingService_client.Subscribe_FlowRate()
+    # results = sila_client.continuous_flow_dosing_service.Subscribe_FlowRate()
     # print("FlowRate res: ", results)
 
     # ----- de/cetoni/pumps/contiflowpumps/ContinuousFlowInitializationController
-    # results = sila_client.continuousFlowInitializationController_client.Subscribe_IsInitialized()
+    # results = sila_client.continuous_flow_initialization_controller.Subscribe_IsInitialized()
     # print("IsInitialized res: ", results)
 
     # ----- de/cetoni/core/ShutdownController

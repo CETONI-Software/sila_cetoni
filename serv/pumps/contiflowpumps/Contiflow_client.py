@@ -78,9 +78,9 @@ class ContiflowClient(neMESYSClient):
               compare the default dictionary that is stored in the directory of the corresponding feature.
     """
 
-    continuousFlowConfigurationService_client =  None
-    continuousFlowDosingService_client =  None
-    continuousFlowInitializationController_client =  None
+    continuous_flow_configuration_service =  None
+    continuous_flow_dosing_service =  None
+    continuous_flow_initialization_controller =  None
 
     # The following variables will be filled when run() is executed
     #: Storage for the connected servers version
@@ -114,9 +114,9 @@ class ContiflowClient(neMESYSClient):
             f"Starting SiLA2 service client for service Contiflow with service name: {name}"
         )
 
-        self.continuousFlowConfigurationService_client = ContinuousFlowConfigurationServiceClient(self.channel)
-        self.continuousFlowDosingService_client = ContinuousFlowDosingServiceClient(self.channel)
-        self.continuousFlowInitializationController_client = ContinuousFlowInitializationControllerClient(self.channel)
+        self.continuous_flow_configuration_service = ContinuousFlowConfigurationServiceClient(self.channel)
+        self.continuous_flow_dosing_service = ContinuousFlowDosingServiceClient(self.channel)
+        self.continuous_flow_initialization_controller = ContinuousFlowInitializationControllerClient(self.channel)
 
 
         # initialise class variables for server information storage
