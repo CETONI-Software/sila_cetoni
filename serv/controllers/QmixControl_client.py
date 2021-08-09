@@ -37,9 +37,11 @@ import time
 # import meta packages
 from typing import Union, Optional
 
+# Import our client base class
+from ..core.SystemStatusProvider_client import SystemStatusClient
+
 # import SiLA2 library modules
 from sila2lib.framework import SiLAFramework_pb2 as silaFW_pb2
-from sila2lib.sila_client import SiLA2Client
 from sila2lib.framework.std_features import SiLAService_pb2 as SiLAService_feature_pb2
 from sila2lib.error_handling import client_err
 #   Usually not needed, but - feel free to modify
@@ -58,7 +60,7 @@ from impl.de.cetoni.controllers.ControlLoopService.ControlLoopService_client imp
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
-class QmixControlClient(SiLA2Client):
+class QmixControlClient(SystemStatusClient):
     """
         The SiLA 2 driver for Qmix Control Devices
 

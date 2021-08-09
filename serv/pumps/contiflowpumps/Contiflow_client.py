@@ -37,9 +37,11 @@ import time
 # import meta packages
 from typing import Union, Optional
 
+# import our client base class
+from ..syringepumps.neMESYS_client import neMESYSClient
+
 # import SiLA2 library modules
 from sila2lib.framework import SiLAFramework_pb2 as silaFW_pb2
-from sila2lib.sila_client import SiLA2Client
 from sila2lib.framework.std_features import SiLAService_pb2 as SiLAService_feature_pb2
 from sila2lib.error_handling import client_err
 #   Usually not needed, but - feel free to modify
@@ -68,7 +70,7 @@ from impl.de.cetoni.pumps.contiflowpumps.ContinuousFlowInitializationController.
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
-class ContiflowClient(SiLA2Client):
+class ContiflowClient(neMESYSClient):
     """
         Allows to control a continuous flow pump that is made up of two syringe pumps
 

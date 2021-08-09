@@ -47,18 +47,18 @@ from sila2lib.error_handling import client_err
 
 # import feature gRPC modules
 # Import gRPC libraries of features
-from SystemStatusProvider.gRPC import SystemStatusProvider_pb2
-from SystemStatusProvider.gRPC import SystemStatusProvider_pb2_grpc
+from impl.de.cetoni.core.SystemStatusProvider.gRPC import SystemStatusProvider_pb2
+from impl.de.cetoni.core.SystemStatusProvider.gRPC import SystemStatusProvider_pb2_grpc
 # import default arguments for this feature
-from SystemStatusProvider.SystemStatusProvider_default_arguments import default_dict as SystemStatusProvider_default_dict
+from impl.de.cetoni.core.SystemStatusProvider.SystemStatusProvider_default_arguments import default_dict as SystemStatusProvider_default_dict
 
 # import all feature clients
-from SystemStatusProvider.SystemStatusProvider_client import SystemStatusProviderClient
+from impl.de.cetoni.core.SystemStatusProvider.SystemStatusProvider_client import SystemStatusProviderClient
 
 
 
 # noinspection PyPep8Naming, PyUnusedLocal
-class SystemStatusProviderClient(SiLA2Client):
+class SystemStatusClient(SiLA2Client):
     """
         Provides status information about the overall system
 
@@ -67,7 +67,7 @@ class SystemStatusProviderClient(SiLA2Client):
     """
 
     systemStatusProvider_client =  None
-    
+
     # The following variables will be filled when run() is executed
     #: Storage for the connected servers version
     server_version: str = ''
@@ -76,7 +76,7 @@ class SystemStatusProviderClient(SiLA2Client):
     #: Storage for the description of the connected server
     server_description: str = ''
 
-    
+
     def __init__(self,
                  name: str = "SystemStatusProviderClient", description: str = "Provides status information about the overall system",
                  server_name: Optional[str] = None,
@@ -101,7 +101,7 @@ class SystemStatusProviderClient(SiLA2Client):
         )
 
         self.systemStatusProvider_client = SystemStatusProviderClient(self.channel)
-        
+
 
         # initialise class variables for server information storage
         self.server_version = ''
@@ -119,7 +119,7 @@ class SystemStatusProviderClient(SiLA2Client):
 
         if show_info:
             self.get_all_server_connection_info()
-        
+
         return True
 
     def stop(self, force: bool = False) -> bool:
@@ -183,7 +183,7 @@ if __name__ == '__main__':
     parsed_args = parse_command_line()
 
     # start the server
-    sila_client = SystemStatusProviderClient(server_ip=parsed_args.server_ip_address, 
+    sila_client = SystemStatusProviderClient(server_ip=parsed_args.server_ip_address,
                                         server_port=int(parsed_args.server_port))
     sila_client.run()
 
