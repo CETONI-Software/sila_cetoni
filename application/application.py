@@ -36,6 +36,8 @@ from qmixsdk import qmixpump
 from .system import ApplicationSystem
 from .singleton import Singleton
 
+DEFAULT_BASE_PORT = 50052
+
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 class Application(metaclass=Singleton):
@@ -45,14 +47,17 @@ class Application(metaclass=Singleton):
 
     system: ApplicationSystem
 
+    base_port: int
     servers: List[SiLA2Server]
 
-    def __init__(self, device_config_path: str = ""):
+    def __init__(self, device_config_path: str = "",
+                 base_port: int = DEFAULT_BASE_PORT):
         if not device_config_path:
             return
 
         self.system = ApplicationSystem(device_config_path)
 
+        self.base_port = base_port
         logging.debug("Creating SiLA 2 servers...")
         self.servers = self.create_servers()
 
@@ -110,7 +115,7 @@ class Application(metaclass=Singleton):
         servers = []
         # common args for all servers
         args = argparse.Namespace(
-            server_port=50051, # base port
+            server_port=self.base_port-1,
             server_type="TestServer",
             encryption_key=None,
             encryption_cert=None,
