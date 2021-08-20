@@ -4,31 +4,45 @@
 #
 #set -x
 
-SILA_VENV_PATH=${0%/*}/.sila_cetoni_venv
+function fail() {
+    echo "ERROR: $@"
+    exit 1
+}
+
+HERE=`realpath ${0%/*}`
+SILA_VENV_PATH=$HERE/.sila_cetoni_venv
 
 echo Installing...
 
-for i in "pip" "pip3"; do
-    pip=`which $i`
-    [ $? -eq 0 ] && `$pip --version | grep -q 'python 3'`
+for i in "python" "python3"; do
+    python=`which $i`
+    [ $? -eq 0 ] && (`$python --version | grep -qi 'python 3'`) > /dev/null 2>&1
     [ $? -eq 0 ] && break;
 done
 
-[ -z $pip ] && ( echo "Could not find a pip executable! Either install pip for python 3 or adjust your PATH environment variable to point to the directory where pip is located."; exit 1 )
+[ -z $python ] && fail "Could not find a python executable! Either install Python 3 or adjust your PATH environment variable to point to the directory where python is located."
+
+for i in "pip" "pip3"; do
+    pip=`which $i`
+    [ $? -eq 0 ] && (`$pip --version | grep -qi 'python 3'`) > /dev/null 2>&1
+    [ $? -eq 0 ] && break;
+done
+
+[ -z $pip ] && fail "Could not find a pip executable! Either install pip for Python 3 or adjust your PATH environment variable to point to the directory where pip is located."
 
 git=`which git`
-[ $? -eq 0 -a -n $git ] || ( echo "Please install git first and then re-run this script!"; exit 1 )
+[ $? -eq 0 -a -n $git ] || fail "Please install git first and then re-run this script!"
 
 $pip install virtualenv
-virtualenv $SILA_VENV_PATH
+$python -m virtualenv $SILA_VENV_PATH
 pip=$SILA_VENV_PATH/bin/${pip##*/}
 
-$git clone -b feature/silacodegenerator-0.3 https://gitlab.com/FMeinicke/sila_python.git ${0%/*}/sila_python
+$git clone -b feature/silacodegenerator-0.3 https://gitlab.com/FMeinicke/sila_python.git $HERE/sila_python
 for i in "sila_library" "sila_tools/sila2codegenerator"; do
-    cd ${0%/*}/sila_python/$i
+    cd $HERE/sila_python/$i
     $pip install --upgrade .
 done
-cd ${0%/*}
+cd $HERE
 
 $pip install -r requirements.txt
 
