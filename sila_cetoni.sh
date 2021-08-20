@@ -18,7 +18,7 @@ sleep 1 # prevent sporadically not working 2nd pump
 # change this path to point to your CETONI SDK installation
 grep -qi raspbian /etc/os-release 2>/dev/null && {
     # default directory for RaspberryPi
-    export CETONI_SDK_PATH="$HOME/QmixSDK_Raspi"
+    export CETONI_SDK_PATH="$HOME/CETONI_SDK_Raspi"
 } || {
     # default directory for generic Linux
     export CETONI_SDK_PATH="$HOME/CETONI_SDK_Linux"
