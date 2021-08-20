@@ -72,7 +72,7 @@ class Application(metaclass=Singleton):
 
         self.start_servers()
 
-        print("Press Ctrl-C to stop...")
+        print("Press Ctrl-C to stop...", flush=True)
         try:
             while not self.system.shutting_down:
                 time.sleep(_ONE_DAY_IN_SECONDS)
