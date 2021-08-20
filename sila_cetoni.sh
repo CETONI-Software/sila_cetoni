@@ -47,4 +47,5 @@ python3 $curr_dir/sila_cetoni.py $@
 cd $curr_dir
 
 # write log to SD card if it's in RUNTIME_DIRECTORY
+mkdir -p "$curr_dir/log"
 [ "$LOG_DIR" = "$RUNTIME_DIRECTORY/log" ] && cp "$LOG_FILE" "$curr_dir/log/${LOG_FILE##*/}"
