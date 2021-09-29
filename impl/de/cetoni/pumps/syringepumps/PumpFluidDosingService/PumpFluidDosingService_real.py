@@ -133,7 +133,8 @@ class PumpFluidDosingServiceReal:
 
         if not self.pump.is_pumping():
             yield silaFW_pb2.ExecutionInfo(
-                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully
+                commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully,
+                progressInfo=silaFW_pb2.Real(value=1)
             )
             return
 
