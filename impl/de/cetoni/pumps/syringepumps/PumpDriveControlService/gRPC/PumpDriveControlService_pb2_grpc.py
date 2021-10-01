@@ -3,6 +3,7 @@
 import grpc
 
 from . import PumpDriveControlService_pb2 as PumpDriveControlService__pb2
+import sila2lib.framework.SiLAFramework_pb2 as SiLAFramework__pb2
 
 
 class PumpDriveControlServiceStub(object):
@@ -25,6 +26,16 @@ class PumpDriveControlServiceStub(object):
         self.InitializePumpDrive = channel.unary_unary(
                 '/sila2.de.cetoni.pumps.syringepumps.pumpdrivecontrolservice.v1.PumpDriveControlService/InitializePumpDrive',
                 request_serializer=PumpDriveControlService__pb2.InitializePumpDrive_Parameters.SerializeToString,
+                response_deserializer=SiLAFramework__pb2.CommandConfirmation.FromString,
+                )
+        self.InitializePumpDrive_Info = channel.unary_stream(
+                '/sila2.de.cetoni.pumps.syringepumps.pumpdrivecontrolservice.v1.PumpDriveControlService/InitializePumpDrive_Info',
+                request_serializer=SiLAFramework__pb2.CommandExecutionUUID.SerializeToString,
+                response_deserializer=SiLAFramework__pb2.ExecutionInfo.FromString,
+                )
+        self.InitializePumpDrive_Result = channel.unary_unary(
+                '/sila2.de.cetoni.pumps.syringepumps.pumpdrivecontrolservice.v1.PumpDriveControlService/InitializePumpDrive_Result',
+                request_serializer=SiLAFramework__pb2.CommandExecutionUUID.SerializeToString,
                 response_deserializer=PumpDriveControlService__pb2.InitializePumpDrive_Responses.FromString,
                 )
         self.EnablePumpDrive = channel.unary_unary(
@@ -64,6 +75,18 @@ class PumpDriveControlServiceServicer(object):
         """Initialize Pump Drive
         Initialize the pump drive (e.g. by executing a reference move).
         """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def InitializePumpDrive_Info(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def InitializePumpDrive_Result(self, request, context):
+        """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -108,6 +131,16 @@ def add_PumpDriveControlServiceServicer_to_server(servicer, server):
             'InitializePumpDrive': grpc.unary_unary_rpc_method_handler(
                     servicer.InitializePumpDrive,
                     request_deserializer=PumpDriveControlService__pb2.InitializePumpDrive_Parameters.FromString,
+                    response_serializer=SiLAFramework__pb2.CommandConfirmation.SerializeToString,
+            ),
+            'InitializePumpDrive_Info': grpc.unary_stream_rpc_method_handler(
+                    servicer.InitializePumpDrive_Info,
+                    request_deserializer=SiLAFramework__pb2.CommandExecutionUUID.FromString,
+                    response_serializer=SiLAFramework__pb2.ExecutionInfo.SerializeToString,
+            ),
+            'InitializePumpDrive_Result': grpc.unary_unary_rpc_method_handler(
+                    servicer.InitializePumpDrive_Result,
+                    request_deserializer=SiLAFramework__pb2.CommandExecutionUUID.FromString,
                     response_serializer=PumpDriveControlService__pb2.InitializePumpDrive_Responses.SerializeToString,
             ),
             'EnablePumpDrive': grpc.unary_unary_rpc_method_handler(
@@ -161,6 +194,40 @@ class PumpDriveControlService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.pumps.syringepumps.pumpdrivecontrolservice.v1.PumpDriveControlService/InitializePumpDrive',
             PumpDriveControlService__pb2.InitializePumpDrive_Parameters.SerializeToString,
+            SiLAFramework__pb2.CommandConfirmation.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def InitializePumpDrive_Info(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/sila2.de.cetoni.pumps.syringepumps.pumpdrivecontrolservice.v1.PumpDriveControlService/InitializePumpDrive_Info',
+            SiLAFramework__pb2.CommandExecutionUUID.SerializeToString,
+            SiLAFramework__pb2.ExecutionInfo.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def InitializePumpDrive_Result(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/sila2.de.cetoni.pumps.syringepumps.pumpdrivecontrolservice.v1.PumpDriveControlService/InitializePumpDrive_Result',
+            SiLAFramework__pb2.CommandExecutionUUID.SerializeToString,
             PumpDriveControlService__pb2.InitializePumpDrive_Responses.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

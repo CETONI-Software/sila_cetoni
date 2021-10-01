@@ -13,7 +13,7 @@
         <Identifier>InitializePumpDrive</Identifier>
         <DisplayName>Initialize Pump Drive</DisplayName>
         <Description>Initialize the pump drive (e.g. by executing a reference move).</Description>
-        <Observable>No</Observable>
+        <Observable>Yes</Observable>
         <DefinedExecutionErrors>
             <Identifier>InitializationFailed</Identifier>
         </DefinedExecutionErrors>
@@ -66,5 +66,10 @@
         <Identifier>InitializationFailed</Identifier>
         <DisplayName>Initialization Failed</DisplayName>
         <Description>The initialization did not end properly.</Description>
+    </DefinedExecutionError>
+    <DefinedExecutionError>
+        <Identifier>InitializationNotFinished</Identifier>
+        <DisplayName>Initialization Not Finished</DisplayName>
+        <Description>There is already another initialization running that hasn't finished yet. Starting a new initialization move is not allowed.</Description>
     </DefinedExecutionError>
 </Feature>
