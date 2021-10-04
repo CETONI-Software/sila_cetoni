@@ -24,10 +24,12 @@ ________________________________________________________________________
 ________________________________________________________________________
 """
 
+import os
 import time
 import logging
 import argparse
 from typing import List
+from OpenSSL import crypto
 
 # only used for type hinting
 from sila2lib.sila_server import SiLA2Server
@@ -47,6 +49,7 @@ class Application(metaclass=Singleton):
 
     system: ApplicationSystem
 
+    key_cert_path: str
     base_port: int
     servers: List[SiLA2Server]
 
@@ -56,10 +59,42 @@ class Application(metaclass=Singleton):
             return
 
         self.system = ApplicationSystem(device_config_path)
+        self._generate_self_signed_cert()
 
         self.base_port = base_port
         logging.debug("Creating SiLA 2 servers...")
         self.servers = self.create_servers()
+
+    def _generate_self_signed_cert(self):
+        """
+        Generates a self-signed SSL key/certificate pair on the fly
+        """
+
+        self.key_cert_path = os.path.join(os.path.dirname(__file__), '..', '.ssl', 'sila_cetoni.{}')
+        os.makedirs(os.path.dirname(self.key_cert_path), exist_ok=True)
+
+        private_key = crypto.PKey()
+        private_key.generate_key(crypto.TYPE_RSA, 4096)
+
+        # create a self-signed cert
+        cert = crypto.X509()
+        cert.get_subject().C = 'DE'
+        cert.get_subject().ST = 'TH'
+        cert.get_subject().O = 'CETONI'
+        cert.get_subject().CN = 'SiLA2'
+        cert.set_serial_number(1)
+        cert.gmtime_adj_notBefore(0)
+        cert.gmtime_adj_notAfter(365*24*60*60)
+        cert.set_issuer(cert.get_subject())
+
+        cert.set_pubkey(private_key)
+        cert.sign(private_key, 'sha512') # signing certificate with public key
+
+        # writing key / cert pair
+        with open(self.key_cert_path.format('crt'), "wt") as f:
+            f.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode("utf-8"))
+        with open(self.key_cert_path.format('key'), "wt") as f:
+            f.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, private_key).decode("utf-8"))
 
     def run(self):
         """
@@ -117,8 +152,8 @@ class Application(metaclass=Singleton):
         args = argparse.Namespace(
             server_port=self.base_port-1,
             server_type="TestServer",
-            encryption_key=None,
-            encryption_cert=None,
+            encryption_key=self.key_cert_path.format('key'),
+            encryption_cert=self.key_cert_path.format('crt'),
             meta_dir=None
         )
 
