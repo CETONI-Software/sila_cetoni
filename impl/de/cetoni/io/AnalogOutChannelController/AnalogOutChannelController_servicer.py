@@ -33,7 +33,7 @@ import logging
 import grpc
 
 # meta packages
-from typing import Union, List, Tuple
+from typing import Union, List
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
@@ -130,14 +130,8 @@ class AnalogOutChannelController(AnalogOutChannelController_pb2_grpc.AnalogOutCh
             )
         )
 
-        # parameter validation
-        # if request.my_paramameter.value out of scope :
-        #        sila_val_err = SiLAValidationError(parameter="myParameter",
-        #                                           msg=f"Parameter {request.my_parameter.value} out of scope!")
-        #        sila_val_err.raise_rpc_error(context)
-
         try:
-            channel = self._get_channel(context.invocation_metadata(), "Command")
+            channel: AnalogOutChannel = self._get_channel(context.invocation_metadata(), "Command")
             return self.implementation.SetOutputValue(request, channel, context)
         except (SiLAError, DeviceError, DecoratorInvalidChannelIndexError) as err:
             if isinstance(err, DeviceError):

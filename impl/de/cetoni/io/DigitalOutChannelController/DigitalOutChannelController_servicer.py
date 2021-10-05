@@ -33,7 +33,7 @@ import logging
 import grpc
 
 # meta packages
-from typing import Union, List, Tuple
+from typing import Union, List
 
 # import SiLA2 library
 import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
