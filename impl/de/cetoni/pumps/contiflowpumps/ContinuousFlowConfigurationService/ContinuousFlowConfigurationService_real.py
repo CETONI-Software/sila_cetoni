@@ -30,6 +30,7 @@ __version__ = "0.1.0"
 
 # import general packages
 import logging
+import math
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
@@ -234,13 +235,18 @@ class ContinuousFlowConfigurationServiceReal:
             SwitchingMode (Switching Mode): Get the switching mode for syringe pump switchover if one syringe pump runs empty.
         """
 
+        new_switching_mode = self.pump.get_device_property(ContiFlowProperty.SWITCHING_MODE)
+        switching_mode = new_switching_mode + 1 # force sending the first value
         while True:
-            switching_mode = self.pump.get_device_property(ContiFlowProperty.SWITCHING_MODE)
-            yield ContinuousFlowConfigurationService_pb2.Subscribe_SwitchingMode_Responses(
-                SwitchingMode=silaFW_pb2.String(value=invert_dict(self.ALLOWED_SWITCHING_MODES)[switching_mode])
-            )
-
-            time.sleep(0.5) # give client a chance to keep up
+            new_switching_mode = self.pump.get_device_property(ContiFlowProperty.SWITCHING_MODE)
+            if new_switching_mode != switching_mode:
+                switching_mode = new_switching_mode
+                yield ContinuousFlowConfigurationService_pb2.Subscribe_SwitchingMode_Responses(
+                    SwitchingMode=silaFW_pb2.String(
+                        value=invert_dict(self.ALLOWED_SWITCHING_MODES)[switching_mode]
+                    )
+                )
+            time.sleep(0.1) # give client a chance to keep up
 
 
     def Subscribe_MaxRefillFlowRate(self, request, context: grpc.ServicerContext) \
@@ -256,13 +262,16 @@ class ContinuousFlowConfigurationServiceReal:
             MaxRefillFlowRate (Max Refill Flow Rate): Get the maximum possible refill flow rate for the continuous flow pump.
         """
 
+        new_max_flow = self.pump.get_device_property(ContiFlowProperty.MAX_REFILL_FLOW)
+        max_flow = new_max_flow + 1 # force sending the first value
         while True:
-            max_flow = self.pump.get_device_property(ContiFlowProperty.MAX_REFILL_FLOW)
-            yield ContinuousFlowConfigurationService_pb2.Subscribe_MaxRefillFlowRate_Responses(
-                MaxRefillFlowRate=silaFW_pb2.Real(value=max_flow)
-            )
-
-            time.sleep(0.5) # give client a chance to keep up
+            new_max_flow = self.pump.get_device_property(ContiFlowProperty.MAX_REFILL_FLOW)
+            if not math.isclose(new_max_flow, max_flow):
+                max_flow = new_max_flow
+                yield ContinuousFlowConfigurationService_pb2.Subscribe_MaxRefillFlowRate_Responses(
+                    MaxRefillFlowRate=silaFW_pb2.Real(value=max_flow)
+                )
+            time.sleep(0.1) # give client a chance to keep up
 
 
     def Subscribe_RefillFlowRate(self, request, context: grpc.ServicerContext) \
@@ -278,13 +287,16 @@ class ContinuousFlowConfigurationServiceReal:
             RefillFlowRate (Refill Flow Rate): Get the refill flow rate for the continuous flow pump.
         """
 
+        new_refill_flow = self.pump.get_device_property(ContiFlowProperty.REFILL_FLOW)
+        refill_flow = new_refill_flow + 1 # force sending the first value
         while True:
-            refill_flow = self.pump.get_device_property(ContiFlowProperty.REFILL_FLOW)
-            yield ContinuousFlowConfigurationService_pb2.Subscribe_RefillFlowRate_Responses(
-                RefillFlowRate=silaFW_pb2.Real(value=refill_flow)
-            )
-
-            time.sleep(0.5) # give client a chance to keep up
+            new_refill_flow = self.pump.get_device_property(ContiFlowProperty.REFILL_FLOW)
+            if not math.isclose(new_refill_flow, refill_flow):
+                refill_flow = new_refill_flow
+                yield ContinuousFlowConfigurationService_pb2.Subscribe_RefillFlowRate_Responses(
+                    RefillFlowRate=silaFW_pb2.Real(value=refill_flow)
+                )
+            time.sleep(0.1) # give client a chance to keep up
 
 
     def Subscribe_MinFlowRate(self, request, context: grpc.ServicerContext) \
@@ -300,13 +312,16 @@ class ContinuousFlowConfigurationServiceReal:
             MinFlowRate (Min Flow Rate): Get the minimum flow rate that is theoretically possible with the continuous flow pump.
         """
 
+        new_min_flow = self.pump.get_device_property(ContiFlowProperty.MIN_PUMP_FLOW)
+        min_flow = new_min_flow + 1 # force sending the first value
         while True:
-            min_flow = self.pump.get_device_property(ContiFlowProperty.MIN_PUMP_FLOW)
-            yield ContinuousFlowConfigurationService_pb2.Subscribe_MinFlowRate_Responses(
-                MinFlowRate=silaFW_pb2.Real(value=min_flow)
-            )
-
-            time.sleep(0.5) # give client a chance to keep up
+            new_min_flow = self.pump.get_device_property(ContiFlowProperty.MIN_PUMP_FLOW)
+            if not math.isclose(new_min_flow, min_flow):
+                min_flow = new_min_flow
+                yield ContinuousFlowConfigurationService_pb2.Subscribe_MinFlowRate_Responses(
+                    MinFlowRate=silaFW_pb2.Real(value=min_flow)
+                )
+            time.sleep(0.1) # give client a chance to keep up
 
 
     def Subscribe_CrossFlowDuration(self, request, context: grpc.ServicerContext) \
@@ -322,13 +337,16 @@ class ContinuousFlowConfigurationServiceReal:
             CrossFlowDuration (Cross Flow Duration): Get the cross flow duration for the continuous flow pump.
         """
 
+        new_cross_duration = self.pump.get_device_property(ContiFlowProperty.CROSSFLOW_DURATION_S)
+        cross_duration = new_cross_duration + 1 # force sending the first value
         while True:
-            cross_duration = self.pump.get_device_property(ContiFlowProperty.CROSSFLOW_DURATION_S)
-            yield ContinuousFlowConfigurationService_pb2.Subscribe_CrossFlowDuration_Responses(
-                CrossFlowDuration=silaFW_pb2.Real(value=cross_duration)
-            )
-
-            time.sleep(0.5) # give client a chance to keep up
+            new_cross_duration = self.pump.get_device_property(ContiFlowProperty.CROSSFLOW_DURATION_S)
+            if not math.isclose(new_cross_duration, cross_duration):
+                cross_duration = new_cross_duration
+                yield ContinuousFlowConfigurationService_pb2.Subscribe_CrossFlowDuration_Responses(
+                    CrossFlowDuration=silaFW_pb2.Real(value=cross_duration)
+                )
+            time.sleep(0.1) # give client a chance to keep up
 
 
 
@@ -345,10 +363,13 @@ class ContinuousFlowConfigurationServiceReal:
             OverlapDuration (Overlap Duration): Get the overlap duration for the continuous flow pump.
         """
 
+        new_overlap_duration = self.pump.get_device_property(ContiFlowProperty.OVERLAP_DURATION_S)
+        overlap_duration = new_overlap_duration + 1 # force sending the first value
         while True:
-            overlap_duration = self.pump.get_device_property(ContiFlowProperty.OVERLAP_DURATION_S)
-            yield ContinuousFlowConfigurationService_pb2.Subscribe_OverlapDuration_Responses(
-                OverlapDuration=silaFW_pb2.Real(value=overlap_duration)
-            )
-
-            time.sleep(0.5) # give client a chance to keep up
+            new_overlap_duration = self.pump.get_device_property(ContiFlowProperty.OVERLAP_DURATION_S)
+            if not math.isclose(new_overlap_duration, overlap_duration):
+                overlap_duration = new_overlap_duration
+                yield ContinuousFlowConfigurationService_pb2.Subscribe_OverlapDuration_Responses(
+                    OverlapDuration=silaFW_pb2.Real(value=overlap_duration)
+                )
+            time.sleep(0.1) # give client a chance to keep up

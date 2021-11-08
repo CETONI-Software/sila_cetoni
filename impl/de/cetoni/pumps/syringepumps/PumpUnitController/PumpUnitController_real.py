@@ -164,22 +164,25 @@ class PumpUnitControllerReal:
         :returns: A response object with the following fields:
             FlowUnit (Flow Unit): The currently used flow unit.
         """
-        volume_unit, time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
+        new_volume_unit, new_time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
+        volume_unit, time_unit = "", "" # force sending the first value
         while True:
             if self.system.state.is_operational():
-                volume_unit, time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
-            yield PumpUnitController_pb2.Subscribe_FlowUnit_Responses(
-                FlowUnit=PumpUnitController_pb2.Subscribe_FlowUnit_Responses.FlowUnit_Struct(
-                    VolumeUnit=PumpUnitController_pb2.DataType_VolumeUnit(
-                        VolumeUnit=silaFW_pb2.String(value=volume_unit)
-                    ),
-                    TimeUnit=PumpUnitController_pb2.DataType_TimeUnit(
-                        TimeUnit=silaFW_pb2.String(value=time_unit)
+                new_volume_unit, new_time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
+            if new_volume_unit != volume_unit or new_time_unit != time_unit:
+                volume_unit, time_unit = new_volume_unit, new_time_unit
+                yield PumpUnitController_pb2.Subscribe_FlowUnit_Responses(
+                    FlowUnit=PumpUnitController_pb2.Subscribe_FlowUnit_Responses.FlowUnit_Struct(
+                        VolumeUnit=PumpUnitController_pb2.DataType_VolumeUnit(
+                            VolumeUnit=silaFW_pb2.String(value=volume_unit)
+                        ),
+                        TimeUnit=PumpUnitController_pb2.DataType_TimeUnit(
+                            TimeUnit=silaFW_pb2.String(value=time_unit)
+                        )
                     )
                 )
-            )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)
 
     def Subscribe_VolumeUnit(self, request, context: grpc.ServicerContext) \
             -> PumpUnitController_pb2.Subscribe_VolumeUnit_Responses:
@@ -193,14 +196,17 @@ class PumpUnitControllerReal:
         :returns: A response object with the following fields:
             VolumeUnit (Volume Unit): The currently used volume unit.
         """
-        volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
+        new_volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
+        volume_unit = "" # force sending the first value
         while True:
             if self.system.state.is_operational():
-                volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
-            yield PumpUnitController_pb2.Subscribe_VolumeUnit_Responses(
-                VolumeUnit=PumpUnitController_pb2.DataType_VolumeUnit(
-                    VolumeUnit=silaFW_pb2.String(value=volume_unit)
+                new_volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
+            if new_volume_unit != volume_unit:
+                volume_unit = new_volume_unit
+                yield PumpUnitController_pb2.Subscribe_VolumeUnit_Responses(
+                    VolumeUnit=PumpUnitController_pb2.DataType_VolumeUnit(
+                        VolumeUnit=silaFW_pb2.String(value=volume_unit)
+                    )
                 )
-            )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)

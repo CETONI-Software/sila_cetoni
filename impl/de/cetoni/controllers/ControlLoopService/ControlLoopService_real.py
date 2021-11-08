@@ -30,6 +30,7 @@ __version__ = "0.1.0"
 
 # import general packages
 import logging
+import math
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
@@ -196,11 +197,16 @@ class ControlLoopServiceReal:
             ControllerValue (Controller Value): The actual value from the Device
         """
 
+        new_value = controller.read_actual_value()
+        value = new_value + 1 # force sending the first value
         while True:
-            yield ControlLoopService_pb2.Subscribe_ControllerValue_Responses(
-                ControllerValue=silaFW_pb2.Real(value=controller.read_actual_value())
-            )
-            time.sleep(0.5) # give client some time to catch up
+            new_value = controller.read_actual_value()
+            if not math.isclose(new_value, value):
+                value = new_value
+                yield ControlLoopService_pb2.Subscribe_ControllerValue_Responses(
+                    ControllerValue=silaFW_pb2.Real(value=value)
+                )
+            time.sleep(0.1) # give client some time to catch up
 
 
     def Subscribe_SetPointValue(self, request, controller: ControllerChannel, context: grpc.ServicerContext) \
@@ -217,8 +223,13 @@ class ControlLoopServiceReal:
             SetPointValue (Set Point Value): The current SetPoint value of the Device
         """
 
+        new_setpoint = controller.get_setpoint()
+        setpoint = new_setpoint + 1 # force sending the first value
         while True:
-            yield ControlLoopService_pb2.Subscribe_SetPointValue_Responses(
-                SetPointValue=silaFW_pb2.Real(value=controller.get_setpoint())
-            )
-            time.sleep(0.5) # give client some time to catch up
+            new_setpoint = controller.get_setpoint()
+            if not math.isclose(new_setpoint, setpoint):
+                setpoint = new_setpoint
+                yield ControlLoopService_pb2.Subscribe_SetPointValue_Responses(
+                    SetPointValue=silaFW_pb2.Real(value=setpoint)
+                )
+            time.sleep(0.1) # give client some time to catch up

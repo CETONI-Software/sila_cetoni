@@ -213,12 +213,15 @@ class ValvePositionControllerReal:
 
         valve = self._get_valve(context.invocation_metadata(), "Property")
 
-        valve_position = self._get_valve_position(valve)
+        new_valve_position = self._get_valve_position(valve)
+        valve_position = new_valve_position + 1 # force sending the first value
         while True:
             if self.system.state.is_operational():
-                valve_position = self._get_valve_position(valve)
-            yield ValvePositionController_pb2.Subscribe_Position_Responses(
-                Position=silaFW_pb2.Integer(value=valve_position)
-            )
+                new_valve_position = self._get_valve_position(valve)
+            if new_valve_position != valve_position:
+                valve_position = new_valve_position
+                yield ValvePositionController_pb2.Subscribe_Position_Responses(
+                    Position=silaFW_pb2.Integer(value=valve_position)
+                )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)

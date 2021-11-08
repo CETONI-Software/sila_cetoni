@@ -30,6 +30,7 @@ __version__ = "0.1.0"
 
 # import general packages
 import logging
+import math
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
@@ -79,8 +80,13 @@ class AnalogInChannelProviderReal:
             Value (Value): The value of the analog input channel.
         """
 
+        new_value = channel.read_input()
+        value = new_value + 1 # force sending the first value
         while True:
-            yield AnalogInChannelProvider_pb2.Subscribe_Value_Responses(
-                Value=silaFW_pb2.Real(value=channel.read_input() if self.system.state.is_operational() else 0)
-            )
-            time.sleep(0.5) # give client some time to catch up
+            new_value = channel.read_input() if self.system.state.is_operational() else 0
+            if not math.isclose(new_value, value):
+                value = new_value
+                yield AnalogInChannelProvider_pb2.Subscribe_Value_Responses(
+                    Value=silaFW_pb2.Real(value=value)
+                )
+            time.sleep(0.1) # give client some time to catch up

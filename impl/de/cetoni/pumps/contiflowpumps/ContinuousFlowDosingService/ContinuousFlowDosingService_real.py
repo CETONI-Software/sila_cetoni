@@ -32,6 +32,7 @@ __version__ = "0.1.0"
 
 # import general packages
 import logging
+import math
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
@@ -220,13 +221,18 @@ class ContinuousFlowDosingServiceReal:
             MaxFlowRate (Maximum Flow Rate): The maximum value of the flow rate at which this pump can dose a fluid.
         """
 
+        new_max_flow_rate = self.pump.get_flow_rate_max()
+        max_flow_rate = new_max_flow_rate + 1 # force sending the first value
         while True:
-            yield ContinuousFlowDosingService_pb2.Subscribe_MaxFlowRate_Responses(
-                MaxFlowRate=silaFW_pb2.Real(value=self.pump.get_flow_rate_max())
-            )
-
+            if self.system.state.is_operational():
+                new_max_flow_rate = self.pump.get_flow_rate_max()
+            if not math.isclose(new_max_flow_rate, max_flow_rate):
+                max_flow_rate = new_max_flow_rate
+                yield ContinuousFlowDosingService_pb2.Subscribe_MaxFlowRate_Responses(
+                    MaxFlowRate=silaFW_pb2.Real(value=max_flow_rate)
+                )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)
 
 
     def Subscribe_FlowRate(self, request, context: grpc.ServicerContext) \
@@ -242,10 +248,14 @@ class ContinuousFlowDosingServiceReal:
             FlowRate (Flow Rate): The current value of the flow rate. It is 0 if the pump does not dose any fluid.
         """
 
+        new_flow_rate = self.pump.get_flow_is()
+        flow_rate = new_flow_rate + 1 # force sending the first value
         while True:
-            yield ContinuousFlowDosingService_pb2.Subscribe_FlowRate_Responses(
-                FlowRate=silaFW_pb2.Real(value=self.pump.get_flow_is())
-            )
-
+            new_flow_rate = self.pump.get_flow_is()
+            if not math.isclose(new_flow_rate, flow_rate):
+                flow_rate = new_flow_rate
+                yield ContinuousFlowDosingService_pb2.Subscribe_FlowRate_Responses(
+                    FlowRate=silaFW_pb2.Real(value=flow_rate)
+                )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)

@@ -330,15 +330,19 @@ class PumpDriveControlServiceReal:
 
         logging.debug("Pump is enabled: %s", self.pump.is_enabled())
 
+        new_is_enabled = self.pump.is_enabled() and self.system.state.is_operational()
+        is_enabled = not new_is_enabled # force sending the first value
         while True:
-            yield PumpDriveControlService_pb2.Subscribe_PumpDriveState_Responses(
-                PumpDriveState=silaFW_pb2.String(
-                    value='Enabled' if self.system.state.is_operational() and self.pump.is_enabled() else 'Disabled'
+            new_is_enabled = self.pump.is_enabled() and self.system.state.is_operational()
+            if new_is_enabled != is_enabled:
+                is_enabled = new_is_enabled
+                yield PumpDriveControlService_pb2.Subscribe_PumpDriveState_Responses(
+                    PumpDriveState=silaFW_pb2.String(
+                        value='Enabled' if is_enabled else 'Disabled'
+                    )
                 )
-            )
-
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)
 
 
     def Subscribe_FaultState(self, request, context: grpc.ServicerContext) \
@@ -356,10 +360,15 @@ class PumpDriveControlServiceReal:
 
         logging.debug("Pump is in fault state: %s", self.pump.is_in_fault_state())
 
+        new_is_in_fault_state = self.pump.is_in_fault_state()
+        is_in_fault_state = not new_is_in_fault_state # force sending the first value
         while True:
-            yield PumpDriveControlService_pb2.Subscribe_FaultState_Responses(
-                FaultState=silaFW_pb2.Boolean(value=self.pump.is_in_fault_state())
-            )
-
+            if self.system.state.is_operational():
+                new_is_in_fault_state = self.pump.is_in_fault_state()
+            if new_is_in_fault_state != is_in_fault_state:
+                is_in_fault_state = new_is_in_fault_state
+                yield PumpDriveControlService_pb2.Subscribe_FaultState_Responses(
+                    FaultState=silaFW_pb2.Boolean(value=is_in_fault_state)
+                )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)

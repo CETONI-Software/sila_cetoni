@@ -80,12 +80,15 @@ class DigitalInChannelProviderReal:
             State (State): The state of the channel.
         """
 
+        new_state = channel.is_on() and self.system.state.is_operational()
+        state = not new_state # force sending the first value
         while True:
-            yield DigitalInChannelProvider_pb2.Subscribe_State_Responses(
-                State=DigitalInChannelProvider_pb2.DataType_State(
-                    State=silaFW_pb2.String(
-                        value=self.states[channel.is_on() and self.system.state.is_operational()]
+            new_state = channel.is_on() and self.system.state.is_operational()
+            if new_state != state:
+                state = new_state
+                yield DigitalInChannelProvider_pb2.Subscribe_State_Responses(
+                    State=DigitalInChannelProvider_pb2.DataType_State(
+                        State=silaFW_pb2.String(value=self.states[state])
                     )
                 )
-            )
-            time.sleep(0.5) # give client some time to catch up
+            time.sleep(0.1) # give client some time to catch up

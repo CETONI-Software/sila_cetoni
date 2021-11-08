@@ -38,6 +38,7 @@ import logging
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
+import math
 
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump
@@ -550,15 +551,18 @@ class PumpFluidDosingServiceReal:
         :returns: A response object with the following fields:
             MaxSyringeFillLevel (Maximum Syringe Fill Level): The maximum amount of fluid that the syringe can hold.
         """
-        max_fill_level = self.pump.get_volume_max()
+        new_max_fill_level = self.pump.get_volume_max()
+        max_fill_level = new_max_fill_level + 1 # force sending the first value
         while True:
             if self.system.state.is_operational():
-                max_fill_level = self.pump.get_volume_max()
-            yield PumpFluidDosingService_pb2.Subscribe_MaxSyringeFillLevel_Responses(
-                MaxSyringeFillLevel=silaFW_pb2.Real(value=max_fill_level)
-            )
+                new_max_fill_level = self.pump.get_volume_max()
+            if not math.isclose(new_max_fill_level, max_fill_level):
+                max_fill_level = new_max_fill_level
+                yield PumpFluidDosingService_pb2.Subscribe_MaxSyringeFillLevel_Responses(
+                    MaxSyringeFillLevel=silaFW_pb2.Real(value=max_fill_level)
+                )
         # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)
 
 
     def Subscribe_SyringeFillLevel(self, request, context: grpc.ServicerContext) \
@@ -573,15 +577,18 @@ class PumpFluidDosingServiceReal:
         :returns: A response object with the following fields:
             SyringeFillLevel (Syringe Fill Level): The current amount of fluid left in the syringe.
         """
-        fill_level = self.pump.get_fill_level()
+        new_fill_level = self.pump.get_fill_level()
+        fill_level = new_fill_level + 1 # force sending the first value
         while True:
             if self.system.state.is_operational():
-                fill_level = self.pump.get_fill_level()
-            yield PumpFluidDosingService_pb2.Subscribe_SyringeFillLevel_Responses(
-                SyringeFillLevel=silaFW_pb2.Real(value=fill_level)
-            )
+                new_fill_level = self.pump.get_fill_level()
+            if not math.isclose(new_fill_level, fill_level):
+                fill_level = new_fill_level
+                yield PumpFluidDosingService_pb2.Subscribe_SyringeFillLevel_Responses(
+                    SyringeFillLevel=silaFW_pb2.Real(value=fill_level)
+                )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)
 
 
     def Subscribe_MaxFlowRate(self, request, context: grpc.ServicerContext) \
@@ -596,15 +603,18 @@ class PumpFluidDosingServiceReal:
         :returns: A response object with the following fields:
             MaxFlowRate (Maximum Flow Rate): The maximum value of the flow rate at which this pump can dose a fluid.
         """
-        max_flow_rate = self.pump.get_flow_rate_max()
+        new_max_flow_rate = self.pump.get_flow_rate_max()
+        max_flow_rate = new_max_flow_rate + 1 # force sending the first value
         while True:
             if self.system.state.is_operational():
-                max_flow_rate = self.pump.get_flow_rate_max()
-            yield PumpFluidDosingService_pb2.Subscribe_MaxFlowRate_Responses(
-                MaxFlowRate=silaFW_pb2.Real(value=max_flow_rate)
-            )
+                new_max_flow_rate = self.pump.get_flow_rate_max()
+            if not math.isclose(new_max_flow_rate, max_flow_rate):
+                max_flow_rate = new_max_flow_rate
+                yield PumpFluidDosingService_pb2.Subscribe_MaxFlowRate_Responses(
+                    MaxFlowRate=silaFW_pb2.Real(value=max_flow_rate)
+                )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)
 
 
     def Subscribe_FlowRate(self, request, context: grpc.ServicerContext) \
@@ -619,12 +629,14 @@ class PumpFluidDosingServiceReal:
         :returns: A response object with the following fields:
             FlowRate (Flow Rate): The current value of the flow rate. It is 0 if the pump does not dose any fluid.
         """
-
+        new_flow_rate = self.pump.get_flow_is()
+        flow_rate = new_flow_rate + 1 # force sending the first value
         while True:
-            yield PumpFluidDosingService_pb2.Subscribe_FlowRate_Responses(
-                FlowRate=silaFW_pb2.Real(
-                    value=self.pump.get_flow_is() if self.system.state.is_operational() else 0
+            new_flow_rate = self.pump.get_flow_is() if self.system.state.is_operational() else 0
+            if not math.isclose(new_flow_rate, flow_rate):
+                flow_rate = new_flow_rate
+                yield PumpFluidDosingService_pb2.Subscribe_FlowRate_Responses(
+                    FlowRate=silaFW_pb2.Real(value=flow_rate)
                 )
-            )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)

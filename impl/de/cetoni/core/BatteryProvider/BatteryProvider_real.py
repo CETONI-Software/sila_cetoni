@@ -30,6 +30,7 @@ __version__ = "0.1.0"
 
 # import general packages
 import logging
+import math
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
@@ -84,11 +85,15 @@ class BatteryProviderReal:
         # the actual voltage value.
         VOLTAGE_DIVIDER_FACTOR = 0.00558
 
-        while True:
-            yield BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses(
-                BatteryVoltage=silaFW_pb2.Real(
-                    value=channel.read_input() * VOLTAGE_DIVIDER_FACTOR
+        new_voltage = channel.read_input() * VOLTAGE_DIVIDER_FACTOR \
                           if self.system.state.is_operational() else 0
+        voltage = new_voltage + 1 # force sending the first value
+        while True:
+            new_voltage = channel.read_input() * VOLTAGE_DIVIDER_FACTOR \
+                          if self.system.state.is_operational() else 0
+            if not math.isclose(new_voltage, voltage):
+                voltage = new_voltage
+                yield BatteryProvider_pb2.Subscribe_BatteryVoltage_Responses(
+                    BatteryVoltage=silaFW_pb2.Real(value=voltage)
                 )
-            )
-            time.sleep(0.5) # give client some time to catch up
+            time.sleep(0.1) # give client some time to catch up

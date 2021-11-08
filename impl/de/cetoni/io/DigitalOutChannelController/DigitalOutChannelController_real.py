@@ -118,12 +118,15 @@ class DigitalOutChannelControllerReal:
             State (State): The state of the channel.
         """
 
+        new_state = channel.is_output_on() and self.system.state.is_operational()
+        state = not new_state # force sending the first value
         while True:
-            yield DigitalOutChannelController_pb2.Subscribe_State_Responses(
-                State=DigitalOutChannelController_pb2.DataType_State(
-                    State=silaFW_pb2.String(
-                        value=self.states[channel.is_output_on() and self.system.state.is_operational()]
+            new_state = channel.is_output_on() and self.system.state.is_operational()
+            if new_state != state:
+                state = new_state
+                yield DigitalOutChannelController_pb2.Subscribe_State_Responses(
+                    State=DigitalOutChannelController_pb2.DataType_State(
+                        State=silaFW_pb2.String(value=self.states[state])
                     )
                 )
-            )
-            time.sleep(0.5) # give client some time to catch up
+            time.sleep(0.1) # give client some time to catch up

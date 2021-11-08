@@ -194,9 +194,13 @@ class ContinuousFlowInitializationControllerReal:
             Use this function to check if the pump is initialized before you start a continuous flow. If you change and continuous flow parameter, like valve settings, cross flow duration and so on, the pump will leave the initialized state. That means, after each parameter change, an initialization is required. Changing the flow rate or the dosing volume does not require and initialization.
         """
 
+        new_is_initialized = self.pump.is_initialized()
+        is_initialized = not new_is_initialized # force sending the first value
         while True:
-            yield ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses(
-                IsInitialized=silaFW_pb2.Boolean(value=self.pump.is_initialized())
-            )
-
-            time.sleep(0.5) # give client a chance to keep up
+            new_is_initialized = self.pump.is_initialized()
+            if new_is_initialized != is_initialized:
+                is_initialized = new_is_initialized
+                yield ContinuousFlowInitializationController_pb2.Subscribe_IsInitialized_Responses(
+                    IsInitialized=silaFW_pb2.Boolean(value=is_initialized)
+                )
+            time.sleep(0.1) # give client a chance to keep up

@@ -30,6 +30,7 @@ __version__ = "0.1.0"
 
 # import general packages
 import logging
+import math
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
@@ -122,15 +123,18 @@ class SyringeConfigurationControllerReal:
         :returns: A response object with the following fields:
             InnerDiameter (Inner Diameter): Inner diameter of the syringe tube in millimetres.
         """
-        inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
+        new_inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
+        inner_diameter = new_inner_diameter + 1 #force sending the first value
         while True:
             if self.system.state.is_operational():
-                inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
-            yield SyringeConfigurationController_pb2.Subscribe_InnerDiameter_Responses(
-                InnerDiameter=silaFW_pb2.Real(value=inner_diameter)
-            )
+                new_inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
+            if not math.isclose(new_inner_diameter, inner_diameter):
+                inner_diameter = new_inner_diameter
+                yield SyringeConfigurationController_pb2.Subscribe_InnerDiameter_Responses(
+                    InnerDiameter=silaFW_pb2.Real(value=inner_diameter)
+                )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)
 
 
     def Subscribe_MaxPistonStroke(self, request, context: grpc.ServicerContext) \
@@ -145,12 +149,15 @@ class SyringeConfigurationControllerReal:
         :returns: A response object with the following fields:
             MaxPistonStroke (Max Piston Stroke): The maximum piston stroke defines the maximum position the piston can be moved to before it slips out of the syringe tube. The maximum piston stroke limits the maximum travel range of the syringe pump pusher.
         """
-        max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
+        new_max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
+        max_piston_stroke = new_max_piston_stroke + 1 #force sending the first value
         while True:
             if self.system.state.is_operational():
-                max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
-            yield SyringeConfigurationController_pb2.Subscribe_MaxPistonStroke_Responses(
-                MaxPistonStroke=silaFW_pb2.Real(value=max_piston_stroke)
-            )
+                new_max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
+            if not math.isclose(new_max_piston_stroke, max_piston_stroke):
+                max_piston_stroke = new_max_piston_stroke
+                yield SyringeConfigurationController_pb2.Subscribe_MaxPistonStroke_Responses(
+                    MaxPistonStroke=silaFW_pb2.Real(value=max_piston_stroke)
+                )
             # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.5)
+            time.sleep(0.1)
