@@ -109,7 +109,7 @@ class Application(metaclass=Singleton):
 
         print("Press Ctrl-C to stop...", flush=True)
         try:
-            while not self.system.shutting_down:
+            while not self.system.state.shutting_down():
                 time.sleep(_ONE_DAY_IN_SECONDS)
         except KeyboardInterrupt:
             print()

@@ -55,6 +55,8 @@ from impl.de.cetoni.pumps.syringepumps.PumpUnitController import unit_conversion
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump
 
+from application.system import ApplicationSystem
+
 # noinspection PyPep8Naming,PyUnusedLocal
 class ContinuousFlowDosingServiceReal:
     """
@@ -68,8 +70,8 @@ class ContinuousFlowDosingServiceReal:
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
         self.pump = pump
-
         self.dosage_uuid = ""
+        self.system =  ApplicationSystem()
 
     def GenerateFlow(self, request, context: grpc.ServicerContext) \
             -> silaFW_pb2.CommandConfirmation:
@@ -223,7 +225,7 @@ class ContinuousFlowDosingServiceReal:
 
         new_max_flow_rate = self.pump.get_flow_rate_max()
         max_flow_rate = new_max_flow_rate + 1 # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             if self.system.state.is_operational():
                 new_max_flow_rate = self.pump.get_flow_rate_max()
             if not math.isclose(new_max_flow_rate, max_flow_rate):
@@ -250,7 +252,7 @@ class ContinuousFlowDosingServiceReal:
 
         new_flow_rate = self.pump.get_flow_is()
         flow_rate = new_flow_rate + 1 # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             new_flow_rate = self.pump.get_flow_is()
             if not math.isclose(new_flow_rate, flow_rate):
                 flow_rate = new_flow_rate

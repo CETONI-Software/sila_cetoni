@@ -332,7 +332,7 @@ class PumpDriveControlServiceReal:
 
         new_is_enabled = self.pump.is_enabled() and self.system.state.is_operational()
         is_enabled = not new_is_enabled # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             new_is_enabled = self.pump.is_enabled() and self.system.state.is_operational()
             if new_is_enabled != is_enabled:
                 is_enabled = new_is_enabled
@@ -362,7 +362,7 @@ class PumpDriveControlServiceReal:
 
         new_is_in_fault_state = self.pump.is_in_fault_state()
         is_in_fault_state = not new_is_in_fault_state # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             if self.system.state.is_operational():
                 new_is_in_fault_state = self.pump.is_in_fault_state()
             if new_is_in_fault_state != is_in_fault_state:

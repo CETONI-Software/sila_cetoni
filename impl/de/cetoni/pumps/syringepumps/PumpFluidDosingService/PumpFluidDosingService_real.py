@@ -553,7 +553,7 @@ class PumpFluidDosingServiceReal:
         """
         new_max_fill_level = self.pump.get_volume_max()
         max_fill_level = new_max_fill_level + 1 # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             if self.system.state.is_operational():
                 new_max_fill_level = self.pump.get_volume_max()
             if not math.isclose(new_max_fill_level, max_fill_level):
@@ -579,7 +579,7 @@ class PumpFluidDosingServiceReal:
         """
         new_fill_level = self.pump.get_fill_level()
         fill_level = new_fill_level + 1 # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             if self.system.state.is_operational():
                 new_fill_level = self.pump.get_fill_level()
             if not math.isclose(new_fill_level, fill_level):
@@ -605,7 +605,7 @@ class PumpFluidDosingServiceReal:
         """
         new_max_flow_rate = self.pump.get_flow_rate_max()
         max_flow_rate = new_max_flow_rate + 1 # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             if self.system.state.is_operational():
                 new_max_flow_rate = self.pump.get_flow_rate_max()
             if not math.isclose(new_max_flow_rate, max_flow_rate):
@@ -631,7 +631,7 @@ class PumpFluidDosingServiceReal:
         """
         new_flow_rate = self.pump.get_flow_is()
         flow_rate = new_flow_rate + 1 # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             new_flow_rate = self.pump.get_flow_is() if self.system.state.is_operational() else 0
             if not math.isclose(new_flow_rate, flow_rate):
                 flow_rate = new_flow_rate

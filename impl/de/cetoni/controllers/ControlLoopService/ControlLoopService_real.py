@@ -51,6 +51,7 @@ from .ControlLoopService_default_arguments import default_dict
 
 from qmixsdk.qmixcontroller import ControllerChannel
 
+from application.system import ApplicationSystem
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class ControlLoopServiceReal:
@@ -62,6 +63,8 @@ class ControlLoopServiceReal:
     def __init__(self):
         """Class initialiser"""
 
+        self.system =  ApplicationSystem()
+        
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
     def WriteSetPoint(self, request, controller: ControllerChannel, context: grpc.ServicerContext) \
@@ -199,7 +202,7 @@ class ControlLoopServiceReal:
 
         new_value = controller.read_actual_value()
         value = new_value + 1 # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             new_value = controller.read_actual_value()
             if not math.isclose(new_value, value):
                 value = new_value
@@ -225,7 +228,7 @@ class ControlLoopServiceReal:
 
         new_setpoint = controller.get_setpoint()
         setpoint = new_setpoint + 1 # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             new_setpoint = controller.get_setpoint()
             if not math.isclose(new_setpoint, setpoint):
                 setpoint = new_setpoint

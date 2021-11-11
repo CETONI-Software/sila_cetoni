@@ -108,7 +108,7 @@ class AnalogOutChannelControllerReal:
 
         new_value = channel.get_output_value()
         value = new_value + 1 # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             new_value = channel.get_output_value() if self.system.state.is_operational() else 0
             if not math.isclose(new_value, value):
                 value = new_value

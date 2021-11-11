@@ -50,6 +50,7 @@ from .ContinuousFlowInitializationController_default_arguments import default_di
 from qmixsdk.qmixbus import PollingTimer
 from qmixsdk.qmixpump import *
 
+from application.system import ApplicationSystem
 
 # noinspection PyPep8Naming,PyUnusedLocal
 class ContinuousFlowInitializationControllerReal:
@@ -68,6 +69,7 @@ class ContinuousFlowInitializationControllerReal:
 
         self.pump = pump
         self.timer = PollingTimer(30000)
+        self.system = ApplicationSystem()
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
 
@@ -196,7 +198,7 @@ class ContinuousFlowInitializationControllerReal:
 
         new_is_initialized = self.pump.is_initialized()
         is_initialized = not new_is_initialized # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             new_is_initialized = self.pump.is_initialized()
             if new_is_initialized != is_initialized:
                 is_initialized = new_is_initialized

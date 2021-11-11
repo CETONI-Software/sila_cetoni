@@ -48,12 +48,16 @@ class SystemState(Enum):
     """
     OPERATIONAL = "Operational"
     STOPPED = "Stopped"
+    SHUTDOWN = "Shutting Down"
 
     def is_operational(self):
         return self.value == self.OPERATIONAL.value
 
     def is_stopped(self):
         return self.value == self.STOPPED.value
+
+    def shutting_down(self):
+        return self.value == self.SHUTDOWN.value
 
 
 class ApplicationSystem(metaclass=Singleton):
@@ -72,7 +76,6 @@ class ApplicationSystem(metaclass=Singleton):
     io_devices: List[IODevice]
 
     state: SystemState
-    shutting_down: bool
 
     MAX_SECONDS_WITHOUT_BATTERY = 20
 
@@ -108,7 +111,6 @@ class ApplicationSystem(metaclass=Singleton):
         logging.debug(f"io devices: {repr(self.io_devices)}")
 
         self.state = SystemState.OPERATIONAL
-        self.shutting_down = False
 
     def start(self):
         """
@@ -122,7 +124,7 @@ class ApplicationSystem(metaclass=Singleton):
         Stops the CAN bus monitoring and the bus communication
         """
         logging.debug("Stopping application system...")
-        self.shutting_down = True
+        self.state = SystemState.SHUTDOWN
         self.stop_and_close_bus()
 
     def shutdown(self):
@@ -199,7 +201,7 @@ class ApplicationSystem(metaclass=Singleton):
                 and event.data[0] == qmixbus.GuardEventId.heartbear_err_resolved.value
 
         seconds_stopped = 0
-        while not self.shutting_down:
+        while not self.state.shutting_down():
             time.sleep(1)
 
             event = self.bus.read_event()

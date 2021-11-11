@@ -120,7 +120,7 @@ class DigitalOutChannelControllerReal:
 
         new_state = channel.is_output_on() and self.system.state.is_operational()
         state = not new_state # force sending the first value
-        while True:
+        while not self.system.state.shutting_down():
             new_state = channel.is_output_on() and self.system.state.is_operational()
             if new_state != state:
                 state = new_state
