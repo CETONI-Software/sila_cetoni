@@ -51,7 +51,7 @@ class InitializationFailedError(SiLAExecutionError):
 
         msg = f"The initialization did not end properly." \
             + (f'\n{extra_message}' if extra_message else "")
-        super.__init__(error_identifier="de.cetoni/pumps.syringepumps/PumpDriveControlService/v1/DefinedError/InitializationFailed",
+        super().__init__(error_identifier="de.cetoni/pumps.syringepumps/PumpDriveControlService/v1/DefinedError/InitializationFailed",
                        msg=msg)
 
 class InitializationNotFinishedError(SiLAExecutionError):
@@ -69,6 +69,6 @@ class InitializationNotFinishedError(SiLAExecutionError):
         msg = f"There is already another initialization running that hasn't finished yet." \
                " Starting a new initialization move is not allowed." \
             + (f'\n{extra_message}' if extra_message else "")
-        super.__init__(error_identifier="de.cetoni/pumps.syringepumps/PumpDriveControlService/v1/DefinedError/InitializationNotFinished",
+        super().__init__(error_identifier="de.cetoni/pumps.syringepumps/PumpDriveControlService/v1/DefinedError/InitializationNotFinished",
                        msg=msg)
 
