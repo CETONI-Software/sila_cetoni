@@ -12,6 +12,8 @@ These SiLA 2 drivers are based on the [CETONI SDK for Python](https://github.com
   - [Running SiLA 2 CETONI servers](#running-sila-2-cetoni-servers)
     - [Windows](#windows)
     - [Linux](#linux)
+  - [Troubleshooting](#troubleshooting)
+    - ['undefined symbol: __atomic_exchange_8' on Raspberry Pi](#undefined-symbol-__atomic_exchange_8-on-raspberry-pi)
 - [Modifying the drivers](#modifying-the-drivers)
   - [Repository layout](#repository-layout)
   - [Generate the prototype code from the FDL](#generate-the-prototype-code-from-the-fdl)
@@ -64,6 +66,32 @@ The script will set the necessary variables and run the python script for you.
 
 You can play around with the server's and their features by using the freely available [SiLA Browser](https://unitelabs.ch/technology/plug-and-play/sila-browser/), for example.  
 Or you can also write your own SiLA Client software using the Python or any other of the [reference implementations](https://gitlab.com/SiLA2/) of SiLA 2.
+
+## Troubleshooting
+### 'undefined symbol: __atomic_exchange_8' on Raspberry Pi
+You might get the following error when trying to run the driver on a Raspberry Pi:
+```console
+Traceback (most recent call last):
+  File "/home/pi/sila_cetoni/sila_cetoni.py", line 43, in <module>
+    from application.application import Application, DEFAULT_BASE_PORT
+  File "/home/pi/sila_cetoni/application/application.py", line 35, in <module>
+    from sila2lib.sila_server import SiLA2Server
+  File "/home/pi/sila_python/sila_library/sila2lib/sila_server.py", line 36, in <module>
+    import grpc
+  File "/home/pi/.local/lib/python3.9/site-packages/grpc/__init__.py", line 22, in <module>
+    from grpc import _compression
+  File "/home/pi/.local/lib/python3.9/site-packages/grpc/_compression.py", line 15, in <module>
+    from grpc._cython import cygrpc
+ImportError: /home/pi/.local/lib/python3.9/site-packages/grpc/_cython/cygrpc.cpython-39-arm-linux-gnueabihf.so: undefined symbol: __atomic_exchange_8
+```
+This is a known bug in gRPC (https://github.com/grpc/grpc/issues/20400) and there exists a workaround, too (https://github.com/opencv/opencv/issues/15278#issuecomment-520893950):  
+You just need to modify `sila_cetoni.sh` like this:
+```shell
+# ...
+LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libatomic.so.1.2.0 python3 $curr_dir/sila_cetoni.py $@
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-- add this
+#...
+```
 
 ## Modifying the drivers
 You are of course free to play around with the code inside this repository.
