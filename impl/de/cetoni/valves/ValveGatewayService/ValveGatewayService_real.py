@@ -101,7 +101,7 @@ class ValveGatewayServiceReal:
 
         try:
             return self.valves[valve_id]
-        except KeyError:
+        except IndexError:
             raise SiLAFrameworkError(
                 SiLAFrameworkErrorType.INVALID_METADATA,
                 f"The sent valve index ({valve_id}) is invalid! "
