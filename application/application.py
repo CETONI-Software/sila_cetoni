@@ -25,11 +25,17 @@ ________________________________________________________________________
 """
 
 import os
+import sys
 import time
 import logging
 import argparse
 from typing import List
 from OpenSSL import crypto
+
+from . import CETONI_SDK_PATH
+# adjust PATH variable to point to the SDK
+sys.path.append(CETONI_SDK_PATH)
+sys.path.append(os.path.join(CETONI_SDK_PATH, "lib", "python"))
 
 # only used for type hinting
 from sila2lib.sila_server import SiLA2Server

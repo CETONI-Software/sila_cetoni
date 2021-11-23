@@ -27,7 +27,6 @@ ________________________________________________________________________
 
 __version__ = "0.1.0"
 
-import sys
 import argparse
 import logging
 try:
@@ -35,10 +34,6 @@ try:
 except ModuleNotFoundError:
     print("Cannot find coloredlogs! Please install coloredlogs, if you'd like to have nicer logging output:")
     print("`pip install coloredlogs`")
-
-# adjust PATH to point to QmixSDK
-sys.path.append("C:/QmixSDK/lib/python")
-sys.path.append("C:/CETONI_SDK/lib/python")
 
 from application.application import Application, DEFAULT_BASE_PORT
 

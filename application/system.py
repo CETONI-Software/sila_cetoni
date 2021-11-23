@@ -41,6 +41,7 @@ from .device import DeviceConfiguration, Device, PumpDevice, AxisSystemDevice, \
 
 from .singleton import Singleton
 
+from . import CETONI_SDK_PATH
 
 class SystemState(Enum):
     """
@@ -152,7 +153,12 @@ class ApplicationSystem(metaclass=Singleton):
         """
         logging.debug("Opening bus...")
         try:
-            self.bus.open(self.device_config.path, 0)
+            # If we're executed through python.exe the application dir is the
+            # directory where python.exe is located. In order for the SDK to find
+            # all plugins, nonetheless, we need to give it it's expected plugin
+            # path.
+            self.bus.open(self.device_config.path,
+                          os.path.join(CETONI_SDK_PATH, 'plugins', 'labbcan'))
         except qmixbus.DeviceError as err:
             logging.error("Could not open the bus communication: %s", err)
             sys.exit(1)
