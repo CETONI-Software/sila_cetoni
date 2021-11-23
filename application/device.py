@@ -235,8 +235,14 @@ class DeviceConfiguration:
         """
         Filter the devices as they contains more than the actual physical modules that we're after
         """
-        for exclude in ('Epos', 'Valve'):
-            if exclude in device.name:
+        for exclude in ('Epos', ):
+            if exclude in device.name or device.name.endswith('Valve'):
+                # A pump might have a valve attached to it that is handled by the
+                # pump server (i.e. we don't want to spawn another server just for
+                # this valve). These valves are all named "<Pump Name>_Valve".
+                # Other (standalone) valve devices (like VICI valves) also contain
+                # the word "Valve" which means we cannot just filter for all
+                # devices containing the word "Valve".
                 return False
         return True
 
