@@ -204,7 +204,7 @@ class ApplicationSystem(metaclass=Singleton):
 
         def is_heartbeat_err_resolved_event(event: qmixbus.Event):
             return event.event_id == qmixbus.EventId.device_guard.value \
-                and event.data[0] == qmixbus.GuardEventId.heartbear_err_resolved.value
+                and event.data[0] == qmixbus.GuardEventId.heartbeat_err_resolved.value
 
         seconds_stopped = 0
         while not self.state.shutting_down():
