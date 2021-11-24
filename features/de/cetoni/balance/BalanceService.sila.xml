@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="balance" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>BalanceService</Identifier>
+    <DisplayName>Balance Service</DisplayName>
+    <Description>Provides an interface to a balance to read its current value and tare the balance if necessary</Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>Tare</Identifier>
+        <DisplayName>Tare</DisplayName>
+        <Description>Tare the balance</Description>
+        <Observable>No</Observable>
+    </Command>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>Value</Identifier>
+        <DisplayName>Value</DisplayName>
+        <Description>The current value</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>g</Label>
+                        <Factor>1</Factor>
+                        <Offset>0</Offset>
+                        <UnitComponent>
+                            <SIUnit>Kilogram</SIUnit>
+                            <Exponent>-3</Exponent>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
+        </DataType>
+    </Property>
+</Feature>
