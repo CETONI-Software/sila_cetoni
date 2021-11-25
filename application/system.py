@@ -35,9 +35,10 @@ from enum import Enum
 
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion, qmixvalve
+from device_drivers import balance
 
 from .device import DeviceConfiguration, Device, PumpDevice, AxisSystemDevice, \
-                    ValveDevice, ControllerDevice, IODevice
+                    ValveDevice, ControllerDevice, IODevice, BalanceDevice
 
 from .singleton import Singleton
 
@@ -75,6 +76,7 @@ class ApplicationSystem(metaclass=Singleton):
     valves: List[ValveDevice]
     controllers: List[ControllerDevice]
     io_devices: List[IODevice]
+    balances: List[BalanceDevice]
 
     state: SystemState
 
@@ -84,16 +86,12 @@ class ApplicationSystem(metaclass=Singleton):
         if not device_config_path:
             return
 
+        logging.debug("Looking up devices...")
         self.device_config = DeviceConfiguration(device_config_path)
 
         self.bus = qmixbus.Bus()
         self.open_bus()
 
-        self.controller_devices = []
-        self.io_devices = []
-        self.valve_devices = []
-
-        logging.debug("Looking up devices...")
         # The order is important here! Many devices have I/O channels but are not
         # pure I/O devices (similarly, pumps might have a valve but they're not a
         # valve device). That's why valves have to be detected after pumps and I/O
@@ -102,14 +100,16 @@ class ApplicationSystem(metaclass=Singleton):
         self.pumps = self.get_availabe_pumps()
         self.axis_systems = self.get_availabe_axis_systems()
         self.valves = self.get_availabe_valves()
-        self.controller_devices = self.get_availabe_controllers()
+        self.controllers = self.get_availabe_controllers()
         self.io_devices = self.get_availabe_io_channels()
+        self.balances = self.get_availabe_balances()
 
         logging.debug(f"Pumps: {repr(self.pumps)}")
         logging.debug(f"axis: {repr(self.axis_systems)}")
         logging.debug(f"valve devices: {repr(self.valves)}")
-        logging.debug(f"controller devices: {repr(self.controller_devices)}")
+        logging.debug(f"controller devices: {repr(self.controllers)}")
         logging.debug(f"io devices: {repr(self.io_devices)}")
+        logging.debug(f"balance devices: {repr(self.balances)}")
 
         self.state = SystemState.OPERATIONAL
 
@@ -403,3 +403,31 @@ class ApplicationSystem(metaclass=Singleton):
                 channels.append(channel)
 
         return self.device_config.add_channels_to_device(channels)
+
+    #-------------------------------------------------------------------------
+    # Balance
+    def get_availabe_balances(self) -> List[IODevice]:
+        """
+        Looks up all balances from the current configuration
+
+        :return: A list of all balance devices
+        """
+
+        # for now we assume that at most one balance is connected until we get
+        # proper balance support in the SDK
+        balance_count = 1
+        logging.debug("Number of balances: %s", balance_count)
+
+        balances = []
+
+        for i in range(balance_count):
+            bal = balance.SartoriusBalance()
+            bal.open()
+            # 'guess' the balance name for now
+            balance_name = f'Sartorius_Balance_{i+1}'
+            logging.debug("Found balance %d named %s", i, balance_name)
+            balance_device = self.device_config.device_by_name(balance_name)
+            BalanceDevice.convert_to_class(balance_device, device=bal)
+            balances += [balance_device]
+
+        return balances
