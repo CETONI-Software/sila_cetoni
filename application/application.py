@@ -224,7 +224,7 @@ class Application(metaclass=Singleton):
 
         #---------------------------------------------------------------------
         # controller
-        for controller_device in self.system.controller_devices:
+        for controller_device in self.system.controllers:
             args.server_port += 1
             args.server_name = controller_device.name.replace("_", " ")
             args.description = "Allows to control Qmix Controller Channels"
