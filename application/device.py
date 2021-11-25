@@ -33,6 +33,7 @@ from lxml import etree, objectify
 from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, \
                     qmixmotion, qmixvalve
 
+from device_drivers import balance
 
 class Device():
     """
@@ -147,6 +148,16 @@ class IODevice(Device):
     def __init__(self, name: str):
         super().__init__(name)
 
+class BalanceDevice(Device):
+    """
+    Simple class to represent a balance device
+    """
+
+    device: balance.SartoriusBalance
+
+    def __init__(self, name: str):
+        super().__init__(name)
+
 class DeviceConfiguration:
     """
     Contains specific parts of the device configuration that is also used by the
@@ -219,7 +230,10 @@ class DeviceConfiguration:
             plugin_tree: objectify.ObjectifiedElement = objectify.fromstring(fixed_xml, parser)
             plugin_root = plugin_tree.Plugin
             try:
-                for device in plugin_root.labbCAN.DeviceList.iterchildren():
+                # a balance has no labbCAN device yet
+                device_list = plugin_root.DeviceList if plugin_name == 'balance' \
+                    else plugin_root.labbCAN.DeviceList
+                for device in device_list.iterchildren():
                     self.devices += [Device(device.get('Name'))]
             except AttributeError:
                 pass
