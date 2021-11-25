@@ -30,6 +30,7 @@ __version__ = "0.1.0"
 
 # import general packages
 import logging
+import math
 import time         # used for observables
 import uuid         # used for observables
 import grpc         # used for type hinting only
@@ -44,6 +45,9 @@ from .gRPC import BalanceService_pb2 as BalanceService_pb2
 # import default arguments
 from .BalanceService_default_arguments import default_dict
 
+from application.system import ApplicationSystem, SystemState
+
+from device_drivers.balance import SartoriusBalance
 
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -53,109 +57,56 @@ class BalanceServiceReal:
         Allows to control a balance
     """
 
-    def __init__(self, hardware_interface=None):
+    def __init__(self, balance: SartoriusBalance = None):
         """Class initialiser"""
 
-        self.hardware_interface = hardware_interface
+        self.balance = balance
+        self.system = ApplicationSystem()
 
         logging.debug('Started server in mode: {mode}'.format(mode='Real'))
-
-    def _get_command_state(self, command_uuid: str) -> silaFW_pb2.ExecutionInfo:
-        """
-        Method to fill an ExecutionInfo message from the SiLA server for observable commands
-
-        :param command_uuid: The uuid of the command for which to return the current state
-
-        :return: An execution info object with the current command state
-        """
-
-        #: Enumeration of silaFW_pb2.ExecutionInfo.CommandStatus
-        command_status = silaFW_pb2.ExecutionInfo.CommandStatus.waiting
-        #: Real silaFW_pb2.Real(0...1)
-        command_progress = None
-        #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
-        command_estimated_remaining = None
-        #: Duration silaFW_pb2.Duration(seconds=<seconds>, nanos=<nanos>)
-        command_lifetime_of_execution = None
-
-        # TODO: check the state of the command with the given uuid and return the correct information
-
-        # just return a default in this example
-        return silaFW_pb2.ExecutionInfo(
-            commandStatus=command_status,
-            progressInfo=(
-                command_progress if command_progress is not None else None
-            ),
-            estimatedRemainingTime=(
-                command_estimated_remaining if command_estimated_remaining is not None else None
-            ),
-            updatedLifetimeOfExecution=(
-                command_lifetime_of_execution if command_lifetime_of_execution is not None else None
-            )
-        )
 
     def Tare(self, request, context: grpc.ServicerContext) \
             -> BalanceService_pb2.Tare_Responses:
         """
         Executes the unobservable command "Tare"
             Tare the balance
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
-        # initialise the return value
-        return_value = None
-        # return_value = GreetingProvider_pb2.SayHello_Responses(Greeting=silaFW_pb2.String(value=f'"hi : {request.Name.value}"'))
-        
-    
-        # TODO:
-        #   Add implementation of Real for command Tare here and write the resulting response
-        #   in return_value
-    
-        # fallback to default
-        if return_value is None:
-            return_value = BalanceService_pb2.Tare_Responses(
-                #**default_dict['Tare_Responses']
-                EmptyResponse=silaFW_pb2.Void(value=b'')
-            )
-    
-        return return_value
-    
+
+        self.balance.tare()
+        return BalanceService_pb2.Tare_Responses()
+
 
     def Subscribe_Value(self, request, context: grpc.ServicerContext) \
             -> BalanceService_pb2.Subscribe_Value_Responses:
         """
         Requests the observable property Value
             The current value
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response object with the following fields:
             request.Value (Value): The current value
         """
-    
-        # initialise the return value
-        return_value: BalanceService_pb2.Subscribe_Value_Responses = None
-    
-        # we could use a timeout here if we wanted
-        while True:
-            # TODO:
-            #   Add implementation of Real for property Value here and write the resulting
-            #   response in return_value
-    
-            # create the default value
-            if return_value is None:
-                return_value = BalanceService_pb2.Subscribe_Value_Responses(
-                    #**default_dict['Subscribe_Value_Responses']
-                    Value=silaFW_pb2.Real(value=1.0)
+        new_value = self.balance.value()
+        value = new_value + 1 # force sending the first value
+        while not self.system.state.shutting_down():
+            if self.system.state.is_operational():
+                new_value = self.balance.value()
+            # consider a value different from the one before if they differ in
+            # the first 4 decimal places (which is the precision we get from the
+            # balance) to reduce the load of value updates
+            if not math.isclose(new_value, value, rel_tol=1.0e-4):
+                value = new_value
+                yield BalanceService_pb2.Subscribe_Value_Responses(
+                    Value=silaFW_pb2.Real(value=value)
                 )
-    
-    
-            yield return_value
-    
+        # we add a small delay to give the client a chance to keep up.
+            time.sleep(0.1)

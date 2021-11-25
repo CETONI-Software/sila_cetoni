@@ -44,23 +44,21 @@ from impl.de.cetoni.balance.BalanceService.BalanceService_default_arguments impo
 # Import the servicer modules for each feature
 from impl.de.cetoni.balance.BalanceService.BalanceService_servicer import BalanceService
 
-# optional hardware interface communication
-# from sila2comlib.com.com_serial import ComSerial
+from device_drivers.balance import SartoriusBalance
 
 class BalanceServer(SystemStatusProviderServer):
     """
     Allows to control a balance
     """
-    hardware_interface = None
 
-    def __init__(self, cmd_args, simulation_mode: bool = True):
+    def __init__(self, cmd_args, balance: SartoriusBalance, simulation_mode: bool = True):
         """Class initialiser"""
         super().__init__(cmd_args=cmd_args, simulation_mode=simulation_mode)
 
         self.simulation_mode = simulation_mode
 
-        # this can be used to add a central hardware interface, used by multiple services
-        self.hardware_interface = None # please add hardware interface here, e.g., ComSerial()
+        meta_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..',
+                                                 'features', 'de', 'cetoni', 'balance'))
 
         logging.info(
             "Starting SiLA2 server with server name: {server_name}".format(
@@ -71,16 +69,14 @@ class BalanceServer(SystemStatusProviderServer):
         # registering features
         #  Register BalanceService
         self.BalanceService_servicer = BalanceService(simulation_mode=self.simulation_mode,
-                                                                   hardware_interface=self.hardware_interface)
+                                                      balance=balance)
         BalanceService_pb2_grpc.add_BalanceServiceServicer_to_server(
             self.BalanceService_servicer,
             self.grpc_server
         )
         self.add_feature(feature_id='de.cetoni/balance/BalanceService/v1',
-                         servicer=self.BalanceService_servicer)
-
-        # starting and running the gRPC/SiLA2 server
-        self.run()
+                         servicer=self.BalanceService_servicer,
+                         meta_path=meta_path)
 
 def parse_command_line():
     """
@@ -141,3 +137,4 @@ if __name__ == '__main__':
 
     # generate SiLA2Server
     sila_server = BalanceServer(cmd_args=args, simulation_mode=True)
+    sila_server.run()

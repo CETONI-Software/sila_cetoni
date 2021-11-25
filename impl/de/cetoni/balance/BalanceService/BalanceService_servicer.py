@@ -7,7 +7,7 @@ ________________________________________________________________________
 
 :details: BalanceService:
     Provides an interface to a balance to read its current value and tare the balance if necessary
-           
+
 :file:    BalanceService_servicer.py
 :authors: Florian Meinicke
 
@@ -47,6 +47,7 @@ from .gRPC import BalanceService_pb2_grpc as BalanceService_pb2_grpc
 from .BalanceService_simulation import BalanceServiceSimulation
 from .BalanceService_real import BalanceServiceReal
 
+from device_drivers.balance import SartoriusBalance
 
 
 class BalanceService(BalanceService_pb2_grpc.BalanceServiceServicer):
@@ -56,21 +57,21 @@ class BalanceService(BalanceService_pb2_grpc.BalanceServiceServicer):
     implementation: Union[BalanceServiceSimulation, BalanceServiceReal]
     simulation_mode: bool
 
-    def __init__(self, simulation_mode: bool = True, hardware_interface=None):
+    def __init__(self, simulation_mode: bool = True, balance: SartoriusBalance = None):
         """
         Class initialiser.
 
         :param simulation_mode: Sets whether at initialisation the simulation mode is active or the real mode.
-        :param hardware_interface (optional): access to shared hardware interface, like serial interface. 
+        :param balance (optional): access to shared hardware interface, like serial interface.
         """
 
-        self.hardware_interface = hardware_interface
+        self.balance = balance
 
         self.simulation_mode = simulation_mode
         if simulation_mode:
             self._inject_implementation(BalanceServiceSimulation())
         else:
-            self._inject_implementation(BalanceServiceReal(hardware_interface=self.hardware_interface))
+            self._inject_implementation(BalanceServiceReal(balance=self.balance))
 
     def _inject_implementation(self,
                                implementation: Union[BalanceServiceSimulation,
@@ -94,34 +95,34 @@ class BalanceService(BalanceService_pb2_grpc.BalanceServiceServicer):
     def switch_to_real_mode(self):
         """Method that will automatically be called by the server when the real mode is requested."""
         self.simulation_mode = False
-        self._inject_implementation(BalanceServiceReal(hardware_interface=self.hardware_interface))
+        self._inject_implementation(BalanceServiceReal(balance=self.balance))
 
     def Tare(self, request, context: grpc.ServicerContext) \
             -> BalanceService_pb2.Tare_Responses:
         """
         Executes the unobservable command "Tare"
             Tare the balance
-    
+
         :param request: gRPC request containing the parameters passed:
             request.EmptyParameter (Empty Parameter): An empty parameter data type used if no parameter is required.
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: The return object defined for the command with the following fields:
             request.EmptyResponse (Empty Response): An empty response data type used if no response is required.
         """
-    
+
         logging.debug(
             "Tare called in {current_mode} mode".format(
                 current_mode=('simulation' if self.simulation_mode else 'real')
             )
         )
-    
+
         # parameter validation
         # if request.my_paramameter.value out of scope :
         #        sila_val_err = SiLAValidationError(parameter="myParameter",
         #                                           msg=f"Parameter {request.my_parameter.value} out of scope!")
         #        sila_val_err.raise_rpc_error(context)
-    
+
         try:
             return self.implementation.Tare(request, context)
         except SiLAError as err:
@@ -132,14 +133,14 @@ class BalanceService(BalanceService_pb2_grpc.BalanceServiceServicer):
         """
         Requests the observable property Value
             The current value
-    
+
         :param request: An empty gRPC request object (properties have no parameters)
         :param context: gRPC :class:`~grpc.ServicerContext` object providing gRPC-specific information
-    
+
         :returns: A response stream with the following fields:
             request.Value (Value): The current value
         """
-    
+
         logging.debug(
             "Property Value requested in {current_mode} mode".format(
                 current_mode=('simulation' if self.simulation_mode else 'real')
@@ -149,4 +150,4 @@ class BalanceService(BalanceService_pb2_grpc.BalanceServiceServicer):
             return self.implementation.Subscribe_Value(request, context)
         except SiLAError as err:
             err.raise_rpc_error(context=context)
-    
+
