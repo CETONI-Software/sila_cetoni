@@ -422,7 +422,10 @@ class ApplicationSystem(metaclass=Singleton):
 
         for i in range(balance_count):
             bal = balance.SartoriusBalance()
-            bal.open()
+            try:
+                bal.open()
+            except balance.BalanceNotFoundException:
+                continue
             # 'guess' the balance name for now
             balance_name = f'Sartorius_Balance_{i+1}'
             logging.debug("Found balance %d named %s", i, balance_name)
