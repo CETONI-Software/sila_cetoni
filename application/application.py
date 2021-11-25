@@ -252,4 +252,19 @@ class Application(metaclass=Singleton):
             )
             servers += [server]
 
+        #---------------------------------------------------------------------
+        # balance
+        for balance in self.system.balances:
+            args.server_port += 1
+            args.server_name = balance.name.replace("_", " ")
+            args.description = "Allows to control a balance"
+
+            from serv.balance.Balance_server import BalanceServer
+            server = BalanceServer(
+                cmd_args=args,
+                balance=balance.device,
+                simulation_mode=False
+            )
+            servers += [server]
+
         return servers
