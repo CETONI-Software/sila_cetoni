@@ -7,3 +7,5 @@ numpy==1.19.3
 shapely
 # only for debugging the AxisSystemPositionControllerReal's positioning shape
 # matplotlib
+# only when using the includes serial driver for Sartorius balances
+# pyserial
