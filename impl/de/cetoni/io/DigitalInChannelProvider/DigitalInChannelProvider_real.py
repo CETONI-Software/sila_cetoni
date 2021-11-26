@@ -82,7 +82,7 @@ class DigitalInChannelProviderReal:
 
         new_state = channel.is_on() and self.system.state.is_operational()
         state = not new_state # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_state = channel.is_on() and self.system.state.is_operational()
             if new_state != state:
                 state = new_state

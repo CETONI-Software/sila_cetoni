@@ -88,7 +88,7 @@ class BatteryProviderReal:
         new_voltage = channel.read_input() * VOLTAGE_DIVIDER_FACTOR \
                           if self.system.state.is_operational() else 0
         voltage = new_voltage + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_voltage = channel.read_input() * VOLTAGE_DIVIDER_FACTOR \
                           if self.system.state.is_operational() else 0
             if not math.isclose(new_voltage, voltage):

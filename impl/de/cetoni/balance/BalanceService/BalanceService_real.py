@@ -97,7 +97,7 @@ class BalanceServiceReal:
         """
         new_value = self.balance.value()
         value = new_value + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             if self.system.state.is_operational():
                 new_value = self.balance.value()
             # consider a value different from the one before if they differ in

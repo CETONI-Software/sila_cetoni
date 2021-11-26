@@ -553,7 +553,8 @@ class PumpFluidDosingServiceReal:
         """
         new_max_fill_level = self.pump.get_volume_max()
         max_fill_level = new_max_fill_level + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+
+        while context.is_active():
             if self.system.state.is_operational():
                 new_max_fill_level = self.pump.get_volume_max()
             if not math.isclose(new_max_fill_level, max_fill_level):
@@ -561,7 +562,7 @@ class PumpFluidDosingServiceReal:
                 yield PumpFluidDosingService_pb2.Subscribe_MaxSyringeFillLevel_Responses(
                     MaxSyringeFillLevel=silaFW_pb2.Real(value=max_fill_level)
                 )
-        # we add a small delay to give the client a chance to keep up.
+            # we add a small delay to give the client a chance to keep up.
             time.sleep(0.1)
 
 
@@ -579,7 +580,7 @@ class PumpFluidDosingServiceReal:
         """
         new_fill_level = self.pump.get_fill_level()
         fill_level = new_fill_level + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             if self.system.state.is_operational():
                 new_fill_level = self.pump.get_fill_level()
             if not math.isclose(new_fill_level, fill_level):
@@ -605,7 +606,7 @@ class PumpFluidDosingServiceReal:
         """
         new_max_flow_rate = self.pump.get_flow_rate_max()
         max_flow_rate = new_max_flow_rate + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             if self.system.state.is_operational():
                 new_max_flow_rate = self.pump.get_flow_rate_max()
             if not math.isclose(new_max_flow_rate, max_flow_rate):
@@ -631,7 +632,7 @@ class PumpFluidDosingServiceReal:
         """
         new_flow_rate = self.pump.get_flow_is()
         flow_rate = new_flow_rate + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_flow_rate = self.pump.get_flow_is() if self.system.state.is_operational() else 0
             if not math.isclose(new_flow_rate, flow_rate):
                 flow_rate = new_flow_rate

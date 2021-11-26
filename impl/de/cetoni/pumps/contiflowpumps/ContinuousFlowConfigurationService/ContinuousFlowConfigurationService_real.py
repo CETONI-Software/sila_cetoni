@@ -239,7 +239,7 @@ class ContinuousFlowConfigurationServiceReal:
 
         new_switching_mode = self.pump.get_device_property(ContiFlowProperty.SWITCHING_MODE)
         switching_mode = new_switching_mode + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_switching_mode = self.pump.get_device_property(ContiFlowProperty.SWITCHING_MODE)
             if new_switching_mode != switching_mode:
                 switching_mode = new_switching_mode
@@ -266,7 +266,7 @@ class ContinuousFlowConfigurationServiceReal:
 
         new_max_flow = self.pump.get_device_property(ContiFlowProperty.MAX_REFILL_FLOW)
         max_flow = new_max_flow + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_max_flow = self.pump.get_device_property(ContiFlowProperty.MAX_REFILL_FLOW)
             if not math.isclose(new_max_flow, max_flow):
                 max_flow = new_max_flow
@@ -291,7 +291,7 @@ class ContinuousFlowConfigurationServiceReal:
 
         new_refill_flow = self.pump.get_device_property(ContiFlowProperty.REFILL_FLOW)
         refill_flow = new_refill_flow + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_refill_flow = self.pump.get_device_property(ContiFlowProperty.REFILL_FLOW)
             if not math.isclose(new_refill_flow, refill_flow):
                 refill_flow = new_refill_flow
@@ -316,7 +316,7 @@ class ContinuousFlowConfigurationServiceReal:
 
         new_min_flow = self.pump.get_device_property(ContiFlowProperty.MIN_PUMP_FLOW)
         min_flow = new_min_flow + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_min_flow = self.pump.get_device_property(ContiFlowProperty.MIN_PUMP_FLOW)
             if not math.isclose(new_min_flow, min_flow):
                 min_flow = new_min_flow
@@ -341,7 +341,7 @@ class ContinuousFlowConfigurationServiceReal:
 
         new_cross_duration = self.pump.get_device_property(ContiFlowProperty.CROSSFLOW_DURATION_S)
         cross_duration = new_cross_duration + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_cross_duration = self.pump.get_device_property(ContiFlowProperty.CROSSFLOW_DURATION_S)
             if not math.isclose(new_cross_duration, cross_duration):
                 cross_duration = new_cross_duration
@@ -367,7 +367,7 @@ class ContinuousFlowConfigurationServiceReal:
 
         new_overlap_duration = self.pump.get_device_property(ContiFlowProperty.OVERLAP_DURATION_S)
         overlap_duration = new_overlap_duration + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_overlap_duration = self.pump.get_device_property(ContiFlowProperty.OVERLAP_DURATION_S)
             if not math.isclose(new_overlap_duration, overlap_duration):
                 overlap_duration = new_overlap_duration

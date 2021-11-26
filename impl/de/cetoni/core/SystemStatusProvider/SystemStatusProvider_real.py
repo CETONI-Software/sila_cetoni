@@ -77,7 +77,7 @@ class SystemStatusProviderReal:
 
         new_state = self.system.state.value
         state = "" # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_state = self.system.state.value
             if new_state != state:
                 state = new_state

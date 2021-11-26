@@ -166,7 +166,7 @@ class PumpUnitControllerReal:
         """
         new_volume_unit, new_time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
         volume_unit, time_unit = "", "" # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             if self.system.state.is_operational():
                 new_volume_unit, new_time_unit = uc.flow_unit_to_string(self.pump.get_flow_unit()).split('/')
             if new_volume_unit != volume_unit or new_time_unit != time_unit:
@@ -198,7 +198,7 @@ class PumpUnitControllerReal:
         """
         new_volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
         volume_unit = "" # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             if self.system.state.is_operational():
                 new_volume_unit = uc.volume_unit_to_string(self.pump.get_volume_unit())
             if new_volume_unit != volume_unit:
