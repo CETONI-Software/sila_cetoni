@@ -110,12 +110,12 @@ class SartoriusBalance():
 
         for info in serial.tools.list_ports.comports():
             self.__logger.debug(f"autodetection trying port {info.device}")
-            ser = serial.Serial(info.device, timeout=2, write_timeout=2)
             try:
+                ser = serial.Serial(info.device, timeout=2, write_timeout=2)
                 ser.write(b'x1_\r\n')
                 time.sleep(0.1)
                 balance_model = model_regex.findall(ser.read(ser.in_waiting or 1))
-            except serial.SerialTimeoutException:
+            except (serial.SerialTimeoutException, serial.SerialException):
                 continue
 
             if balance_model:
