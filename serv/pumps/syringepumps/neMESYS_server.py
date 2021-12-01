@@ -63,6 +63,10 @@ from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.gRPC impor
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.gRPC import SyringeConfigurationController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.SyringeConfigurationController_default_arguments import default_dict as SyringeConfigurationController_default_dict
+from impl.de.cetoni.pumps.syringepumps.ForceMonitoringService.gRPC import ForceMonitoringService_pb2
+from impl.de.cetoni.pumps.syringepumps.ForceMonitoringService.gRPC import ForceMonitoringService_pb2_grpc
+# import default arguments for this feature
+from impl.de.cetoni.pumps.syringepumps.ForceMonitoringService.ForceMonitoringService_default_arguments import default_dict as ForceMonitoringService_default_dict
 from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2
 from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
 # import default arguments for this feature
@@ -77,6 +81,7 @@ from impl.de.cetoni.pumps.syringepumps.PumpDriveControlService.PumpDriveControlS
 from impl.de.cetoni.pumps.syringepumps.PumpUnitController.PumpUnitController_servicer import PumpUnitController
 from impl.de.cetoni.pumps.syringepumps.PumpFluidDosingService.PumpFluidDosingService_servicer import PumpFluidDosingService
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.SyringeConfigurationController_servicer import SyringeConfigurationController
+from impl.de.cetoni.pumps.syringepumps.ForceMonitoringService.ForceMonitoringService_servicer import ForceMonitoringService
 from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_servicer import ValvePositionController
 from impl.de.cetoni.core.ShutdownController.ShutdownController_servicer import ShutdownController
 
@@ -144,6 +149,18 @@ class neMESYSServer(QmixIOServer):
             self.add_feature(feature_id='de.cetoni/pumps.syringepumps/SyringeConfigurationController/v1',
                              servicer=self.SyringeConfigurationController_servicer,
                              meta_path=meta_path)
+            if qmix_pump.has_force_monitoring():
+                #  Register de.cetoni.pumps.syringepumps.ForceMonitoringService
+                self.ForceMonitoringService_servicer = ForceMonitoringService(
+                    pump=qmix_pump,
+                    simulation_mode=simulation_mode)
+                ForceMonitoringService_pb2_grpc.add_ForceMonitoringServiceServicer_to_server(
+                    self.ForceMonitoringService_servicer,
+                    self.grpc_server
+                )
+                self.add_feature(feature_id='de.cetoni/pumps.syringepumps/ForceMonitoringService/v1',
+                                servicer=self.ForceMonitoringService_servicer,
+                                meta_path=meta_path)
             #  Register de.cetoni.pumps.syringepumps.PumpFluidDosingService
             self.PumpFluidDosingService_servicer = PumpFluidDosingService(
                 pump=qmix_pump,

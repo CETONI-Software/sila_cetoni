@@ -176,7 +176,7 @@ class PumpFluidDosingServiceReal:
                 message_timer.restart()
             is_pumping = self.pump.is_pumping()
 
-        if not is_pumping and not self.pump.is_in_fault_state():
+        if not is_pumping and not self.pump.is_in_fault_state() and self.pump.is_enabled():
             yield silaFW_pb2.ExecutionInfo(
                 commandStatus=silaFW_pb2.ExecutionInfo.CommandStatus.finishedSuccessfully,
                 progressInfo=silaFW_pb2.Real(value=1),
@@ -561,7 +561,7 @@ class PumpFluidDosingServiceReal:
                 yield PumpFluidDosingService_pb2.Subscribe_MaxSyringeFillLevel_Responses(
                     MaxSyringeFillLevel=silaFW_pb2.Real(value=max_fill_level)
                 )
-        # we add a small delay to give the client a chance to keep up.
+            # we add a small delay to give the client a chance to keep up.
             time.sleep(0.1)
 
 

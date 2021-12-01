@@ -65,6 +65,10 @@ from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.gRPC impor
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.gRPC import SyringeConfigurationController_pb2_grpc
 # import default arguments for this feature
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.SyringeConfigurationController_default_arguments import default_dict as SyringeConfigurationController_default_dict
+from impl.de.cetoni.pumps.syringepumps.ForceMonitoringService.gRPC import SyringeConfigurationController_pb2
+from impl.de.cetoni.pumps.syringepumps.ForceMonitoringService.gRPC import SyringeConfigurationController_pb2_grpc
+# import default arguments for this feature
+from impl.de.cetoni.pumps.syringepumps.ForceMonitoringService.ForceMonitoringService_default_arguments import default_dict as ForceMonitoringService_default_dict
 from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2
 from impl.de.cetoni.valves.ValvePositionController.gRPC import ValvePositionController_pb2_grpc
 # import default arguments for this feature
@@ -79,6 +83,7 @@ from impl.de.cetoni.pumps.syringepumps.PumpDriveControlService.PumpDriveControlS
 from impl.de.cetoni.pumps.syringepumps.PumpUnitController.PumpUnitController_client import PumpUnitControllerClient
 from impl.de.cetoni.pumps.syringepumps.PumpFluidDosingService.PumpFluidDosingService_client import PumpFluidDosingServiceClient
 from impl.de.cetoni.pumps.syringepumps.SyringeConfigurationController.SyringeConfigurationController_client import SyringeConfigurationControllerClient
+from impl.de.cetoni.pumps.syringepumps.ForceMonitoringService.ForceMonitoringService_client import ForceMonitoringServiceClient
 from impl.de.cetoni.valves.ValvePositionController.ValvePositionController_client import ValvePositionControllerClient
 from impl.de.cetoni.core.ShutdownController.ShutdownController_client import ShutdownControllerClient
 
@@ -135,6 +140,7 @@ class neMESYSClient(QmixIOClient):
         self.pump_unit_controller = PumpUnitControllerClient(self.channel)
         self.pump_fluid_dosing_service = PumpFluidDosingServiceClient(self.channel)
         self.syringe_configuration_controller = SyringeConfigurationControllerClient(self.channel)
+        self.force_monitoring_service = ForceMonitoringServiceClient(self.channel)
         self.valve_position_controller = ValvePositionControllerClient(self.channel)
         self.shutdown_controller = ShutdownControllerClient(self.channel)
 

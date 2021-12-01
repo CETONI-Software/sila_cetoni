@@ -14,6 +14,7 @@
     "de/cetoni/pumps/syringepumps/PumpUnitController",
     "de/cetoni/pumps/syringepumps/PumpFluidDosingService",
     "de/cetoni/pumps/syringepumps/SyringeConfigurationController",
+    "de/cetoni/pumps/syringepumps/ForceMonitoringService",
     "de/cetoni/valves/ValvePositionController",
     "de/cetoni/core/ShutdownController"
   ],
