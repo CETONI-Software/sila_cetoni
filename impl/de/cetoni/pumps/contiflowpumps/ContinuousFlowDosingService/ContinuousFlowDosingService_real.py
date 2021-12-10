@@ -225,7 +225,7 @@ class ContinuousFlowDosingServiceReal:
 
         new_max_flow_rate = self.pump.get_flow_rate_max()
         max_flow_rate = new_max_flow_rate + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             if self.system.state.is_operational():
                 new_max_flow_rate = self.pump.get_flow_rate_max()
             if not math.isclose(new_max_flow_rate, max_flow_rate):
@@ -252,7 +252,7 @@ class ContinuousFlowDosingServiceReal:
 
         new_flow_rate = self.pump.get_flow_is()
         flow_rate = new_flow_rate + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_flow_rate = self.pump.get_flow_is()
             if not math.isclose(new_flow_rate, flow_rate):
                 flow_rate = new_flow_rate

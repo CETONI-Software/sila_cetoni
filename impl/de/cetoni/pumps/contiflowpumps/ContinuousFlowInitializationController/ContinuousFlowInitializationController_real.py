@@ -198,7 +198,7 @@ class ContinuousFlowInitializationControllerReal:
 
         new_is_initialized = self.pump.is_initialized()
         is_initialized = not new_is_initialized # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             new_is_initialized = self.pump.is_initialized()
             if new_is_initialized != is_initialized:
                 is_initialized = new_is_initialized

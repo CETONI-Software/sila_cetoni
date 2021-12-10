@@ -125,7 +125,7 @@ class SyringeConfigurationControllerReal:
         """
         new_inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
         inner_diameter = new_inner_diameter + 1 #force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             if self.system.state.is_operational():
                 new_inner_diameter = self.pump.get_syringe_param().inner_diameter_mm
             if not math.isclose(new_inner_diameter, inner_diameter):
@@ -151,7 +151,7 @@ class SyringeConfigurationControllerReal:
         """
         new_max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
         max_piston_stroke = new_max_piston_stroke + 1 #force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             if self.system.state.is_operational():
                 new_max_piston_stroke = self.pump.get_syringe_param().max_piston_stroke_mm
             if not math.isclose(new_max_piston_stroke, max_piston_stroke):

@@ -215,7 +215,7 @@ class ValvePositionControllerReal:
 
         new_valve_position = self._get_valve_position(valve)
         valve_position = new_valve_position + 1 # force sending the first value
-        while not self.system.state.shutting_down():
+        while context.is_active():
             if self.system.state.is_operational():
                 new_valve_position = self._get_valve_position(valve)
             if new_valve_position != valve_position:
