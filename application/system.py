@@ -67,41 +67,41 @@ class ApplicationSystem(metaclass=Singleton):
     The whole application system containing all devices and all configuration
     """
 
-    device_config: DeviceConfiguration
-    bus: qmixbus.Bus
+    device_config: DeviceConfiguration = None
+    bus: qmixbus.Bus = None
     monitoring_thread: threading.Thread
 
-    pumps: List[PumpDevice]
-    axis_systems: List[AxisSystemDevice]
-    valves: List[ValveDevice]
-    controllers: List[ControllerDevice]
-    io_devices: List[IODevice]
-    balances: List[BalanceDevice]
+    pumps: List[PumpDevice] = []
+    axis_systems: List[AxisSystemDevice] = []
+    valves: List[ValveDevice] = []
+    controllers: List[ControllerDevice] = []
+    io_devices: List[IODevice] = []
+    balances: List[BalanceDevice] = []
 
     state: SystemState
 
     MAX_SECONDS_WITHOUT_BATTERY = 20
 
     def __init__(self, device_config_path: str = ""):
-        if not device_config_path:
-            return
-
         logging.debug("Looking up devices...")
-        self.device_config = DeviceConfiguration(device_config_path)
 
-        self.bus = qmixbus.Bus()
-        self.open_bus()
+        if device_config_path:
+            self.device_config = DeviceConfiguration(device_config_path)
 
-        # The order is important here! Many devices have I/O channels but are not
-        # pure I/O devices (similarly, pumps might have a valve but they're not a
-        # valve device). That's why valves have to be detected after pumps and I/O
-        # devices have to be detected last (since then we can guarantee that there
-        # is no possibility for an I/O channel to belong to an I/O device).
-        self.pumps = self.get_availabe_pumps()
-        self.axis_systems = self.get_availabe_axis_systems()
-        self.valves = self.get_availabe_valves()
-        self.controllers = self.get_availabe_controllers()
-        self.io_devices = self.get_availabe_io_channels()
+            self.bus = qmixbus.Bus()
+            self.open_bus()
+
+            # The order is important here! Many devices have I/O channels but are not
+            # pure I/O devices (similarly, pumps might have a valve but they're not a
+            # valve device). That's why valves have to be detected after pumps and I/O
+            # devices have to be detected last (since then we can guarantee that there
+            # is no possibility for an I/O channel to belong to an I/O device).
+            self.pumps = self.get_availabe_pumps()
+            self.axis_systems = self.get_availabe_axis_systems()
+            self.valves = self.get_availabe_valves()
+            self.controllers = self.get_availabe_controllers()
+            self.io_devices = self.get_availabe_io_channels()
+
         self.balances = self.get_availabe_balances()
 
         logging.debug(f"Pumps: {repr(self.pumps)}")
@@ -117,8 +117,9 @@ class ApplicationSystem(metaclass=Singleton):
         """
         Starts the CAN bus communications and the bus monitoring and enables devices
         """
-        self.start_bus_and_enable_devices()
-        self._start_bus_monitoring()
+        if self.bus:
+            self.start_bus_and_enable_devices()
+            self._start_bus_monitoring()
 
     def stop(self):
         """
@@ -126,7 +127,8 @@ class ApplicationSystem(metaclass=Singleton):
         """
         logging.debug("Stopping application system...")
         self.state = SystemState.SHUTDOWN
-        self.stop_and_close_bus()
+        if self.bus:
+            self.stop_and_close_bus()
 
     def shutdown(self):
         """
@@ -406,7 +408,7 @@ class ApplicationSystem(metaclass=Singleton):
 
     #-------------------------------------------------------------------------
     # Balance
-    def get_availabe_balances(self) -> List[IODevice]:
+    def get_availabe_balances(self) -> List[BalanceDevice]:
         """
         Looks up all balances from the current configuration
 
@@ -429,8 +431,11 @@ class ApplicationSystem(metaclass=Singleton):
             # 'guess' the balance name for now
             balance_name = f'Sartorius_Balance_{i+1}'
             logging.debug("Found balance %d named %s", i, balance_name)
-            balance_device = self.device_config.device_by_name(balance_name)
-            BalanceDevice.convert_to_class(balance_device, device=bal)
+            if self.device_config:
+                balance_device = self.device_config.device_by_name(balance_name)
+                BalanceDevice.convert_to_class(balance_device, device=bal)
+            else:
+                balance_device = BalanceDevice(balance_name, bal)
             balances += [balance_device]
 
         return balances

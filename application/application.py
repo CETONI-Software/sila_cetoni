@@ -61,8 +61,6 @@ class Application(metaclass=Singleton):
 
     def __init__(self, device_config_path: str = "",
                  base_port: int = DEFAULT_BASE_PORT):
-        if not device_config_path:
-            return
 
         self.system = ApplicationSystem(device_config_path)
         self._generate_self_signed_cert()
@@ -109,6 +107,10 @@ class Application(metaclass=Singleton):
         Starts the whole system (i.e. all devices) and all SiLA 2 servers
         Runs until Ctrl-C is pressed on the command line or `stop()` has been called
         """
+        if not self.servers:
+            logging.info("No SiLA Servers to run")
+            return
+
         self.system.start()
 
         self.start_servers()

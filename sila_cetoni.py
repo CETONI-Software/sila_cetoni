@@ -45,10 +45,13 @@ def parse_command_line():
     """
     parser = argparse.ArgumentParser(
         description="Launches as many SiLA 2 servers as there are CETONI devices in the configuration")
-    parser.add_argument('config_path', metavar='configuration_path', type=str,
-                        help="""a path to a valid device configuration folder
-                             (If you don't have a configuration yet,
-                             create one with the CETONI Elements software first.)""")
+    parser.add_argument('-c', '--config_path', type=str, default='',
+                        help="Path to a valid CETONI device configuration folder \
+                             (This is only necessary if you want to control CETONI \
+                             devices. Controlling other devices that have their \
+                             own drivers in the 'device_drivers' subdirectory don't \
+                             need a configuration.If you don't have a configuration \
+                             yet, create one with the CETONI Elements software first.)")
     parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
     parser.add_argument('-p', '--server-base-port', action='store', default=DEFAULT_BASE_PORT,
                         help='The port number for the first SiLA server (default: %d)' % DEFAULT_BASE_PORT)

@@ -155,8 +155,10 @@ class BalanceDevice(Device):
 
     device: balance.BalanceInterface
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, device: balance.BalanceInterface = None):
         super().__init__(name)
+
+        self.device = device
 
 class DeviceConfiguration:
     """
