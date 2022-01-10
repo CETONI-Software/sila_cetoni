@@ -1,74 +1,70 @@
-import serial
-import serial.threaded
-import serial.tools.list_ports
-import traceback
+"""
+An interface for implementing a balance device driver for the CETONI SiLA SDK
+"""
+
 import time
 import re
 import logging
+import traceback
+import serial
+import serial.threaded
+import serial.tools.list_ports
+from typing import Union
+from abc import ABC, abstractmethod, abstractstaticmethod
 
 
-class BalanceNotFoundException(Exception):
-    def __init__(self):
-        super().__init__("No Sartorius balance detected on any serial port. Please " \
-                         "verify that your balance has the following RS232 settings: " \
-                         "[DAT.REC: SBI], [BAUD: 115200], [PARITY: NONE], [STOPBIT: 1 BIT], " \
-                         "[HANDSHK.: NONE], [DATABITS: 8 BIT]. For best performance, "\
-                         "please ensure that you set COM.SBI -> AUTO.CYCL to EACH VAL.")
-
-class ReaderThread(serial.threaded.ReaderThread):
+class _ReaderThread(serial.threaded.ReaderThread):
     """
     Implements a serial port read loop and dispatches to a Protocol instance but
     do it with threads.
 
-    Provides the connection from the `SartoriusBalance` instance (which creates
-    an instance of this `ReaderThread` class) to the protocol instance
-    (`SartoriusBalanceReader`) that is created by this `ReaderThread` so that the
+    Provides the connection from the `SerialBalanceInterface` instance (which creates
+    an instance of this `_ReaderThread` class) to the protocol instance
+    (`_SerialBalanceReader`) that is created by this `_ReaderThread` so that the
     protocol instance that receives the data from the serial port can set the actual
-    value of the balance in the `SartoriusBalance` instance
+    value of the balance in the `SerialBalanceInterface` instance
     """
-    balance = None #: SartoriusBalance
+    balance = None #: SerialBalanceInterface
 
     def __init__(self, serial_instance, protocol_factory, balance):
         super().__init__(serial_instance, protocol_factory)
-        self.balance: SartoriusBalance = balance
+        self.balance: SerialBalanceInterface = balance
 
-class SartoriusBalanceReader(serial.threaded.LineReader):
+class _SerialBalanceReader(serial.threaded.LineReader):
     """
-    Reads/writes to/from a sartorius balance
+    Reads/writes to/from a balance via a serial connection
 
-    The `SartoriusBalance` instance that is represented is obtained from the
-    transport object (a `ReaderThread`) that creates an instance of this reader class
+    The `SerialBalanceInterface` instance that is represented is obtained from
+    the transport object (a `_ReaderThread`) that creates an instance of this
+    reader class
     """
 
-    __balance = None #: SartoriusBalance
+    __balance = None #: SerialBalanceInterface
     __logger = logging.getLogger('balance_driver')
 
-    # data = 'G     +   0.0006 !  '
-    #               ^~~~~~~~~~ match this (and remove spaces later)
-    __value_regex = re.compile('[+-]?\s+\d+\.\d+')
-
     # implements serial.threaded.LineReader ----------------------------------
-    def connection_made(self, transport: ReaderThread):
+    def connection_made(self, transport: _ReaderThread):
         super().connection_made(transport)
-        self.__balance: SartoriusBalance = transport.balance
+
+        self.__balance: SerialBalanceInterface = transport.balance
         self.__logger.debug('port opened')
 
-        # validate that we have a Sartorius Balance
-        self.write_line('x1_')
-        time.sleep(0.5)
-        buffer: bytes = transport.serial.read(transport.serial.in_waiting or 1)#
+        # validate that we have the correct balance
+        self.write_line(self.__balance.unique_balance_identifier_request)
+        time.sleep(1.5)
+        buffer: bytes = transport.serial.read(transport.serial.in_waiting or 1)
         while self.TERMINATOR in buffer:
             data, buffer = buffer.split(self.TERMINATOR, 1)
-            if data and data.startswith(b'Model'):
+            if data and self.__balance.is_valid_balance(data):
                 break
         else:
-                raise BalanceNotFoundException()
+                raise self.__balance.not_found_exception()
 
     def handle_line(self, data: str):
         self.__logger.debug('line received: {}'.format(repr(data)))
 
         try:
-            self.__balance.set_value(float(self.__value_regex.findall(data)[0].replace(' ', '')))
+            self.__balance.value = self.__balance.serial_data_to_value(data)
         except IndexError:
             pass
 
@@ -77,71 +73,117 @@ class SartoriusBalanceReader(serial.threaded.LineReader):
             traceback.print_exception(exc, exc, None)
         self.__logger.debug('port closed')
 
-class SartoriusBalance():
+class BalanceInterface(ABC):
     """
-    Class for reading serial data from a Sartorius balance
+    Interface for a balance device driver
     """
-
-    __serial: serial.Serial
-    __reader_thread: serial.threaded.ReaderThread
-    protocol: SartoriusBalanceReader
 
     __value: float
 
-    __logger = logging.getLogger('balance_driver')
+    def __init__(self):
+        super().__init__()
+
+    @property
+    def value(self) -> float:
+        """
+        Returns the current value of the balance
+        """
+        return self.__value
+
+    @value.setter
+    def value(self, value: float):
+        """
+        Sets the value of the balance to `value`
+        """
+        self.__value = value
+
+    @abstractmethod
+    def tare(self):
+        """
+        Tare the balance
+        """
+        raise NotImplementedError()
+
+
+
+class BalanceNotFoundException(Exception):
+    """
+    An exception that indicates that a balance is not available (any more) over
+    a serial connection
+    """
+    def __init__(self, msg: str = "No balance detected"):
+        super().__init__(msg)
+
+class SerialBalanceInterface(BalanceInterface):
+    """
+    Interface for a balance device driver that uses a serial communication protocol
+    """
+
+    # You can derive from `BalanceNotFoundException` to give a more detailed error
+    # message. Set `not_found_exception = YourBalanceNotFoundException` in your
+    # custom Balance class
+    not_found_exception = BalanceNotFoundException
+
+    __serial: serial.Serial
+    __reader_thread: serial.threaded.ReaderThread
+    _protocol: _SerialBalanceReader
+
+    __logger = logging.getLogger(__name__)
 
     def __init__(self, port: str = ""):
+        """
+        :param port: (optional) The serial port of the balance
+        """
+        super().__init__()
+
         self.__serial = serial.Serial()
         if port:
             self.__serial.port = port
-        self.__reader_thread = ReaderThread(self.__serial, SartoriusBalanceReader, self)
+        self.__reader_thread = _ReaderThread(self.__serial, _SerialBalanceReader, self)
 
-    def __autodetect_serial_port(self):
+    def _autodetect_serial_port(self):
         """
         Goes through all available serial ports of the system and tries to find
-        the first port connected to a Sartorius Balance
+        the first port connected to a Balance
         """
-
-        # b'Model  BCE124I-1CEU \r\n'
-        #                      ^~~~~ positive lookahead   (?=\s+\\r\\n.*)
-        #          ^~~~~~~~~~~~ matches this              [\w\d-]+
-        #   ^~~~~~~ positive lookbehind                   (?<=Model\s{2})
-        model_regex = re.compile(b'(?<=Model\s{2})[\w\d-]+(?=\s+\\r\\n.*)')
 
         for info in serial.tools.list_ports.comports():
             self.__logger.debug(f"autodetection trying port {info.device}")
             try:
                 ser = serial.Serial(info.device, timeout=2, write_timeout=2)
-                ser.write(b'x1_\r\n')
+                # read something from the balance that uniquely identifies it, e.g.
+                ser.write(f"{self.unique_balance_identifier_request}\r\n".encode('utf-8'))
                 time.sleep(0.1)
-                balance_model = model_regex.findall(ser.read(ser.in_waiting or 1))
+                if self.is_valid_balance(ser.read(ser.in_waiting or 1)):
+                    self.__logger.info(f"Balance detected on serial port {ser.port}")
+                    self.__serial.port = ser.port
+                    break
             except (serial.SerialTimeoutException, serial.SerialException):
                 continue
-
-            if balance_model:
-                self.__logger.info(f"Sartorius device {balance_model[0]} detected on serial port {ser.port}")
-                self.__serial.port = ser.port
-                break
         else:
-            raise BalanceNotFoundException()
+            raise self.not_found_exception()
 
     def open(self, port: str = ""):
         """
         Connects to the balance via the serial port with the given `port`
+
+        :param port: (optional) The serial port of the balance. If not given,
+                     tries to autodetect a balance by trying all available serial
+                     ports until a valid port is found
         """
         if self.__serial.isOpen():
             return
 
         if not port:
-            self.__autodetect_serial_port()
+            self._autodetect_serial_port()
         else:
             self.__serial.port = port
 
         self.__serial.open()
         if not self.__serial.isOpen():
-            raise BalanceNotFoundException()
+            raise self.not_found_exception()
         self.__reader_thread.start()
-        _, self.protocol = self.__reader_thread.connect()
+        _, self._protocol = self.__reader_thread.connect()
 
     def close(self):
         """
@@ -149,36 +191,34 @@ class SartoriusBalance():
         """
         self.__reader_thread.close()
 
-    def tare(self):
+    @abstractstaticmethod
+    def serial_data_to_value(data) -> float:
         """
-        Executes the tare command
+        Function to convert the `data` read from the balance to a floating point
+        value
         """
-        self.protocol.write_line('T')
+        raise NotImplementedError()
 
-    def value(self) -> float:
+    @property
+    @abstractmethod
+    def unique_balance_identifier_request(self) -> str:
         """
-        Returns the current value of the balance
+        This function should return a string containing a request for the balance
+        to return some kind of unique identifier or something that can be used to
+        identify if the current serial connection uses the correct balance (e.g.
+        this could be a request to return the serial number of the balance).
+        The response of the device will be passed to the `is_valid_balance()`
+        function to validate it.
         """
-        return self.__value
+        raise NotImplementedError()
 
-    def set_value(self, value: float):
+    @abstractstaticmethod
+    def is_valid_balance(data) -> bool:
         """
-        Sets the value of the balance to `value`
+        This function should return whether `data` indicates that the current
+        serial connection is using the correct balance.
+
+        :param data: The serial data which was read as a response to writing the
+                     `unique_balance_identifier_request`
         """
-        self.__value = value
-
-
-# ----------------------------------------------------------------------------
-# test
-if __name__ == "__main__":
-    logging.basicConfig(
-        format='%(asctime)s [%(threadName)-12.12s] %(levelname)-8s| %(module)s.%(funcName)s: %(message)s',
-        level=logging.DEBUG
-    )
-
-    balance = SartoriusBalance()
-    balance.open()
-    time.sleep(0.3)
-    balance.tare()
-    time.sleep(5)
-
+        raise NotImplementedError()

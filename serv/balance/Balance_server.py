@@ -44,14 +44,14 @@ from impl.de.cetoni.balance.BalanceService.BalanceService_default_arguments impo
 # Import the servicer modules for each feature
 from impl.de.cetoni.balance.BalanceService.BalanceService_servicer import BalanceService
 
-from device_drivers.balance import SartoriusBalance
+from device_drivers.balance import BalanceInterface
 
 class BalanceServer(SystemStatusProviderServer):
     """
     Allows to control a balance
     """
 
-    def __init__(self, cmd_args, balance: SartoriusBalance, simulation_mode: bool = True):
+    def __init__(self, cmd_args, balance: BalanceInterface, simulation_mode: bool = True):
         """Class initialiser"""
         super().__init__(cmd_args=cmd_args, simulation_mode=simulation_mode)
 

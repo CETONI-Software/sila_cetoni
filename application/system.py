@@ -35,7 +35,7 @@ from enum import Enum
 
 # import qmixsdk
 from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, qmixmotion, qmixvalve
-from device_drivers import balance
+from device_drivers import sartorius_balance
 
 from .device import DeviceConfiguration, Device, PumpDevice, AxisSystemDevice, \
                     ValveDevice, ControllerDevice, IODevice, BalanceDevice
@@ -421,10 +421,10 @@ class ApplicationSystem(metaclass=Singleton):
         balances = []
 
         for i in range(balance_count):
-            bal = balance.SartoriusBalance()
+            bal = sartorius_balance.SartoriusBalance()
             try:
                 bal.open()
-            except balance.BalanceNotFoundException:
+            except sartorius_balance.BalanceNotFoundException:
                 continue
             # 'guess' the balance name for now
             balance_name = f'Sartorius_Balance_{i+1}'

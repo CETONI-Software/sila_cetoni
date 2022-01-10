@@ -47,7 +47,7 @@ from .gRPC import BalanceService_pb2_grpc as BalanceService_pb2_grpc
 from .BalanceService_simulation import BalanceServiceSimulation
 from .BalanceService_real import BalanceServiceReal
 
-from device_drivers.balance import SartoriusBalance
+from device_drivers.balance import BalanceInterface
 
 
 class BalanceService(BalanceService_pb2_grpc.BalanceServiceServicer):
@@ -57,7 +57,7 @@ class BalanceService(BalanceService_pb2_grpc.BalanceServiceServicer):
     implementation: Union[BalanceServiceSimulation, BalanceServiceReal]
     simulation_mode: bool
 
-    def __init__(self, simulation_mode: bool = True, balance: SartoriusBalance = None):
+    def __init__(self, simulation_mode: bool = True, balance: BalanceInterface = None):
         """
         Class initialiser.
 

@@ -47,7 +47,7 @@ from .BalanceService_default_arguments import default_dict
 
 from application.system import ApplicationSystem, SystemState
 
-from device_drivers.balance import SartoriusBalance
+from device_drivers.balance import BalanceInterface
 
 
 # noinspection PyPep8Naming,PyUnusedLocal
@@ -57,7 +57,7 @@ class BalanceServiceReal:
         Allows to control a balance
     """
 
-    def __init__(self, balance: SartoriusBalance = None):
+    def __init__(self, balance: BalanceInterface = None):
         """Class initialiser"""
 
         self.balance = balance
@@ -95,11 +95,11 @@ class BalanceServiceReal:
         :returns: A response object with the following fields:
             request.Value (Value): The current value
         """
-        new_value = self.balance.value()
+        new_value = self.balance.value
         value = new_value + 1 # force sending the first value
         while context.is_active():
             if self.system.state.is_operational():
-                new_value = self.balance.value()
+                new_value = self.balance.value
             # consider a value different from the one before if they differ in
             # the first 4 decimal places (which is the precision we get from the
             # balance) to reduce the load of value updates
@@ -108,5 +108,5 @@ class BalanceServiceReal:
                 yield BalanceService_pb2.Subscribe_Value_Responses(
                     Value=silaFW_pb2.Real(value=value)
                 )
-        # we add a small delay to give the client a chance to keep up.
+            # we add a small delay to give the client a chance to keep up.
             time.sleep(0.1)

@@ -153,7 +153,7 @@ class BalanceDevice(Device):
     Simple class to represent a balance device
     """
 
-    device: balance.SartoriusBalance
+    device: balance.BalanceInterface
 
     def __init__(self, name: str):
         super().__init__(name)
