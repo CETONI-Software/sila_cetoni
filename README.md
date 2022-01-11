@@ -12,11 +12,12 @@ These SiLA 2 drivers are based on the [CETONI SDK for Python](https://github.com
   - [Running SiLA 2 CETONI servers](#running-sila-2-cetoni-servers)
     - [Windows](#windows)
     - [Linux](#linux)
-  - [Troubleshooting](#troubleshooting)
-    - ['undefined symbol: __atomic_exchange_8' on Raspberry Pi](#undefined-symbol-__atomic_exchange_8-on-raspberry-pi)
+- [Troubleshooting](#troubleshooting)
+  - ['undefined symbol: __atomic_exchange_8' on Raspberry Pi](#undefined-symbol-__atomic_exchange_8-on-raspberry-pi)
 - [Modifying the drivers](#modifying-the-drivers)
   - [Repository layout](#repository-layout)
   - [Generate the prototype code from the FDL](#generate-the-prototype-code-from-the-fdl)
+  - [Adding new Features for other devices](#adding-new-features-for-other-devices)
 - [Contributing](#contributing)
 
 ## Getting Started
@@ -31,24 +32,25 @@ Install the requirements for SiLA CETONI from PyPI with
 $ pip install -r requirements.txt
 ```
 It is recommended to install these things in a virtual environment to not interfere with anything in your system's environment.  
-This will install all Python dependencies for SiLA CETONI most notably `sila_python` and its codegenerator (`sila2codegenerator`).
+This will install all Python dependencies for SiLA CETONI most notably `sila_python` and its code generator (`sila2codegenerator`).
 
 #### CETONI SDK
-Additionally you'll of course need the CETONI SDK with the Python Integration.
+Additionally, you'll of course need the CETONI SDK with the Python Integration.
 
-For instructions on how to install the CETONI SDK for Python on your system and get a valid configuration for your devices see the [CETONI SDK Documentation](https://www.cetoni.de/fileadmin/user_upload/Documents/Manuals/QmixSDK/index.html).  
+For instructions on how to install the CETONI SDK for Python on your system and get a valid configuration for your devices see the [CETONI SDK Documentation].  
 On Linux be sure to also install the correct SocketCAN driver (either [SysTec](https://www.systec-electronic.com/en/company/support/device-driver/) or [IXXAT](https://www.ixxat.com/support/file-and-documents-download/drivers/socketcan-driver) depending on your CETONI base module).
 
 ### Running SiLA 2 CETONI servers
 > ##### Note:
-> You always need a valid device configuration created with the [CETONI Elements software](https://www.cetoni.com/products/qmixelements/) in order to use SiLA CETONI.
+> If your system contains any CETONI devices you always need a valid device configuration created with the [CETONI Elements] software in order to use SiLA CETONI.  
+> If you only want to control a Sartorius balance, for example, you don't need a device configuration.
 
-Running any valid device configuration to get the corresponding SiLA 2 servers is always done through the `sila_cetoni.py` wrapper script located in the root of this repository.
+Running the corresponding SiLA 2 servers for your system is always done through the `sila_cetoni.py` wrapper script located in the root of this repository.
 
 #### Windows
-On Windows you can simply run the script through Python giving it the path to the Qmix configuration folder as its argument:
+On Windows you can simply run the script through Python giving it the path to the CETONI device configuration folder as an argument (if necessary):
 ```cmd
-> python .\sila_cetoni.py <path\to\your\device_config>
+> python .\sila_cetoni.py -c <path\to\your\device_config>
 ```
 
 #### Linux
@@ -58,13 +60,13 @@ You need to specify the dynamic library search path *before* running the `python
 This can be done by manually specifying the `PATH`, `PYTHONPATH` and `LD_LIBRARY_PATH` environment variables before running `sila_cetoni.py`.  
 To make this a bit easier you can use the provided shell script `sila_cetoni.sh`.
 You only need to edit the path to the CETONI SDK installation folder in this file.  
-After that you can run this script giving it only the path to your configuration folder as its argument:
+After that you can run this script giving it only the path to your device configuration folder as an argument (if necessary):
 ```console
-$ ./sila_cetoni.sh <path/to/your/device_config>
+$ ./sila_cetoni.sh -c <path/to/your/device_config>
 ```
 The script will set the necessary variables and run the python script for you.
 
-You can play around with the server's and their features by using the freely available [SiLA Browser](https://unitelabs.ch/technology/plug-and-play/sila-browser/), for example.  
+You can play around with the server's and their features by using the freely available [SiLA Browser](https://unitelabs.ch/technology/plug-and-play/sila-browser/) or even [CETONI Elements], for example.  
 Or you can also write your own SiLA Client software using the Python or any other of the [reference implementations](https://gitlab.com/SiLA2/) of SiLA 2.
 
 ## Troubleshooting
@@ -94,14 +96,18 @@ LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libatomic.so.1.2.0 python3 $curr_dir/sil
 ```
 
 ## Modifying the drivers
-You are of course free to play around with the code inside this repository.
-Especially when modifying the feature definitions you need to bear in mind a few things.
+You are, of course, free to play around with the code inside this repository.
+Especially, when modifying the feature definitions you need to bear in mind a few things.  
 The following is meant to be some kind of guidance for your first steps modifying the code.
 
 ### Repository layout
 The repository is structured in the following way:
 ```
 sila_cetoni
+|- device_drivers/            # contains non-CETONI device drivers
+|  |- balance.py              # common driver interface for balances
+|  `- sartorius_balance.py    # specific device driver for Sartorius balances
+|
 |- features/de/cetoni/        # folder structure according to SiLA 2 Part A
 |  |- controllers/            # contains all feature definitions grouped by category
 |  |  `- ControlLoopService.sila.xml
@@ -159,10 +165,16 @@ The code regeneration process is now as follows:
    Answer this with `n`.
 4. After that delete all directories you don't need and only move the `gRPC/` directory of th current feature into the correct directory in `impl/de/cetoni/` (i.e. in our case into `impl/de/cetoni/pumps/syringepumps/PumpFluidDosingService/`).
 5. Finally, inspect each of the `_servicer.py`, `_real.py` and `_simulation.py` files of te feature to find the prototype definition(s) of the functions for your new command and copy them into the correct file in the `impl/` folder.
-   Then simply add your implementation in the `_real.py` file (the `_simulation.py` files have not been implemented because Qmix configurations support simulated devices already hence we don't need to use the simulation functionality of `sila_python`).
+   Then simply add your implementation in the `_real.py` file (the `_simulation.py` files have not been implemented because CETONI device configurations support simulated devices already hence we don't need to use the simulation functionality of `sila_python`).
+
+### Adding new Features for other devices
+If you want to add new Features for your own devices, for example, refer to the [README.md](device_drivers/README.md) in the 'device_drivers' subdirectory.
 
 ## Contributing
 
 You can change and improve the current implementations, create new Commands, Properties, or even whole new SiLA 2 Features.
 If you think your changes might be interesting for us and other users as well, feel free to [open a pull request](https://github.com/CETONI-Software/sila_qmix/compare) on the GitHub project page.
 Also, if you have any questions or problems with the drivers, just open an issue and we'll try to help you.
+
+[CETONI SDK Documentation]: https://cetoni.de/downloads/manuals/CETONI_SDK/index.html
+[CETONI Elements]: https://cetoni.com/cetoni-elements/
