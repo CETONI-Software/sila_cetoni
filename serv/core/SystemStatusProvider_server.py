@@ -48,7 +48,7 @@ from impl.de.cetoni.core.SystemStatusProvider.SystemStatusProvider_servicer impo
 # optional hardware interface communication
 # from sila2comlib.com.com_serial import ComSerial
 
-from ..local_ip import LOCAL_IP
+from util.local_ip import LOCAL_IP
 
 
 class SystemStatusProviderServer(SiLA2Server):

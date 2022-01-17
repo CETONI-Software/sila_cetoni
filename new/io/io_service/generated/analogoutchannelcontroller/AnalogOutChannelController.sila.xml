@@ -1,0 +1,64 @@
+<Feature xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Category="io" FeatureVersion="1.0" Originator="de.cetoni" SiLA2Version="1.0" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+  <Identifier>AnalogOutChannelController</Identifier>
+  <DisplayName>Analog Out Channel Controller</DisplayName>
+  <Description>Allows to control one analog output channel of an I/O module</Description>
+  <!-- Metadata -->
+  <Metadata>
+    <Identifier>ChannelIndex</Identifier>
+    <DisplayName>Channel Index</DisplayName>
+    <Description>The index of the channel that should be used. This value is 0-indexed, i.e. the first channel has index 0, the second one index 1 and so on.</Description>
+    <DataType>
+      <Constrained>
+        <DataType>
+          <Basic>Integer</Basic>
+        </DataType>
+        <Constraints>
+          <MinimalInclusive>0</MinimalInclusive>
+        </Constraints>
+      </Constrained>
+    </DataType>
+    <DefinedExecutionErrors>
+      <Identifier>InvalidChannelIndex</Identifier>
+    </DefinedExecutionErrors>
+  </Metadata>
+  <!-- Commands -->
+  <Command>
+    <Identifier>SetOutputValue</Identifier>
+    <DisplayName>Set Output Value</DisplayName>
+    <Description>Set the value of the analog output channel.</Description>
+    <Observable>No</Observable>
+    <Parameter>
+      <Identifier>Value</Identifier>
+      <DisplayName>Value</DisplayName>
+      <Description>The value to set.</Description>
+      <DataType>
+        <Basic>Real</Basic>
+      </DataType>
+    </Parameter>
+  </Command>
+  <!-- Properties -->
+  <Property>
+    <Identifier>NumberOfChannels</Identifier>
+    <DisplayName>Number Of Channels</DisplayName>
+    <Description>The number of analog output channels.</Description>
+    <Observable>No</Observable>
+    <DataType>
+      <Basic>Integer</Basic>
+    </DataType>
+  </Property>
+  <Property>
+    <Identifier>Value</Identifier>
+    <DisplayName>Value</DisplayName>
+    <Description>The value of the analog output channel.</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <Basic>Real</Basic>
+    </DataType>
+  </Property>
+  <!-- Errors -->
+  <DefinedExecutionError>
+    <Identifier>InvalidChannelIndex</Identifier>
+    <DisplayName>Invalid Channel Index</DisplayName>
+    <Description>The sent channel index is not known.</Description>
+  </DefinedExecutionError>
+</Feature>

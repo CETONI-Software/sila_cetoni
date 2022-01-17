@@ -1,0 +1,116 @@
+<Feature xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Category="pumps.syringepumps" FeatureVersion="1.0" Originator="de.cetoni" SiLA2Version="1.0" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+  <Identifier>ForceMonitoringService</Identifier>
+  <DisplayName>Force Monitoring Service</DisplayName>
+  <Description>Functionality to control the force monitoring, read the force sensor and set a custom force limit for pump devices that support this functionality such as Nemesys S and Nemesys M.</Description>
+  <!-- Commands -->
+  <Command>
+    <Identifier>ClearForceSafetyStop</Identifier>
+    <DisplayName>Clear Force Safety Stop</DisplayName>
+    <Description>Clear/acknowledge a force safety stop.</Description>
+    <Observable>No</Observable>
+  </Command>
+  <Command>
+    <Identifier>EnableForceMonitoring</Identifier>
+    <DisplayName>Enable Force Monitoring</DisplayName>
+    <Description>Enable the force monitoring.</Description>
+    <Observable>No</Observable>
+  </Command>
+  <Command>
+    <Identifier>DisableForceMonitoring</Identifier>
+    <DisplayName>Disable Force Monitoring</DisplayName>
+    <Description>Disable the force monitoring.</Description>
+    <Observable>No</Observable>
+  </Command>
+  <Command>
+    <Identifier>SetForceLimit</Identifier>
+    <DisplayName>Set Force Limit</DisplayName>
+    <Description>Set a custom limit.</Description>
+    <Observable>No</Observable>
+    <Parameter>
+      <Identifier>ForceLimit</Identifier>
+      <DisplayName>Force Limit</DisplayName>
+      <Description>The force limit to set. If higher than MaxDeviceForce, MaxDeviceForce will be used instead.</Description>
+      <DataType>
+        <DataTypeIdentifier>Force</DataTypeIdentifier>
+      </DataType>
+    </Parameter>
+  </Command>
+  <!-- Properties -->
+  <Property>
+    <Identifier>ForceSensorValue</Identifier>
+    <DisplayName>Force Sensor Value</DisplayName>
+    <Description>The currently measured force as read by the force sensor.</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <DataTypeIdentifier>Force</DataTypeIdentifier>
+    </DataType>
+  </Property>
+  <Property>
+    <Identifier>ForceLimit</Identifier>
+    <DisplayName>Force Limit</DisplayName>
+    <Description>The current force limit.</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <DataTypeIdentifier>Force</DataTypeIdentifier>
+    </DataType>
+  </Property>
+  <Property>
+    <Identifier>MaxDeviceForce</Identifier>
+    <DisplayName>Maximum Device Force</DisplayName>
+    <Description>The maximum device force (i.e. the maximum force the pump hardware can take in continuous operation).</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <DataTypeIdentifier>Force</DataTypeIdentifier>
+    </DataType>
+  </Property>
+  <Property>
+    <Identifier>ForceMonitoringEnabled</Identifier>
+    <DisplayName>Force Monitoring Enabled</DisplayName>
+    <Description>Whether force monitoring is enabled.</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <Basic>Boolean</Basic>
+    </DataType>
+  </Property>
+  <Property>
+    <Identifier>ForceSafetyStopActive</Identifier>
+    <DisplayName>Force Safety Stop Active</DisplayName>
+    <Description>Whether force safety stop is active.</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <Basic>Boolean</Basic>
+    </DataType>
+  </Property>
+  <!-- Data Type Definitions -->
+  <DataTypeDefinition>
+    <Identifier>Force</Identifier>
+    <DisplayName>Force Unit</DisplayName>
+    <Description>The force unit used force monitoring related functions.</Description>
+    <DataType>
+      <Constrained>
+        <DataType>
+          <Basic>Real</Basic>
+        </DataType>
+        <Constraints>
+          <Unit>
+            <Label>kN</Label>
+            <Factor>1000</Factor>
+            <Offset>0</Offset>
+            <UnitComponent>
+              <SIUnit>Kilogram</SIUnit>
+              <Exponent>1</Exponent>
+            </UnitComponent>
+            <UnitComponent>
+              <SIUnit>Meter</SIUnit>
+              <Exponent>1</Exponent>
+            </UnitComponent>
+            <UnitComponent>
+              <SIUnit>Second</SIUnit>
+              <Exponent>-2</Exponent>
+            </UnitComponent>
+          </Unit>
+        </Constraints>
+      </Constrained>
+    </DataType>
+  </DataTypeDefinition>
+</Feature>

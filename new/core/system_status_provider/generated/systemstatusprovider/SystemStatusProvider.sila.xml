@@ -1,0 +1,15 @@
+<Feature xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Category="core" FeatureVersion="1.0" Originator="de.cetoni" SiLA2Version="1.0" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+  <Identifier>SystemStatusProvider</Identifier>
+  <DisplayName>System Status Provider</DisplayName>
+  <Description>Provides information about the overall system, e.g. if the system is operational or not</Description>
+  <!-- Properties -->
+  <Property>
+    <Identifier>SystemState</Identifier>
+    <DisplayName>System State</DisplayName>
+    <Description>The state of the system, e.g. if the system is operational or not. 'Operational' means that the system can process Commands and that all Property values are read from the device. 'Stopped' means that the system is unable to process Commands (i.e. all Execution will result in errors) and that Property values are not read from the device and might have outdated values.</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <Basic>String</Basic>
+    </DataType>
+  </Property>
+</Feature>

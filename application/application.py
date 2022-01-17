@@ -32,17 +32,20 @@ import argparse
 from typing import List
 from OpenSSL import crypto
 
+from sila2.server import SilaServer
+
 from . import CETONI_SDK_PATH
 # adjust PATH variable to point to the SDK
 sys.path.append(CETONI_SDK_PATH)
 sys.path.append(os.path.join(CETONI_SDK_PATH, "lib", "python"))
 
 # only used for type hinting
-from sila2lib.sila_server import SiLA2Server
 from qmixsdk import qmixpump
 
 from .system import ApplicationSystem
 from .singleton import Singleton
+
+from util.local_ip import LOCAL_IP
 
 DEFAULT_BASE_PORT = 50052
 
@@ -57,7 +60,7 @@ class Application(metaclass=Singleton):
 
     key_cert_path: str
     base_port: int
-    servers: List[SiLA2Server]
+    servers: List[SilaServer]
 
     def __init__(self, device_config_path: str = "",
                  base_port: int = DEFAULT_BASE_PORT):
@@ -66,8 +69,6 @@ class Application(metaclass=Singleton):
         self._generate_self_signed_cert()
 
         self.base_port = base_port
-        logging.debug("Creating SiLA 2 servers...")
-        self.servers = self.create_servers()
 
     def _generate_self_signed_cert(self):
         """
@@ -107,11 +108,14 @@ class Application(metaclass=Singleton):
         Starts the whole system (i.e. all devices) and all SiLA 2 servers
         Runs until Ctrl-C is pressed on the command line or `stop()` has been called
         """
+        self.system.start()
+        
+        logging.debug("Creating SiLA 2 servers...")
+        self.servers = self.create_servers()
+
         if not self.servers:
             logging.info("No SiLA Servers to run")
             return
-
-        self.system.start()
 
         self.start_servers()
 
@@ -138,7 +142,8 @@ class Application(metaclass=Singleton):
         """
         logging.debug("Starting SiLA 2 servers...")
         for server in self.servers:
-            server.run(block=False)
+            port = self.base_port - 1
+            server.start_insecure(LOCAL_IP, port)
         logging.info("All servers started!")
 
     def stop_servers(self):
@@ -147,7 +152,7 @@ class Application(metaclass=Singleton):
         """
         logging.debug("Shutting down servers...")
         for server in self.servers:
-            server.stop_grpc_server()
+            server.stop()
         logging.info("Done!")
 
     def create_servers(self):
@@ -157,116 +162,72 @@ class Application(metaclass=Singleton):
 
         servers = []
         # common args for all servers
-        args = argparse.Namespace(
-            server_port=self.base_port-1,
-            server_type="TestServer",
-            encryption_key=self.key_cert_path.format('key'),
-            encryption_cert=self.key_cert_path.format('crt'),
-            meta_dir=None
-        )
+        server_type="TestServer"
+        encryption_key=self.key_cert_path.format('key')
+        encryption_cert=self.key_cert_path.format('crt')
 
         #---------------------------------------------------------------------
         # pumps
         for pump in self.system.pumps:
-            args.server_port += 1
-            args.server_name = pump.name.replace("_", " ")
-            args.description = "Allows to control a {contiflow_descr}neMESYS syringe pump".format(
-                contiflow_descr="contiflow pump made up of two " if isinstance(pump, qmixpump.ContiFlowPump) else ""
-            )
+            # server_port += 1
+            server_name = pump.name.replace("_", " ")
 
             if isinstance(pump, qmixpump.ContiFlowPump):
-                from serv.pumps.contiflowpumps.Contiflow_server import ContiflowServer
-                server = ContiflowServer(
-                    cmd_args=args,
-                    qmix_pump=pump,
-                    simulation_mode=False
-                )
+                from new.pumps.contiflowpumps.contiflowpump_service.server import Server
+                server = Server(pump, server_name, server_type) #, server_uuid=)
             else:
-                from serv.pumps.syringepumps.neMESYS_server import neMESYSServer
-                server = neMESYSServer(
-                    cmd_args=args,
-                    qmix_pump=pump,
-                    valve=pump.valves[0] if pump.valves else None,
-                    io_channels=pump.io_channels,
-                    simulation_mode=False
-                )
+                from new.pumps.syringepumps.syringepump_service import Server
+                server = Server(pump, pump.valves[0], pump.io_channels, server_name, server_type) #, server_uuid=)
             servers += [server]
 
         #---------------------------------------------------------------------
         # axis systems
         for axis_system in self.system.axis_systems:
-            args.server_port += 1
-            args.server_name = axis_system.name.replace("_", " ")
-            args.description = "Allows to control motion systems like axis systems"
+            # server_port += 1
+            server_name = axis_system.name.replace("_", " ")
 
-            from serv.motioncontrol.MotionControl_server import MotionControlServer
-            server = MotionControlServer(
-                cmd_args=args,
-                axis_system=axis_system,
-                io_channels=axis_system.io_channels,
-                device_properties=axis_system.properties,
-                simulation_mode=False
-            )
+            from new.motioncontrol.axis_service.server import Server
+            server = Server(axis_system, axis_system.io_channels, server_name, server_type) #, server_uuid=)
             servers += [server]
 
         #---------------------------------------------------------------------
         # valves
         for valve_device in self.system.valves:
-            args.server_port += 1
-            args.server_name = valve_device.name.replace("_", " ")
-            args.description = "Allows to control valve devices"
+            # server_port += 1
+            server_name = valve_device.name.replace("_", " ")
 
-            from serv.valves.Valve_server import ValveServer
-            server = ValveServer(
-                cmd_args=args,
-                valves=valve_device.valves,
-                simulation_mode=False
-            )
+            from new.valves.valve_service.server import Server
+            server = Server(valve_device.valves, server_name, server_type) #, server_uuid=)
             servers += [server]
 
         #---------------------------------------------------------------------
         # controller
         for controller_device in self.system.controllers:
-            args.server_port += 1
-            args.server_name = controller_device.name.replace("_", " ")
-            args.description = "Allows to control Qmix Controller Channels"
+            # server_port += 1
+            server_name = controller_device.name.replace("_", " ")
 
-            from serv.controllers.QmixControl_server import QmixControlServer
-            server = QmixControlServer(
-                cmd_args=args,
-                controller_channels=controller_device.controller_channels,
-                simulation_mode=False
-            )
+            from new.controllers.control_loop_service.server import Server
+            server = Server(controller_device.controller_channels, server_name, server_type) #, server_uuid=)
             servers += [server]
 
         #---------------------------------------------------------------------
         # I/O
         for io_device in self.system.io_devices:
-            args.server_port += 1
-            args.server_name = io_device.name.replace("_", " ")
-            args.description = "Allows to control Qmix I/O Channels"
+            # server_port += 1
+            server_name = io_device.name.replace("_", " ")
 
-            from serv.io.QmixIO_server import QmixIOServer
-            server = QmixIOServer(
-                cmd_args=args,
-                io_channels=io_device.io_channels,
-                simulation_mode=False
-            )
+            from new.io.io_service.server import Server
+            server = Server(io_device.io_channels, server_name, server_type) #, server_uuid=)
             servers += [server]
 
         #---------------------------------------------------------------------
         # balance
         for balance in self.system.balances:
-            args.server_port += 1
-            args.server_name = balance.name.replace("_", " ")
-            args.description = "Allows to control a balance"
+            # server_port += 1
+            server_name = balance.name.replace("_", " ")
 
-            from serv.balance.Balance_server import BalanceServer
-            server = BalanceServer(
-                cmd_args=args,
-                balance=balance.device,
-                simulation_mode=False
-            )
+            from new.balance.balance_service.server import Server
+            server = Server(balance.device, server_name, server_type) #, server_uuid=)
             servers += [server]
 
         return servers

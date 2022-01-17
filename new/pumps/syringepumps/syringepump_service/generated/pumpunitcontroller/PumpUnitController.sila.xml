@@ -1,0 +1,129 @@
+<Feature xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Category="pumps.syringepumps" FeatureVersion="1.0" Originator="de.cetoni" SiLA2Version="1.0" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+  <Identifier>PumpUnitController</Identifier>
+  <DisplayName>Pump Unit Controller</DisplayName>
+  <Description>Allows to control the currently used units for passing and retrieving flow rates and volumes to and from a pump.</Description>
+  <!-- Commands -->
+  <Command>
+    <Identifier>SetFlowUnit</Identifier>
+    <DisplayName>Set Flow Unit</DisplayName>
+    <Description>Sets the flow unit for the pump. The flow unit defines the unit to be used for all flow values passed to or retrieved from the pump.</Description>
+    <Observable>No</Observable>
+    <Parameter>
+      <Identifier>FlowUnit</Identifier>
+      <DisplayName>Flow Unit</DisplayName>
+      <Description>The flow unit to be set.</Description>
+      <DataType>
+        <Structure>
+          <Element>
+            <Identifier>VolumeUnit</Identifier>
+            <DisplayName>Volume Unit</DisplayName>
+            <Description>The volume unit of the flow rate</Description>
+            <DataType>
+              <DataTypeIdentifier>VolumeUnit</DataTypeIdentifier>
+            </DataType>
+          </Element>
+          <Element>
+            <Identifier>TimeUnit</Identifier>
+            <DisplayName>Time Unit</DisplayName>
+            <Description>The time unit of the flow rate</Description>
+            <DataType>
+              <DataTypeIdentifier>TimeUnit</DataTypeIdentifier>
+            </DataType>
+          </Element>
+        </Structure>
+      </DataType>
+    </Parameter>
+  </Command>
+  <Command>
+    <Identifier>SetVolumeUnit</Identifier>
+    <DisplayName>Set Volume Unit</DisplayName>
+    <Description>Sets the default volume unit. The volume unit defines the unit to be used for all volume values passed to or retrieved from the pump.</Description>
+    <Observable>No</Observable>
+    <Parameter>
+      <Identifier>VolumeUnit</Identifier>
+      <DisplayName>Volume Unit</DisplayName>
+      <Description>The volume unit for the flow rate.</Description>
+      <DataType>
+        <DataTypeIdentifier>VolumeUnit</DataTypeIdentifier>
+      </DataType>
+    </Parameter>
+  </Command>
+  <!-- Properties -->
+  <Property>
+    <Identifier>FlowUnit</Identifier>
+    <DisplayName>Flow Unit</DisplayName>
+    <Description>The currently used flow unit.</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <Structure>
+        <Element>
+          <Identifier>VolumeUnit</Identifier>
+          <DisplayName>Volume Unit</DisplayName>
+          <Description>The volume unit of the flow rate</Description>
+          <DataType>
+            <DataTypeIdentifier>VolumeUnit</DataTypeIdentifier>
+          </DataType>
+        </Element>
+        <Element>
+          <Identifier>TimeUnit</Identifier>
+          <DisplayName>Time Unit</DisplayName>
+          <Description>The time unit of the flow rate</Description>
+          <DataType>
+            <DataTypeIdentifier>TimeUnit</DataTypeIdentifier>
+          </DataType>
+        </Element>
+      </Structure>
+    </DataType>
+  </Property>
+  <Property>
+    <Identifier>VolumeUnit</Identifier>
+    <DisplayName>Volume Unit</DisplayName>
+    <Description>The currently used volume unit.</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <DataTypeIdentifier>VolumeUnit</DataTypeIdentifier>
+    </DataType>
+  </Property>
+  <!-- Data Type Definitions -->
+  <DataTypeDefinition>
+    <Identifier>VolumeUnit</Identifier>
+    <DisplayName>Volume Unit</DisplayName>
+    <Description>The unit for the volume of a fluid (e.g. 'l' for 'litres').</Description>
+    <DataType>
+      <Constrained>
+        <DataType>
+          <Basic>String</Basic>
+        </DataType>
+        <Constraints>
+          <Set>
+            <Value>l</Value>
+            <Value>dl</Value>
+            <Value>cl</Value>
+            <Value>ml</Value>
+            <Value>ul</Value>
+            <Value>&#181;l</Value>
+          </Set>
+        </Constraints>
+      </Constrained>
+    </DataType>
+  </DataTypeDefinition>
+  <DataTypeDefinition>
+    <Identifier>TimeUnit</Identifier>
+    <DisplayName>Time Unit</DisplayName>
+    <Description>The time unit for flow rates (e.g. 'h' for 'hours' or 's' for 'seconds').</Description>
+    <DataType>
+      <Constrained>
+        <DataType>
+          <Basic>String</Basic>
+        </DataType>
+        <Constraints>
+          <Set>
+            <Value>h</Value>
+            <Value>min</Value>
+            <Value>s</Value>
+          </Set>
+        </Constraints>
+      </Constrained>
+    </DataType>
+  </DataTypeDefinition>
+</Feature>

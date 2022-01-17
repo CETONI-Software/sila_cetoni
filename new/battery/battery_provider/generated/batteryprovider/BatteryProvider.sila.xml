@@ -1,0 +1,42 @@
+<Feature xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Category="core" FeatureVersion="1.0" Originator="de.cetoni" SiLA2Version="1.0" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+  <Identifier>BatteryProvider</Identifier>
+  <DisplayName>Battery Provider</DisplayName>
+  <Description>Provides information on the battery state</Description>
+  <!-- Properties -->
+  <Property>
+    <Identifier>BatteryVoltage</Identifier>
+    <DisplayName>Battery Voltage</DisplayName>
+    <Description>The current voltage of the battery</Description>
+    <Observable>Yes</Observable>
+    <DataType>
+      <Constrained>
+        <DataType>
+          <Basic>Real</Basic>
+        </DataType>
+        <Constraints>
+          <Unit>
+            <Label>V</Label>
+            <Factor>1</Factor>
+            <Offset>0</Offset>
+            <UnitComponent>
+              <SIUnit>Kilogram</SIUnit>
+              <Exponent>1</Exponent>
+            </UnitComponent>
+            <UnitComponent>
+              <SIUnit>Meter</SIUnit>
+              <Exponent>2</Exponent>
+            </UnitComponent>
+            <UnitComponent>
+              <SIUnit>Second</SIUnit>
+              <Exponent>-3</Exponent>
+            </UnitComponent>
+            <UnitComponent>
+              <SIUnit>Ampere</SIUnit>
+              <Exponent>-1</Exponent>
+            </UnitComponent>
+          </Unit>
+        </Constraints>
+      </Constrained>
+    </DataType>
+  </Property>
+</Feature>
