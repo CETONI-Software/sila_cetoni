@@ -12,6 +12,9 @@
         <DataType>
             <Basic>String</Basic>
         </DataType>
+        <DefinedExecutionErrors>
+            <Identifier>InvalidAxisIdentifier</Identifier>
+        </DefinedExecutionErrors>
     </Metadata>
 
     <!-- Commands -->
@@ -136,4 +139,11 @@
             </Constrained>
         </DataType>
     </DataTypeDefinition>
+
+    <!-- Errors -->
+    <DefinedExecutionError>
+        <Identifier>InvalidAxisIdentifier</Identifier>
+        <DisplayName>Invalid Axis Identifier</DisplayName>
+        <Description>The sent Axis Identifier is not known</Description>
+    </DefinedExecutionError>
 </Feature>

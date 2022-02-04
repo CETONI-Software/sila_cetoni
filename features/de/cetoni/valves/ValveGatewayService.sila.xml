@@ -12,6 +12,9 @@
         <DataType>
             <Basic>Integer</Basic>
         </DataType>
+    <DefinedExecutionErrors>
+        <Identifier>InvalidValveIndex</Identifier>
+    </DefinedExecutionErrors>
     </Metadata>
 
     <!-- Properties -->
@@ -24,4 +27,11 @@
             <Basic>Integer</Basic>
         </DataType>
     </Property>
+
+    <!-- Errors -->
+    <DefinedExecutionError>
+        <Identifier>InvalidValveIndex</Identifier>
+        <DisplayName>Invalid Valve Index</DisplayName>
+        <Description>The sent Valve Index is not known</Description>
+    </DefinedExecutionError>
 </Feature>
