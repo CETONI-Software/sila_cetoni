@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from queue import Queue
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from sila2.framework import FullyQualifiedIdentifier
 from sila2.server import FeatureImplementationBase
@@ -31,22 +31,25 @@ class ValvePositionControllerBase(FeatureImplementationBase, ABC):
         """
         pass
 
-    def update_Position(self, Position: int):
+    def update_Position(self, Position: int, queue: Optional[Queue[int]] = None):
         """
         The current logical valve position. This is a value between 0 and NumberOfPositions - 1.
 
         This method updates the observable property 'Position'.
         """
-        self._Position_producer_queue.put(Position)
+        if queue:
+            queue.put(Position)
+        else:
+            self._Position_producer_queue.put(Position)
 
-    def Position_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def Position_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Optional[Queue[int]]:
         """
         The current logical valve position. This is a value between 0 and NumberOfPositions - 1.
 
         This method is called when a client subscribes to the observable property 'Position'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property
         """
         pass
 

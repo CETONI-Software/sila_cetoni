@@ -1,10 +1,12 @@
 from __future__ import annotations
+import math
+from queue import Queue
 
 import time
 import logging
 from threading import Event
 from concurrent.futures import Executor
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from sila2.framework import Command, Feature, FullyQualifiedIdentifier, Property
 from sila2.framework.command.execution_info import CommandExecutionStatus
@@ -20,39 +22,50 @@ from ..generated.axispositioncontroller import (
     MoveToPosition_Responses,
     StopMoving_Responses,
     Velocity,
+    InvalidAxisIdentifier,
 )
+
 
 class AxisPositionControllerImpl(AxisPositionControllerBase):
     __axis_system: AxisSystem
     __axes: Dict[str, Axis]
     __axis_id_identifier: FullyQualifiedIdentifier
+    __value_queues: List[Queue[float]]  # same number of items and order as `__axes`
     __stop_event: Event
 
     def __init__(self, axis_system: AxisSystem, executor: Executor):
         super().__init__()
         self.__axis_system = axis_system
         self.__axes = {
-            self.__axis_system.get_axis_device(i).get_device_name():
-                self.__axis_system.get_axis_device(i)
+            self.__axis_system.get_axis_device(i).get_device_name(): self.__axis_system.get_axis_device(i)
             for i in range(self.__axis_system.get_axes_count())
         }
         self.__axis_id_identifier = AxisPositionControllerFeature["AxisIdentifier"].fully_qualified_identifier
 
         for name, axis in self.__axes.items():
             unit = axis.get_position_unit()
-            unit_string = (unit.prefix.name if unit.prefix.name != 'unit' else '') + unit.unitid.name
+            unit_string = (unit.prefix.name if unit.prefix.name != "unit" else "") + unit.unitid.name
             logging.debug(f"{name}, {unit_string}")
 
         self.__stop_event = Event()
 
+        self.__value_queues = []
+        for i in range(len(self.__axes)):
+            self.__value_queues += [Queue()]
+            self.update_Position(self.__axes.values()[i].get_actual_position(), queue=self.__value_queues[i])
+            executor.submit(self.__make_position_updater(i), self.__stop_event)
+
+    def __make_position_updater(self, i: int):
         def update_position(stop_event: Event):
+            new_value = value = self.__axes.values()[i].get_actual_position()
             while not stop_event.is_set():
-                self.update_Position(self.__axes.values()[0].get_actual_position()) # TODO metadata
-                dict
-                # TODO smart update
+                new_value = self.__axes.values()[i].get_actual_position()
+                if not math.isclose(new_value, value):
+                    value = new_value
+                    self.update_Position(value, queue=self.__value_queues[i])
                 time.sleep(0.1)
 
-        executor.submit(update_position, self.__stop_event)
+        return update_position
 
     def _get_axis(self, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Axis:
         """
@@ -60,11 +73,16 @@ class AxisPositionControllerImpl(AxisPositionControllerBase):
         """
         axis_identifier: int = metadata.pop(self.__axis_id_identifier)
         logging.debug(f"axis id: {axis_identifier}")
-        return self.__axes[axis_identifier]
+        try:
+            return self.__axes[axis_identifier]
+        except KeyError:
+            raise InvalidAxisIdentifier(
+                message=f"The sent Axis Identifier '{axis_identifier}' is invalid. Valid identifiers are: {self.__axes.keys()}."
+            )
 
     def get_PositionUnit(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> str:
         unit = self._get_axis(metadata).get_position_unit()
-        return (unit.prefix.name if unit.prefix.name != 'unit' else '') + unit.unitid.name
+        return (unit.prefix.name if unit.prefix.name != "unit" else "") + unit.unitid.name
 
     def get_MinimumPosition(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> float:
         return self._get_axis(metadata).get_position_min()
@@ -77,6 +95,15 @@ class AxisPositionControllerImpl(AxisPositionControllerBase):
 
     def get_MaximumVelocity(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Velocity:
         return self._get_axis(metadata).get_velocity_max()
+
+    def Position_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Optional[Queue[float]]:
+        axis_identifier: int = metadata.pop(self.__axis_id_identifier)
+        try:
+            return self.__value_queues[axis_identifier]
+        except IndexError:
+            raise InvalidAxisIdentifier(
+                message=f"The sent Axis Identifier '{axis_identifier}' is invalid. Valid identifiers are: {self.__axes.keys()}.",
+            )
 
     def MoveToHomePosition(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> MoveToHomePosition_Responses:
         axis = self._get_axis(metadata)
@@ -96,20 +123,18 @@ class AxisPositionControllerImpl(AxisPositionControllerBase):
     def _validate(axis: Axis, position: float, velocity: Velocity):
         min_position = axis.get_position_min()
         max_position = axis.get_position_max()
-        if position < min_position or \
-            position > max_position:
+        if position < min_position or position > max_position:
             raise ValidationError(
                 AxisPositionControllerFeature["MoveToPosition"].parameters.fields[0],
-                f'The given position {position} is not in the valid range {min_position, max_position} for this axis.'
+                f"The given position {position} is not in the valid range {min_position, max_position} for this axis.",
             )
 
         min_velocity = 0
         max_velocity = axis.get_velocity_max()
-        if velocity < min_velocity or \
-            velocity > max_velocity:
+        if velocity < min_velocity or velocity > max_velocity:
             raise ValidationError(
                 AxisPositionControllerFeature["MoveToPosition"].parameters.fields[1],
-                f'The given velocity {velocity} is not in the valid range {min_velocity, max_velocity} for this axis.'
+                f"The given velocity {velocity} is not in the valid range {min_velocity, max_velocity} for this axis.",
             )
 
     def MoveToPosition(
@@ -118,7 +143,7 @@ class AxisPositionControllerImpl(AxisPositionControllerBase):
         Velocity: Velocity,
         *,
         metadata: Dict[FullyQualifiedIdentifier, Any],
-        instance: ObservableCommandInstance
+        instance: ObservableCommandInstance,
     ) -> MoveToPosition_Responses:
         axis = self._get_axis(metadata)
         self._validate(axis, Position, Velocity)

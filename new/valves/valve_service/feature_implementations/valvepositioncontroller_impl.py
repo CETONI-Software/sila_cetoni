@@ -1,11 +1,12 @@
 from __future__ import annotations
 import logging
+from queue import Queue
 
 import time
 from threading import Event
 from concurrent.futures import Executor
 
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from sila2.framework import FullyQualifiedIdentifier, Command, Property
 from sila2.framework.errors.validation_error import ValidationError
@@ -26,6 +27,7 @@ from ..generated.valvepositioncontroller import (
     ValvePositionNotAvailable,
 )
 
+from ..generated.valvegatewayservice import InvalidValveIndex
 
 class SystemNotOperationalError(UndefinedExecutionError):
     def __init__(self, command_or_property: Union[Command, Property]):
@@ -40,6 +42,7 @@ class SystemNotOperationalError(UndefinedExecutionError):
 class ValvePositionControllerImpl(ValvePositionControllerBase):
     __valve: Optional[Valve]
     __valve_gateway: Optional[ValveGatewayServiceImpl]
+    __position_queues: List[Queue[int]] # same number of items and order as `__valve_gateway.valves`
     __system: ApplicationSystem
     __stop_event: Event
 
@@ -52,24 +55,41 @@ class ValvePositionControllerImpl(ValvePositionControllerBase):
         self.__system = ApplicationSystem()
         self.__stop_event = Event()
 
+        if self.__valve:
+            executor.submit(self.__make_position_updater(), self.__stop_event)
+        else:
+            self.__position_queues = []
+            for i in range(len(self.__valve_gateway.valves)):
+                self.__position_queues += [Queue()]
+                self.update_Position(self.__valve_gateway.valves[i].actual_valve_position(), queue=self.__position_queues[i])
+                executor.submit(self.__make_position_updater(i), self.__stop_event)
+
+    def __make_position_updater(self, i: Optional[int] = None):
         def update_position(stop_event: Event):
-            valve = self.__valve  # or self.__valve_gateway.get_valve(metadata) # TODO metadata
-            new_position = valve.actual_valve_position()
-            position = -1  # force sending first value
+            valve = self.__valve or self.__valve_gateway.valves[i]
+            new_position = position = valve.actual_valve_position()
             while not stop_event.is_set():
                 if self.__system.state.is_operational():
                     new_position = valve.actual_valve_position()
                 if new_position != position:
                     position = new_position
-                    self.update_Position(position)
+                    self.update_Position(position, queue=self.__position_queues[i])
                 time.sleep(0.1)
 
-        executor.submit(update_position, self.__stop_event)
+        return update_position
 
     def get_NumberOfPositions(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> int:
         valve = self.__valve or self.__valve_gateway.get_valve(metadata)
         return valve.number_of_valve_positions()
 
+    def Position_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Optional[Queue[int]]:
+        valve_index: int = metadata.pop(self.__valve_gateway.valve_index_identifier)
+        try:
+            return self.__position_queues[valve_index]
+        except IndexError:
+            raise InvalidValveIndex(
+                message=f"The sent Valve Index {valve_index} is invalid. The index must be between 0 and {len(self.__valve_gateway.valves) - 1}.",
+            )
     @staticmethod
     def _try_switch_valve_to_position(valve: Valve, position: int):
         try:

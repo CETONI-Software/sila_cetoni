@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from queue import Queue
 
 from typing import Any, Dict, List, Union
 
@@ -11,6 +12,7 @@ from qmixsdk.qmixvalve import Valve
 from ..generated.valvegatewayservice import (
     ValveGatewayServiceBase,
     ValveGatewayServiceFeature,
+    InvalidValveIndex,
 )
 from ..generated.valvepositioncontroller import ValvePositionControllerFeature
 
@@ -44,9 +46,14 @@ class ValveGatewayServiceImpl(ValveGatewayServiceBase):
         try:
             return self.__valves[valve_index]
         except IndexError:
-            raise FrameworkError(
-                FrameworkErrorType.INVALID_METADATA,
-                f"The sent valve index ({valve_index}) is invalid! "
-                f"The index has to be between 0 and {len(self.__valves) - 1}."
+            raise InvalidValveIndex(
+                message=f"The sent Valve Index ({valve_index}) is invalid! The index has to be between 0 and {len(self.__valves) - 1}."
             )
 
+    @property
+    def valves(self) -> List[Valve]:
+        return self.__valves
+
+    @property
+    def valve_index_identifier(self) -> FullyQualifiedIdentifier:
+        return self.__valve_index_identifier

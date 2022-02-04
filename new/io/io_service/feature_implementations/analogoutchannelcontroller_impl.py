@@ -1,12 +1,14 @@
 from __future__ import annotations
 import logging
+from queue import Queue
 
 import time, math
 from concurrent.futures import Executor
 from threading import Event
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from sila2.framework import Command, Feature, FullyQualifiedIdentifier, Property
+from sila2.framework.errors.framework_error import FrameworkError, FrameworkErrorType
 
 from application.system import ApplicationSystem
 from qmixsdk.qmixanalogio import AnalogOutChannel
@@ -15,6 +17,7 @@ from ..generated.analogoutchannelcontroller import (
     AnalogOutChannelControllerBase,
     AnalogOutChannelControllerFeature,
     SetOutputValue_Responses,
+    InvalidChannelIndex,
 )
 
 
@@ -22,6 +25,7 @@ class AnalogOutChannelControllerImpl(AnalogOutChannelControllerBase):
     __system: ApplicationSystem
     __channels: List[AnalogOutChannel]
     __channel_index_identifier: FullyQualifiedIdentifier
+    __value_queues: List[Queue[float]]  # same number of items and order as `__channels`
     __stop_event: Event
 
     def __init__(self, channels: List[AnalogOutChannel], executor: Executor):
@@ -31,30 +35,52 @@ class AnalogOutChannelControllerImpl(AnalogOutChannelControllerBase):
         self.__channel_index_identifier = AnalogOutChannelControllerFeature["ChannelIndex"].fully_qualified_identifier
         self.__stop_event = Event()
 
+        self.__value_queues = []
+        for i in range(len(self.__channels)):
+            self.__value_queues += [Queue()]
+            self.update_Value(self.__channels[i].get_output_value(), queue=self.__value_queues[i])
+            executor.submit(self.__make_value_updater(i), self.__stop_event)
+
+    def __make_value_updater(self, i: int):
         def update_value(stop_event: Event):
-            new_value = self.__channels[0].get_output_value()  # TODO channel from metadata
-            value = -1  # force sending first value
+            new_value = value = self.__channels[i].get_output_value()
             while not stop_event.is_set():
                 if self.__system.state.is_operational():
-                    new_value = self.__channels[0].get_output_value()  # TODO channel from metadata
+                    new_value = self.__channels[i].get_output_value()
                 if not math.isclose(new_value, value):
                     value = new_value
-                    self.update_Value(value)
+                    self.update_Value(value, queue=self.__value_queues[i])
                 time.sleep(0.1)
 
-        executor.submit(update_value, self.__stop_event)
+        return update_value
 
     def get_NumberOfChannels(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> int:
         return len(self.__channels)
 
+    def Value_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Optional[Queue[float]]:
+        channel_index: int = metadata.pop(self.__channel_index_identifier)
+        try:
+            return self.__value_queues[channel_index]
+        except IndexError:
+            raise InvalidChannelIndex(
+                message=f"The sent channel index {channel_index} is invalid. The index must be between 0 and {len(self.__channels) - 1}.",
+            )
+
     def SetOutputValue(
         self, Value: float, *, metadata: Dict[FullyQualifiedIdentifier, Any]
     ) -> SetOutputValue_Responses:
-        channel_identifier: int = metadata.pop(self.__channel_index_identifier)
-        logging.debug(f"channel id: {channel_identifier}")
-        self.__channels[channel_identifier].write_output(Value)
+        channel_index: int = metadata.pop(self.__channel_index_identifier)
+        logging.debug(f"channel index: {channel_index}")
+        try:
+           self.__channels[channel_index].write_output(Value)
+        except IndexError:
+            raise InvalidChannelIndex(
+                message=f"The sent channel index {channel_index} is invalid. The index must be between 0 and {len(self.__channels) - 1}.",
+            )
 
-    def get_calls_affected_by_ChannelIndex(self) -> List[Union[Feature, Command, Property, FullyQualifiedIdentifier]]:
+    def get_calls_affected_by_ChannelIndex(
+        self,
+    ) -> List[Union[Feature, Command, Property, FullyQualifiedIdentifier]]:
         return [
             AnalogOutChannelControllerFeature["Value"],
             AnalogOutChannelControllerFeature["SetOutputValue"],

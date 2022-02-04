@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from queue import Queue
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from sila2.framework import FullyQualifiedIdentifier
 from sila2.server import FeatureImplementationBase, ObservableCommandInstance
@@ -26,22 +26,25 @@ class AxisSystemPositionControllerBase(FeatureImplementationBase, ABC):
 
         self._Position_producer_queue = Queue()
 
-    def update_Position(self, Position: Position):
+    def update_Position(self, Position: Position, queue: Optional[Queue[Position]] = None):
         """
         The current XY position of the axis system
 
         This method updates the observable property 'Position'.
         """
-        self._Position_producer_queue.put(Position)
+        if queue:
+            queue.put(Position)
+        else:
+            self._Position_producer_queue.put(Position)
 
-    def Position_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def Position_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Optional[Queue[Position]]:
         """
         The current XY position of the axis system
 
         This method is called when a client subscribes to the observable property 'Position'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property
         """
         pass
 
@@ -74,7 +77,7 @@ class AxisSystemPositionControllerBase(FeatureImplementationBase, ABC):
         Velocity: int,
         *,
         metadata: Dict[FullyQualifiedIdentifier, Any],
-        instance: ObservableCommandInstance
+        instance: ObservableCommandInstance,
     ) -> MoveToPosition_Responses:
         """
         Move the axis system to the given position with a certain velocity

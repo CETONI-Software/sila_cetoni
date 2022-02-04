@@ -28,6 +28,7 @@ class AxisSystemControlServiceClient:
     """
     Returns all axes of the system that are currently in fault state. The fault state of all axes can be cleared by calling ClearFaultState.
     """
+
     def EnableAxisSystem(
         self, *, metadata: Optional[Iterable[ClientMetadataInstance]] = None
     ) -> EnableAxisSystem_Responses:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from queue import Queue
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from sila2.framework import Command, Feature, FullyQualifiedIdentifier, Property
 from sila2.server import FeatureImplementationBase, ObservableCommandInstance
@@ -35,41 +35,49 @@ class ControlLoopServiceBase(FeatureImplementationBase, ABC):
         """
         pass
 
-    def update_ControllerValue(self, ControllerValue: float):
+    def update_ControllerValue(self, ControllerValue: float, queue: Optional[Queue[float]] = None):
         """
         The actual value from the Device
 
         This method updates the observable property 'ControllerValue'.
         """
-        self._ControllerValue_producer_queue.put(ControllerValue)
+        if queue:
+            queue.put(ControllerValue)
+        else:
+            self._ControllerValue_producer_queue.put(ControllerValue)
 
-    def ControllerValue_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def ControllerValue_on_subscription(
+        self, *, metadata: Dict[FullyQualifiedIdentifier, Any]
+    ) -> Optional[Queue[float]]:
         """
         The actual value from the Device
 
         This method is called when a client subscribes to the observable property 'ControllerValue'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property
         """
         pass
 
-    def update_SetPointValue(self, SetPointValue: float):
+    def update_SetPointValue(self, SetPointValue: float, queue: Optional[Queue[float]] = None):
         """
         The current SetPoint value of the Device
 
         This method updates the observable property 'SetPointValue'.
         """
-        self._SetPointValue_producer_queue.put(SetPointValue)
+        if queue:
+            queue.put(SetPointValue)
+        else:
+            self._SetPointValue_producer_queue.put(SetPointValue)
 
-    def SetPointValue_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def SetPointValue_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Optional[Queue[float]]:
         """
         The current SetPoint value of the Device
 
         This method is called when a client subscribes to the observable property 'SetPointValue'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property
         """
         pass
 

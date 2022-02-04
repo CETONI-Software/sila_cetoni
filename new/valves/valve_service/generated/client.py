@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from sila2.client import SilaClient
 
+from .valvegatewayservice import InvalidValveIndex, ValveGatewayServiceFeature
 from .valvepositioncontroller import ValveNotToggleable, ValvePositionControllerFeature, ValvePositionNotAvailable
 
 if TYPE_CHECKING:
@@ -20,6 +21,10 @@ class Client(SilaClient):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self._register_defined_execution_error_class(
+            ValveGatewayServiceFeature.defined_execution_errors["InvalidValveIndex"], InvalidValveIndex
+        )
 
         self._register_defined_execution_error_class(
             ValvePositionControllerFeature.defined_execution_errors["ValveNotToggleable"], ValveNotToggleable

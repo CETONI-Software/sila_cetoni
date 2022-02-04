@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from queue import Queue
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from sila2.framework import FullyQualifiedIdentifier
 from sila2.server import FeatureImplementationBase
@@ -39,41 +39,49 @@ class AxisSystemControlServiceBase(FeatureImplementationBase, ABC):
         """
         pass
 
-    def update_AxisSystemState(self, AxisSystemState: str):
+    def update_AxisSystemState(self, AxisSystemState: str, queue: Optional[Queue[str]] = None):
         """
         The current state of the axis system. This is either 'Enabled' or 'Disabled'. Only if the state is 'Enabled', the axis system can move.
 
         This method updates the observable property 'AxisSystemState'.
         """
-        self._AxisSystemState_producer_queue.put(AxisSystemState)
+        if queue:
+            queue.put(AxisSystemState)
+        else:
+            self._AxisSystemState_producer_queue.put(AxisSystemState)
 
-    def AxisSystemState_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def AxisSystemState_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Optional[Queue[str]]:
         """
         The current state of the axis system. This is either 'Enabled' or 'Disabled'. Only if the state is 'Enabled', the axis system can move.
 
         This method is called when a client subscribes to the observable property 'AxisSystemState'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property
         """
         pass
 
-    def update_AxesInFaultState(self, AxesInFaultState: List[str]):
+    def update_AxesInFaultState(self, AxesInFaultState: List[str], queue: Optional[Queue[List[str]]] = None):
         """
         Returns all axes of the system that are currently in fault state. The fault state of all axes can be cleared by calling ClearFaultState.
 
         This method updates the observable property 'AxesInFaultState'.
         """
-        self._AxesInFaultState_producer_queue.put(AxesInFaultState)
+        if queue:
+            queue.put(AxesInFaultState)
+        else:
+            self._AxesInFaultState_producer_queue.put(AxesInFaultState)
 
-    def AxesInFaultState_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def AxesInFaultState_on_subscription(
+        self, *, metadata: Dict[FullyQualifiedIdentifier, Any]
+    ) -> Optional[Queue[List[str]]]:
         """
         Returns all axes of the system that are currently in fault state. The fault state of all axes can be cleared by calling ClearFaultState.
 
         This method is called when a client subscribes to the observable property 'AxesInFaultState'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property
         """
         pass
 

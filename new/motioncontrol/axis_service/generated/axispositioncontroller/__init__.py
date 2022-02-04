@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from .axispositioncontroller_base import AxisPositionControllerBase
+from .axispositioncontroller_errors import InvalidAxisIdentifier
 from .axispositioncontroller_feature import AxisPositionControllerFeature
 from .axispositioncontroller_types import (
     MoveToHomePosition_Responses,
@@ -15,6 +16,7 @@ __all__ = [
     "MoveToHomePosition_Responses",
     "StopMoving_Responses",
     "MoveToPosition_Responses",
+    "InvalidAxisIdentifier",
     "Velocity",
 ]
 

@@ -20,6 +20,7 @@ class AxisSystemPositionControllerClient:
     """
     The current XY position of the axis system
     """
+
     def MoveToHomePosition(
         self, *, metadata: Optional[Iterable[ClientMetadataInstance]] = None
     ) -> MoveToHomePosition_Responses:

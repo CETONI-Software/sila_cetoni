@@ -35,6 +35,7 @@ class ControlLoopServiceClient:
     """
     The index of the channel that should be used. This value is 0-indexed, i.e. the first channel has index 0, the second one index 1 and so on.
     """
+
     def WriteSetPoint(
         self, SetPointValue: float, *, metadata: Optional[Iterable[ClientMetadataInstance]] = None
     ) -> WriteSetPoint_Responses:

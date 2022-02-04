@@ -19,6 +19,7 @@ class ValvePositionControllerClient:
     """
     The current logical valve position. This is a value between 0 and NumberOfPositions - 1.
     """
+
     def SwitchToPosition(
         self, Position: int, *, metadata: Optional[Iterable[ClientMetadataInstance]] = None
     ) -> SwitchToPosition_Responses:

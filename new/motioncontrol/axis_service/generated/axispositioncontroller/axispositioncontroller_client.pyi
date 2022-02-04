@@ -52,6 +52,7 @@ class AxisPositionControllerClient:
     """
     The identifier of a single axis of an axis system. Use AvailableAxes from the AxisSystemControlService Feature to get all possible values.
     """
+
     def MoveToHomePosition(
         self, *, metadata: Optional[Iterable[ClientMetadataInstance]] = None
     ) -> MoveToHomePosition_Responses:
