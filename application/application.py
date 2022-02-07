@@ -185,7 +185,7 @@ class Application(metaclass=Singleton):
         for axis_system in self.system.axis_systems:
             server_name = axis_system.name.replace("_", " ")
 
-            from new.motioncontrol.axis_service.server import Server
+            from new.motioncontrol.axis.axis_service.server import Server
             server = Server(axis_system, axis_system.io_channels, server_name, server_type) #, server_uuid=)
             servers += [server]
 
