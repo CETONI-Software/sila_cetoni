@@ -41,6 +41,7 @@ class ForceMonitoringServiceClient:
     """
     Whether force safety stop is active.
     """
+
     def ClearForceSafetyStop(
         self, *, metadata: Optional[Iterable[ClientMetadataInstance]] = None
     ) -> ClearForceSafetyStop_Responses:

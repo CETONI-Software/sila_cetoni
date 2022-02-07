@@ -12,12 +12,10 @@ from sila2.client import ClientMetadataInstance, ClientObservableCommandInstance
 
 class PumpFluidDosingServiceClient:
     """
-
     Allows to dose a specified fluid. There are commands for absolute dosing (SetFillLevel) and relative dosing (DoseVolume and GenerateFlow) available.
 
-    The flow rate can be negative. In this case the pump aspirates the fluid instead of dispensing. The flow rate has to be a value between MaxFlowRate and MinFlowRate. If the value is not within this range (hence is invalid) a ValidationError will be thrown.
-    At any time the property CurrentSyringeFillLevel can be queried to see how much fluid is left in the syringe. Similarly the property CurrentFlowRate can be queried to get the current flow rate at which the pump is dosing.
-
+        The flow rate can be negative. In this case the pump aspirates the fluid instead of dispensing. The flow rate has to be a value between MaxFlowRate and MinFlowRate. If the value is not within this range (hence is invalid) a ValidationError will be thrown.
+        At any time the property CurrentSyringeFillLevel can be queried to see how much fluid is left in the syringe. Similarly the property CurrentFlowRate can be queried to get the current flow rate at which the pump is dosing.
     """
 
     MaxSyringeFillLevel: ClientObservableProperty[float]
@@ -39,6 +37,7 @@ class PumpFluidDosingServiceClient:
     """
     The current value of the flow rate. It is 0 if the pump does not dose any fluid.
     """
+
     def StopDosage(self, *, metadata: Optional[Iterable[ClientMetadataInstance]] = None) -> StopDosage_Responses:
         """
         Stops a currently running dosage immediately.
@@ -48,10 +47,8 @@ class PumpFluidDosingServiceClient:
         self, FillLevel: float, FlowRate: float, *, metadata: Optional[Iterable[ClientMetadataInstance]] = None
     ) -> ClientObservableCommandInstance[None, SetFillLevel_Responses]:
         """
-
         Pumps fluid with the given flow rate until the requested fill level is reached.
-        Depending on the requested fill level given in the FillLevel parameter this function may cause aspiration or dispension of fluid.
-
+                Depending on the requested fill level given in the FillLevel parameter this function may cause aspiration or dispension of fluid.
         """
         ...
     def DoseVolume(
@@ -65,8 +62,6 @@ class PumpFluidDosingServiceClient:
         self, FlowRate: float, *, metadata: Optional[Iterable[ClientMetadataInstance]] = None
     ) -> ClientObservableCommandInstance[None, GenerateFlow_Responses]:
         """
-
         Generate a continuous flow with the given flow rate. Dosing continues until it gets stopped manually by calling StopDosage or until the pusher reached one of its limits.
-
         """
         ...

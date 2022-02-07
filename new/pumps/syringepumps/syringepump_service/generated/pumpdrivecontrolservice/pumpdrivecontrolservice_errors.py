@@ -23,3 +23,10 @@ class InitializationNotFinished(DefinedExecutionError):
         super().__init__(
             PumpDriveControlServiceFeature.defined_execution_errors["InitializationNotFinished"], message=message
         )
+
+
+class NotSupported(DefinedExecutionError):
+    def __init__(self, message: Optional[str] = None):
+        if message is None:
+            message = "The Command is not supported by this device."
+        super().__init__(PumpDriveControlServiceFeature.defined_execution_errors["NotSupported"], message=message)

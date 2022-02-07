@@ -30,6 +30,23 @@
         <Description>Set the pump into disabled state.</Description>
         <Observable>No</Observable>
     </Command>
+    <Command>
+        <Identifier>RestoreDrivePositionCounter</Identifier>
+        <DisplayName>Restore Drive Position Counter</DisplayName>
+        <Description>Restore the internal hardware position counter value of the pump drive. This function is not required and not supported for devices that have an absolute encoder such as the new Nemesys 4 devices Nemesys S and Nemesys M.</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>DrivePositionCounterValue</Identifier>
+            <DisplayName>Drive Position Counter Value</DisplayName>
+            <Description>The position counter value to restore</Description>
+            <DataType>
+                <Basic>Integer</Basic>
+            </DataType>
+        </Parameter>
+        <DefinedExecutionErrors>
+            <Identifier>NotSupported</Identifier>
+        </DefinedExecutionErrors>
+    </Command>
 
     <!-- Properties -->
     <Property>
@@ -60,6 +77,15 @@
             <Basic>Boolean</Basic>
         </DataType>
     </Property>
+    <Property>
+        <Identifier>DrivePositionCounter</Identifier>
+        <DisplayName>Drive Position Counter</DisplayName>
+        <Description>Returns the value of the internal drive position counter. You can query this value and store it persistently somewhere before shutting down the device and restore it later using the RestoreDrivePositionCounter Command.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Integer</Basic>
+        </DataType>
+    </Property>
 
     <!-- Errors -->
     <DefinedExecutionError>
@@ -71,5 +97,10 @@
         <Identifier>InitializationNotFinished</Identifier>
         <DisplayName>Initialization Not Finished</DisplayName>
         <Description>There is already another initialization running that hasn't finished yet. Starting a new initialization move is not allowed.</Description>
+    </DefinedExecutionError>
+    <DefinedExecutionError>
+        <Identifier>NotSupported</Identifier>
+        <DisplayName>Not Supported</DisplayName>
+        <Description>The Command is not supported by this device.</Description>
     </DefinedExecutionError>
 </Feature>

@@ -4,7 +4,12 @@ from typing import TYPE_CHECKING
 
 from sila2.client import SilaClient
 
-from .pumpdrivecontrolservice import InitializationFailed, InitializationNotFinished, PumpDriveControlServiceFeature
+from .pumpdrivecontrolservice import (
+    InitializationFailed,
+    InitializationNotFinished,
+    NotSupported,
+    PumpDriveControlServiceFeature,
+)
 
 if TYPE_CHECKING:
 
@@ -37,4 +42,8 @@ class Client(SilaClient):
         self._register_defined_execution_error_class(
             PumpDriveControlServiceFeature.defined_execution_errors["InitializationNotFinished"],
             InitializationNotFinished,
+        )
+
+        self._register_defined_execution_error_class(
+            PumpDriveControlServiceFeature.defined_execution_errors["NotSupported"], NotSupported
         )

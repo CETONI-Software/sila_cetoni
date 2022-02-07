@@ -13,6 +13,11 @@ class DisablePumpDrive_Responses(NamedTuple):
     pass
 
 
+class RestoreDrivePositionCounter_Responses(NamedTuple):
+
+    pass
+
+
 class InitializePumpDrive_Responses(NamedTuple):
 
     pass

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from queue import Queue
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from sila2.framework import FullyQualifiedIdentifier
 from sila2.server import FeatureImplementationBase
@@ -43,98 +43,121 @@ class ForceMonitoringServiceBase(FeatureImplementationBase, ABC):
 
         self._ForceSafetyStopActive_producer_queue = Queue()
 
-    def update_ForceSensorValue(self, ForceSensorValue: Force):
+    def update_ForceSensorValue(self, ForceSensorValue: Force, queue: Optional[Queue[Force]] = None):
         """
         The currently measured force as read by the force sensor.
 
         This method updates the observable property 'ForceSensorValue'.
         """
-        self._ForceSensorValue_producer_queue.put(ForceSensorValue)
+        if queue is None:
+            queue = self._ForceSensorValue_producer_queue
+        queue.put(ForceSensorValue)
 
-    def ForceSensorValue_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def ForceSensorValue_on_subscription(
+        self, *, metadata: Dict[FullyQualifiedIdentifier, Any]
+    ) -> Optional[Queue[Force]]:
         """
         The currently measured force as read by the force sensor.
 
         This method is called when a client subscribes to the observable property 'ForceSensorValue'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property.
+            If None, the default Queue will be used.
         """
         pass
 
-    def update_ForceLimit(self, ForceLimit: Force):
+    def update_ForceLimit(self, ForceLimit: Force, queue: Optional[Queue[Force]] = None):
         """
         The current force limit.
 
         This method updates the observable property 'ForceLimit'.
         """
-        self._ForceLimit_producer_queue.put(ForceLimit)
+        if queue is None:
+            queue = self._ForceLimit_producer_queue
+        queue.put(ForceLimit)
 
-    def ForceLimit_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def ForceLimit_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Optional[Queue[Force]]:
         """
         The current force limit.
 
         This method is called when a client subscribes to the observable property 'ForceLimit'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property.
+            If None, the default Queue will be used.
         """
         pass
 
-    def update_MaxDeviceForce(self, MaxDeviceForce: Force):
+    def update_MaxDeviceForce(self, MaxDeviceForce: Force, queue: Optional[Queue[Force]] = None):
         """
         The maximum device force (i.e. the maximum force the pump hardware can take in continuous operation).
 
         This method updates the observable property 'MaxDeviceForce'.
         """
-        self._MaxDeviceForce_producer_queue.put(MaxDeviceForce)
+        if queue is None:
+            queue = self._MaxDeviceForce_producer_queue
+        queue.put(MaxDeviceForce)
 
-    def MaxDeviceForce_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def MaxDeviceForce_on_subscription(
+        self, *, metadata: Dict[FullyQualifiedIdentifier, Any]
+    ) -> Optional[Queue[Force]]:
         """
         The maximum device force (i.e. the maximum force the pump hardware can take in continuous operation).
 
         This method is called when a client subscribes to the observable property 'MaxDeviceForce'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property.
+            If None, the default Queue will be used.
         """
         pass
 
-    def update_ForceMonitoringEnabled(self, ForceMonitoringEnabled: bool):
+    def update_ForceMonitoringEnabled(self, ForceMonitoringEnabled: bool, queue: Optional[Queue[bool]] = None):
         """
         Whether force monitoring is enabled.
 
         This method updates the observable property 'ForceMonitoringEnabled'.
         """
-        self._ForceMonitoringEnabled_producer_queue.put(ForceMonitoringEnabled)
+        if queue is None:
+            queue = self._ForceMonitoringEnabled_producer_queue
+        queue.put(ForceMonitoringEnabled)
 
-    def ForceMonitoringEnabled_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def ForceMonitoringEnabled_on_subscription(
+        self, *, metadata: Dict[FullyQualifiedIdentifier, Any]
+    ) -> Optional[Queue[bool]]:
         """
         Whether force monitoring is enabled.
 
         This method is called when a client subscribes to the observable property 'ForceMonitoringEnabled'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property.
+            If None, the default Queue will be used.
         """
         pass
 
-    def update_ForceSafetyStopActive(self, ForceSafetyStopActive: bool):
+    def update_ForceSafetyStopActive(self, ForceSafetyStopActive: bool, queue: Optional[Queue[bool]] = None):
         """
         Whether force safety stop is active.
 
         This method updates the observable property 'ForceSafetyStopActive'.
         """
-        self._ForceSafetyStopActive_producer_queue.put(ForceSafetyStopActive)
+        if queue is None:
+            queue = self._ForceSafetyStopActive_producer_queue
+        queue.put(ForceSafetyStopActive)
 
-    def ForceSafetyStopActive_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
+    def ForceSafetyStopActive_on_subscription(
+        self, *, metadata: Dict[FullyQualifiedIdentifier, Any]
+    ) -> Optional[Queue[bool]]:
         """
         Whether force safety stop is active.
 
         This method is called when a client subscribes to the observable property 'ForceSafetyStopActive'
 
         :param metadata: The SiLA Client Metadata attached to the call
-        :return:
+        :return: Optional `Queue` that should be used for updating this property.
+            If None, the default Queue will be used.
         """
         pass
 

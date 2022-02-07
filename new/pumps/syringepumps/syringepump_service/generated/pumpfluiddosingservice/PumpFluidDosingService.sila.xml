@@ -110,60 +110,60 @@
   </Property>
   <!-- Custom Data Types -->
   <!-- Possibility 1: Structure of a value (real) and a unit (string) -->
-  <!-- &lt;DataTypeDefinition&gt;
-        &lt;Identifier&gt;ValueWithUnit&lt;/Identifier&gt;
-        &lt;DisplayName&gt;Value with Unit&lt;/DisplayName&gt;
-        &lt;Description&gt;Holds a value (e.g. flow rate or fill level) and its unit (e.g. ml/h or ml)&lt;/Description&gt;
-        &lt;DataType&gt;
-            &lt;Structure&gt;
-                &lt;Element&gt;
-                    &lt;Identifier&gt;Value&lt;/Identifier&gt;
-                    &lt;DisplayName&gt;Value&lt;/DisplayName&gt;
-                    &lt;Description /&gt;
-                    &lt;DataType&gt;
-                        &lt;Basic&gt;Real&lt;/Basic&gt;
-                    &lt;/DataType&gt;
-                &lt;/Element&gt;
-                &lt;Element&gt;
-                    &lt;Identifier&gt;Unit&lt;/Identifier&gt;
-                    &lt;DisplayName&gt;Unit&lt;/DisplayName&gt;
-                    &lt;Description /&gt;
-                    &lt;DataType&gt;
-                        &lt;Basic&gt;String&lt;/Basic&gt;
-                    &lt;/DataType&gt;
-                &lt;/Element&gt;
-            &lt;/Structure&gt;
-        &lt;/DataType&gt;
-    &lt;/DataTypeDefinition&gt; -->
+  <!-- &amp;lt;DataTypeDefinition&amp;gt;
+        &amp;lt;Identifier&amp;gt;ValueWithUnit&amp;lt;/Identifier&amp;gt;
+        &amp;lt;DisplayName&amp;gt;Value with Unit&amp;lt;/DisplayName&amp;gt;
+        &amp;lt;Description&amp;gt;Holds a value (e.g. flow rate or fill level) and its unit (e.g. ml/h or ml)&amp;lt;/Description&amp;gt;
+        &amp;lt;DataType&amp;gt;
+            &amp;lt;Structure&amp;gt;
+                &amp;lt;Element&amp;gt;
+                    &amp;lt;Identifier&amp;gt;Value&amp;lt;/Identifier&amp;gt;
+                    &amp;lt;DisplayName&amp;gt;Value&amp;lt;/DisplayName&amp;gt;
+                    &amp;lt;Description /&amp;gt;
+                    &amp;lt;DataType&amp;gt;
+                        &amp;lt;Basic&amp;gt;Real&amp;lt;/Basic&amp;gt;
+                    &amp;lt;/DataType&amp;gt;
+                &amp;lt;/Element&amp;gt;
+                &amp;lt;Element&amp;gt;
+                    &amp;lt;Identifier&amp;gt;Unit&amp;lt;/Identifier&amp;gt;
+                    &amp;lt;DisplayName&amp;gt;Unit&amp;lt;/DisplayName&amp;gt;
+                    &amp;lt;Description /&amp;gt;
+                    &amp;lt;DataType&amp;gt;
+                        &amp;lt;Basic&amp;gt;String&amp;lt;/Basic&amp;gt;
+                    &amp;lt;/DataType&amp;gt;
+                &amp;lt;/Element&amp;gt;
+            &amp;lt;/Structure&amp;gt;
+        &amp;lt;/DataType&amp;gt;
+    &amp;lt;/DataTypeDefinition&amp;gt; -->
   <!-- Possibility 2: Unit Constraint that constraints the value (real) to a specific unit -->
-  <!-- &lt;DataTypeDefinition&gt;
-        &lt;Identifier&gt;ValueWithUnit&lt;/Identifier&gt;
-        &lt;DisplayName&gt;Value with Unit&lt;/DisplayName&gt;
-        &lt;Description&gt;Holds a value (e.g. flow rate or fill level) and its unit (e.g. ml/h or ml)&lt;/Description&gt;
-        &lt;DataType&gt;
-            &lt;Constrained&gt;
-                &lt;DataType&gt;
-                    &lt;Basic&gt;Real&lt;/Basic&gt;
-                &lt;/DataType&gt;
-                &lt;Constraints&gt;
-                    &lt;Unit&gt;
-                        &lt;Label&gt;ml/s&lt;/Label&gt;
-                        &lt;UnitComponent&gt;
-                            &lt;SIUnit&gt;Meter&lt;/SIUnit&gt;
-                            &lt;Exponent&gt;3&lt;/Exponent&gt;
-                            &lt;Factor&gt;0.0001&lt;/Factor&gt;
-                            &lt;Offset&gt;0&lt;/Offset&gt;
-                        &lt;/UnitComponent&gt;
-                        &lt;UnitComponent&gt;
-                            &lt;SIUnit&gt;Second&lt;/SIUnit&gt;
-                            &lt;Exponent&gt;-1&lt;/Exponent&gt;
-                            &lt;Factor&gt;0.00027777777&lt;/Factor&gt;
+  <!-- &amp;lt;DataTypeDefinition&amp;gt;
+        &amp;lt;Identifier&amp;gt;ValueWithUnit&amp;lt;/Identifier&amp;gt;
+        &amp;lt;DisplayName&amp;gt;Value with Unit&amp;lt;/DisplayName&amp;gt;
+        &amp;lt;Description&amp;gt;Holds a value (e.g. flow rate or fill level) and its unit (e.g. ml/h or ml)&amp;lt;/Description&amp;gt;
+        &amp;lt;DataType&amp;gt;
+            &amp;lt;Constrained&amp;gt;
+                &amp;lt;DataType&amp;gt;
+                    &amp;lt;Basic&amp;gt;Real&amp;lt;/Basic&amp;gt;
+                &amp;lt;/DataType&amp;gt;
+                &amp;lt;Constraints&amp;gt;
+                    &amp;lt;Unit&amp;gt;
+                        &amp;lt;Label&amp;gt;ml/s&amp;lt;/Label&amp;gt;
+                        &amp;lt;UnitComponent&amp;gt;
+                            &amp;lt;SIUnit&amp;gt;Meter&amp;lt;/SIUnit&amp;gt;
+                            &amp;lt;Exponent&amp;gt;3&amp;lt;/Exponent&amp;gt;
+                            &amp;lt;Factor&amp;gt;0.0001&amp;lt;/Factor&amp;gt;
+                            &amp;lt;Offset&amp;gt;0&amp;lt;/Offset&amp;gt;
+                        &amp;lt;/UnitComponent&amp;gt;
+                        &amp;lt;UnitComponent&amp;gt;
+                            &amp;lt;SIUnit&amp;gt;Second&amp;lt;/SIUnit&amp;gt;
+                            &amp;lt;Exponent&amp;gt;-1&amp;lt;/Exponent&amp;gt;
+                            &amp;lt;Factor&amp;gt;0.00027777777&amp;lt;/Factor&amp;gt;
                             1/3600 = 0.00027777777
-                            &lt;Offset&gt;0&lt;/Offset&gt;
-                        &lt;/UnitComponent&gt;
-                    &lt;/Unit&gt;
-                &lt;/Constraints&gt;
-            &lt;/Constrained&gt;
-        &lt;/DataType&gt;
-    &lt;/DataTypeDefinition&gt; -->
+                            &amp;lt;Offset&amp;gt;0&amp;lt;/Offset&amp;gt;
+                        &amp;lt;/UnitComponent&amp;gt;
+                    &amp;lt;/Unit&amp;gt;
+                &amp;lt;/Constraints&amp;gt;
+            &amp;lt;/Constrained&amp;gt;
+        &amp;lt;/DataType&amp;gt;
+    &amp;lt;/DataTypeDefinition&amp;gt; -->
 </Feature>
