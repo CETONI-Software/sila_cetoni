@@ -117,10 +117,9 @@ class Application(metaclass=Singleton):
             logging.info("No SiLA Servers to run")
             return
 
-        self.start_servers()
-
-        print("Press Ctrl-C to stop...", flush=True)
         try:
+            self.start_servers()
+            print("Press Ctrl-C to stop...", flush=True)
             while not self.system.state.shutting_down():
                 time.sleep(_ONE_DAY_IN_SECONDS)
         except KeyboardInterrupt:
