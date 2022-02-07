@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional, Union
 from uuid import UUID
 
-from ...io.io_service.server import Server as IOServer
+from ....io.io_service.server import Server as IOServer
 
 from qmixsdk.qmixmotion import AxisSystem
 
