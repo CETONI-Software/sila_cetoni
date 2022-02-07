@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 from uuid import UUID
 
-from ...battery.battery_provider.server import Server as BatteryServer
+from ...core.core_service.server import Server as CoreServer
 
 from qmixsdk.qmixanalogio import AnalogInChannel, AnalogOutChannel
 from qmixsdk.qmixdigio import DigitalInChannel, DigitalOutChannel
@@ -16,7 +16,7 @@ from .generated.digitalinchannelprovider import DigitalInChannelProviderFeature
 from .generated.digitaloutchannelcontroller import DigitalOutChannelControllerFeature
 
 
-class Server(BatteryServer):
+class Server(CoreServer):
     def __init__(
         self,
         io_channels: List[Union[AnalogInChannel, AnalogOutChannel, DigitalInChannel, DigitalOutChannel]],

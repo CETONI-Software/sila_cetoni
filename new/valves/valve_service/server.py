@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 from uuid import UUID
 
-from ...core.system_status_provider.server import Server as SystemStatusProviderServer
+from ...core.core_service.server import Server as CoreServer
 
 from qmixsdk.qmixvalve import Valve
 
@@ -11,7 +11,7 @@ from .generated.valvegatewayservice import ValveGatewayServiceFeature
 from .generated.valvepositioncontroller import ValvePositionControllerFeature
 
 
-class Server(SystemStatusProviderServer):
+class Server(CoreServer):
     def __init__(
         self,
         valves: List[Valve] = [],
