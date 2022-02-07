@@ -47,7 +47,7 @@ from .singleton import Singleton
 
 from util.local_ip import LOCAL_IP
 
-DEFAULT_BASE_PORT = 50052
+DEFAULT_BASE_PORT = 50051
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -109,7 +109,7 @@ class Application(metaclass=Singleton):
         Runs until Ctrl-C is pressed on the command line or `stop()` has been called
         """
         self.system.start()
-        
+
         logging.debug("Creating SiLA 2 servers...")
         self.servers = self.create_servers()
 
@@ -141,9 +141,10 @@ class Application(metaclass=Singleton):
         Starts all SiLA 2 servers
         """
         logging.debug("Starting SiLA 2 servers...")
+        port = self.base_port
         for server in self.servers:
-            port = self.base_port - 1
             server.start_insecure(LOCAL_IP, port)
+            port += 1
         logging.info("All servers started!")
 
     def stop_servers(self):
@@ -169,7 +170,6 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # pumps
         for pump in self.system.pumps:
-            # server_port += 1
             server_name = pump.name.replace("_", " ")
 
             if isinstance(pump, qmixpump.ContiFlowPump):
@@ -183,7 +183,6 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # axis systems
         for axis_system in self.system.axis_systems:
-            # server_port += 1
             server_name = axis_system.name.replace("_", " ")
 
             from new.motioncontrol.axis_service.server import Server
@@ -193,7 +192,6 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # valves
         for valve_device in self.system.valves:
-            # server_port += 1
             server_name = valve_device.name.replace("_", " ")
 
             from new.valves.valve_service.server import Server
@@ -203,7 +201,6 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # controller
         for controller_device in self.system.controllers:
-            # server_port += 1
             server_name = controller_device.name.replace("_", " ")
 
             from new.controllers.control_loop_service.server import Server
@@ -213,7 +210,6 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # I/O
         for io_device in self.system.io_devices:
-            # server_port += 1
             server_name = io_device.name.replace("_", " ")
 
             from new.io.io_service.server import Server
@@ -223,7 +219,6 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # balance
         for balance in self.system.balances:
-            # server_port += 1
             server_name = balance.name.replace("_", " ")
 
             from new.balance.balance_service.server import Server
