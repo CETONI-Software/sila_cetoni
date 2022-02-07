@@ -35,6 +35,8 @@ class ControlLoopServiceImpl(ControlLoopServiceBase):
         self.__controller_channels = controller_channels
         self.__channel_index_identifier = ControlLoopServiceFeature["ChannelIndex"].fully_qualified_identifier
 
+        self.__stop_event = Event()
+
         self.__set_point_queues = []
         self.__controller_value_queues = []
         for i in range(len(self.__controller_channels)):
