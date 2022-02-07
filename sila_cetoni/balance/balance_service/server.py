@@ -18,7 +18,7 @@ class Server(SilaServer):
         server_vendor_url: str = "",
         server_uuid: Optional[Union[str, UUID]] = None):
         super().__init__(
-            server_name=server_name or "BalanceService",
+            server_name=server_name or "Balance Service",
             server_type=server_type or "TestServer",
             server_description=server_description or "Allows to control a balance",
             server_version=server_version or "0.1.0",

@@ -23,14 +23,16 @@ class SystemStatusProviderImpl(SystemStatusProviderBase):
         self.__stop_event = Event()
 
         def update_state(stop_event: Event):
-            new_state = self.__system.state.value
-            state = ""  # force sending the first value
+            new_state = state = self.__system.state.value
             while not stop_event.is_set():
                 new_state = self.__system.state.value
                 if new_state != state:
                     state = new_state
                     self.update_SystemState(state)
                 time.sleep(0.1)
+
+        # initial value
+        self.update_SystemState(self.__system.state.value)
 
         executor.submit(update_state, self.__stop_event)
 

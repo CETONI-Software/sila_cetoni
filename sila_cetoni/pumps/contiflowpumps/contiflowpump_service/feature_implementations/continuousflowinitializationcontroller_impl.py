@@ -29,10 +29,16 @@ class ContinuousFlowInitializationControllerImpl(ContinuousFlowInitializationCon
         self.__stop_event = Event()
 
         def update_is_initialized(stop_event: Event):
+            new_is_initialized = is_initialized = self.__pump.is_initialized()
             while not stop_event.is_set():
-                self.update_IsInitialized(self.__pump.is_initialized())
-                # TODO smart update
+                new_is_initialized = self.__pump.is_initialized()
+                if new_is_initialized != is_initialized:
+                    is_initialized = new_is_initialized
+                    self.update_IsInitialized(is_initialized)
                 time.sleep(0.1)
+
+        # initial value
+        self.update_IsInitialized(self.__pump.is_initialized())
 
         executor.submit(update_is_initialized, self.__stop_event)
 

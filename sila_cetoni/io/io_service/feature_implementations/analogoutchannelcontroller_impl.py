@@ -38,7 +38,10 @@ class AnalogOutChannelControllerImpl(AnalogOutChannelControllerBase):
         self.__value_queues = []
         for i in range(len(self.__channels)):
             self.__value_queues += [Queue()]
+
+            # initial value
             self.update_Value(self.__channels[i].get_output_value(), queue=self.__value_queues[i])
+
             executor.submit(self.__make_value_updater(i), self.__stop_event)
 
     def __make_value_updater(self, i: int):

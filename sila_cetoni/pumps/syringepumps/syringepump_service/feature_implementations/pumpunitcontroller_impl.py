@@ -38,6 +38,9 @@ class SystemNotOperationalError(UndefinedExecutionError):
         )
 
 
+FlowUnit = namedtuple("FlowUnit", ["VolumeUnit", "TimeUnit"])
+
+
 class PumpUnitControllerImpl(PumpUnitControllerBase):
     __pump: Pump
     __system: ApplicationSystem
@@ -50,9 +53,7 @@ class PumpUnitControllerImpl(PumpUnitControllerBase):
         self.__stop_event = Event()
 
         def update_flow_unit(stop_event: Event):
-            FlowUnit = namedtuple("FlowUnit", ["VolumeUnit", "TimeUnit"])
-            new_flow_unit = FlowUnit(*uc.flow_unit_to_tuple(self.__pump.get_flow_unit()))
-            flow_unit = ""  # force sending the first value
+            new_flow_unit = flow_unit = FlowUnit(*uc.flow_unit_to_tuple(self.__pump.get_flow_unit()))
             while not stop_event.is_set():
                 if self.__system.state.is_operational():
                     new_flow_unit = FlowUnit(*uc.flow_unit_to_tuple(self.__pump.get_flow_unit()))
@@ -62,8 +63,7 @@ class PumpUnitControllerImpl(PumpUnitControllerBase):
                 time.sleep(0.1)
 
         def update_volume_unit(stop_event: Event):
-            new_volume_unit = uc.volume_unit_to_string(self.__pump.get_volume_unit())
-            volume_unit = ""  # force sending the first value
+            new_volume_unit = volume_unit = uc.volume_unit_to_string(self.__pump.get_volume_unit())
             while not stop_event.is_set():
                 if self.__system.state.is_operational():
                     new_volume_unit = uc.volume_unit_to_string(self.__pump.get_volume_unit())
@@ -71,6 +71,10 @@ class PumpUnitControllerImpl(PumpUnitControllerBase):
                     volume_unit = new_volume_unit
                     self.update_VolumeUnit(volume_unit)
                 time.sleep(0.1)
+
+        # initial values
+        self.update_FlowUnit(FlowUnit(*uc.flow_unit_to_tuple(self.__pump.get_flow_unit())))
+        self.update_VolumeUnit(uc.volume_unit_to_string(self.__pump.get_volume_unit()))
 
         executor.submit(update_flow_unit, self.__stop_event)
         executor.submit(update_volume_unit, self.__stop_event)

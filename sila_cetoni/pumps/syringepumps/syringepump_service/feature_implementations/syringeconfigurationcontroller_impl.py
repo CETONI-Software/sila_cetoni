@@ -42,8 +42,7 @@ class SyringeConfigurationControllerImpl(SyringeConfigurationControllerBase):
         self.__stop_event = Event()
 
         def update_inner_diameter(stop_event: Event):
-            new_inner_diameter = self.__pump.get_syringe_param().inner_diameter_mm
-            inner_diameter = -1  # force sending first value
+            new_inner_diameter = inner_diameter = self.__pump.get_syringe_param().inner_diameter_mm
             while not stop_event.is_set():
                 if self.__system.state.is_operational():
                     new_inner_diameter = self.__pump.get_syringe_param().inner_diameter_mm
@@ -53,8 +52,7 @@ class SyringeConfigurationControllerImpl(SyringeConfigurationControllerBase):
                 time.sleep(0.1)
 
         def update_max_piston_stroke(stop_event: Event):
-            new_max_piston_stroke = self.__pump.get_syringe_param().max_piston_stroke_mm
-            max_piston_stroke = -1  # force sending first value
+            new_max_piston_stroke = max_piston_stroke = self.__pump.get_syringe_param().max_piston_stroke_mm
             while not stop_event.is_set():
                 if self.__system.state.is_operational():
                     new_max_piston_stroke = self.__pump.get_syringe_param().max_piston_stroke_mm
@@ -62,6 +60,10 @@ class SyringeConfigurationControllerImpl(SyringeConfigurationControllerBase):
                     max_piston_stroke = new_max_piston_stroke
                     self.update_MaxPistonStroke(max_piston_stroke)
                 time.sleep(0.1)
+
+        # initial values
+        self.update_InnerDiameter(self.__pump.get_syringe_param().inner_diameter_mm)
+        self.update_MaxPistonStroke(self.__pump.get_syringe_param().max_piston_stroke_mm)
 
         executor.submit(update_inner_diameter, self.__stop_event)
         executor.submit(update_max_piston_stroke, self.__stop_event)

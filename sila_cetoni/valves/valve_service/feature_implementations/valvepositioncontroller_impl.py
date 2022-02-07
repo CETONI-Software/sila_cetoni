@@ -57,14 +57,23 @@ class ValvePositionControllerImpl(ValvePositionControllerBase):
         self.__stop_event = Event()
 
         if self.__valve:
+            # initial value
+            try:
+                self.update_Position(self.__valve.actual_valve_position())
+            except DeviceError as err:
+                logging.error(err)
+
             executor.submit(self.__make_position_updater(), self.__stop_event)
         else:
             self.__position_queues = []
             for i in range(len(self.__valve_gateway.valves)):
                 self.__position_queues += [Queue()]
+
+                # initial value
                 self.update_Position(
                     self.__valve_gateway.valves[i].actual_valve_position(), queue=self.__position_queues[i]
                 )
+
                 executor.submit(self.__make_position_updater(i), self.__stop_event)
 
     def __make_position_updater(self, i: Optional[int] = None):
@@ -86,6 +95,9 @@ class ValvePositionControllerImpl(ValvePositionControllerBase):
         return valve.number_of_valve_positions()
 
     def Position_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Optional[Queue[int]]:
+        if self.__valve_gateway is None:
+            return super().Position_on_subscription(metadata=metadata)
+
         valve_index: int = metadata.pop(self.__valve_gateway.valve_index_identifier)
         try:
             return self.__position_queues[valve_index]

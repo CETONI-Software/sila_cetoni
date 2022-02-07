@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 
 import time
 from concurrent.futures import Executor
@@ -22,9 +23,16 @@ class BalanceServiceImpl(BalanceServiceBase):
         self.__stop_event = Event()
 
         def update_value(stop_event: Event):
+            new_value = value = self.__balance.value
             while not stop_event.is_set():
-                self.update_Value(self.__balance.value)
+                new_value = self.__balance.value
+                if not math.isclose(new_value, value):
+                    value = new_value
+                    self.update_Value(value)
                 time.sleep(0.1)
+
+        # initial value
+        self.update_Value(self.__balance.value)
 
         executor.submit(update_value, self.__stop_event)
 

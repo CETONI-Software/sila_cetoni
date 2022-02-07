@@ -36,10 +36,13 @@ class DigitalInChannelProviderImpl(DigitalInChannelProviderBase):
         self.__state_queues = []
         for i in range(len(self.__channels)):
             self.__state_queues += [Queue()]
+
+            # initial value
             self.update_State(
                 "On" if self.__channels[i].is_on() else "Off",
                 queue=self.__state_queues[i],
             )
+
             executor.submit(self.__make_state_updater(i), self.__stop_event)
 
     def __make_state_updater(self, i: int):

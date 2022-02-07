@@ -42,6 +42,8 @@ class ControlLoopServiceImpl(ControlLoopServiceBase):
         for i in range(len(self.__controller_channels)):
             self.__set_point_queues += [Queue()]
             self.__controller_value_queues += [Queue()]
+
+            # initial values
             self.update_SetPointValue(
                 self.__controller_channels[i].get_setpoint(),
                 queue=self.__set_point_queues[i],
@@ -50,6 +52,7 @@ class ControlLoopServiceImpl(ControlLoopServiceBase):
                 self.__controller_channels[i].read_actual_value(),
                 queue=self.__controller_value_queues[i],
             )
+
             executor.submit(self.__make_set_point_updater(i), self.__stop_event)
             executor.submit(self.__make_controller_value_updater(i), self.__stop_event)
 

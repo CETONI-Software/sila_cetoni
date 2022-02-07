@@ -63,11 +63,6 @@ class PumpFluidDosingServiceImpl(PumpFluidDosingServiceBase):
     __pump: Pump
     __system: ApplicationSystem
     __stop_event: Event
-    __force_flow_rate_update: bool = True
-    __force_max_flow_rate_update: bool = True
-    __force_fill_level_update: bool = True
-    __force_max_fill_level_update: bool = True
-
     def __init__(self, pump: Pump, executor: Executor):
         super().__init__()
         self.__pump = pump
@@ -75,60 +70,54 @@ class PumpFluidDosingServiceImpl(PumpFluidDosingServiceBase):
         self.__stop_event = Event()
 
         def update_flow_rate(stop_event: Event):
+            new_flow_rate = flow_rate = self.__pump.get_flow_is()
             while not stop_event.is_set():
                 new_flow_rate = self.__pump.get_flow_is() if self.__system.state.is_operational() else 0
-                if self.__force_flow_rate_update or not math.isclose(new_flow_rate, flow_rate):
+                if not math.isclose(new_flow_rate, flow_rate):
                     flow_rate = new_flow_rate
                     self.update_FlowRate(flow_rate)
-                    self.__force_flow_rate_update = False
                 time.sleep(0.1)
 
         def update_max_flow_rate(stop_event: Event):
+            new_max_flow_rate = max_flow_rate = self.__pump.get_flow_rate_max()
             while not stop_event.is_set():
                 if self.__system.state.is_operational():
                     new_max_flow_rate = self.__pump.get_flow_rate_max()
-                if self.__force_max_flow_rate_update or not math.isclose(new_max_flow_rate, max_flow_rate):
+                if not math.isclose(new_max_flow_rate, max_flow_rate):
                     max_flow_rate = new_max_flow_rate
                     self.update_MaxFlowRate(max_flow_rate)
-                    self.__force_max_flow_rate_update = False
                 time.sleep(0.1)
 
         def update_fill_level(stop_event: Event):
+            new_fill_level = fill_level = self.__pump.get_fill_level()
             while not stop_event.is_set():
                 if self.__system.state.is_operational():
                     new_fill_level = self.__pump.get_fill_level()
-                if self.__force_fill_level_update or not math.isclose(new_fill_level, fill_level):
+                if not math.isclose(new_fill_level, fill_level):
                     fill_level = new_fill_level
                     self.update_SyringeFillLevel(fill_level)
-                    self.__force_fill_level_update = False
                 time.sleep(0.1)
 
         def update_max_fill_level(stop_event: Event):
+            new_max_fill_level = max_fill_level = self.__pump.get_volume_max()
             while not stop_event.is_set():
                 if self.__system.state.is_operational():
                     new_max_fill_level = self.__pump.get_volume_max()
-                if self.__force_max_fill_level_update or not math.isclose(new_max_fill_level, max_fill_level):
+                if not math.isclose(new_max_fill_level, max_fill_level):
                     max_fill_level = new_max_fill_level
                     self.update_MaxSyringeFillLevel(max_fill_level)
-                    self.__force_max_fill_level_update = False
                 time.sleep(0.1)
+
+        # initial values
+        self.update_FlowRate(self.__pump.get_flow_is())
+        self.update_MaxFlowRate(self.__pump.get_flow_rate_max())
+        self.update_SyringeFillLevel(self.__pump.get_fill_level())
+        self.update_MaxSyringeFillLevel(self.__pump.get_volume_max())
 
         executor.submit(update_flow_rate, self.__stop_event)
         executor.submit(update_max_flow_rate, self.__stop_event)
         executor.submit(update_fill_level, self.__stop_event)
         executor.submit(update_max_fill_level, self.__stop_event)
-
-    def FlowRate_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
-        self.__force_flow_rate_update = True
-
-    def MaxFlowRate_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
-        self.__force_max_flow_rate_update = True
-
-    def SyringeFillLevel_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
-        self.__force_fill_level_update = True
-
-    def MaxSyringeFillLevel_on_subscription(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> None:
-        self.__force_max_fill_level_update = True
 
     @requires_operational_system
     def StopDosage(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> StopDosage_Responses:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 
 import time
 from threading import Event
@@ -31,16 +32,26 @@ class ContinuousFlowDosingServiceImpl(ContinuousFlowDosingServiceBase):
         self.__stop_event = Event()
 
         def update_flow_rate(stop_event: Event):
+            new_flow_rate = flow_rate = self.__pump.get_flow_is()
             while not stop_event.is_set():
-                self.update_FlowRate(self.__pump.get_flow_is())
-                # TODO smart update
+                new_flow_rate = self.__pump.get_flow_is()
+                if not math.isclose(new_flow_rate, flow_rate):
+                    flow_rate = new_flow_rate
+                    self.update_FlowRate(flow_rate)
                 time.sleep(0.1)
 
         def update_max_flow_rate(stop_event: Event):
+            new_max_flow_rate = max_flow_rate = self.__pump.get_flow_rate_max()
             while not stop_event.is_set():
-                self.update_MaxFlowRate(self.__pump.get_flow_rate_max())
-                # TODO smart update
+                new_max_flow_rate = self.__pump.get_flow_rate_max()
+                if not math.isclose(new_max_flow_rate, max_flow_rate):
+                    max_flow_rate = new_max_flow_rate
+                    self.update_MaxFlowRate(max_flow_rate)
                 time.sleep(0.1)
+
+        # initial values
+        self.update_FlowRate(self.__pump.get_flow_is())
+        self.update_MaxFlowRate(self.__pump.get_flow_rate_max())
 
         executor.submit(update_flow_rate, self.__stop_event)
         executor.submit(update_max_flow_rate, self.__stop_event)
