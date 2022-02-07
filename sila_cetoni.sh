@@ -43,8 +43,8 @@ if [ "$DISABLE_LOG" = 0 ]; then
     exec 2>&1
 fi
 
-python3 $curr_dir/sila_cetoni.py $@
 cd $curr_dir
+python3 -m sila_cetoni $@
 
 # write log to SD card if it's in RUNTIME_DIRECTORY
 mkdir -p "$curr_dir/log"

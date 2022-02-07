@@ -1,0 +1,9 @@
+- [ ] persistent UUIDs
+- [x] per category server (and package w/ feature implementations?)
+- [ ] drive position counter restoration in pumpdrivecontrolservice_impl.py and axissystemcontrolservice_impl.py
+- [ ] remove old implementations and servers
+- [ ] Update docs (README.md, CETONI SDK)
+- [ ] Update install scripts
+---
+- [ ] Make sila_cetoni an installable package (nice to have)
+- [ ] `requires_operational_system` decorator (maybe...if it's not too much work)
