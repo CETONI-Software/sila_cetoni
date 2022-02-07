@@ -5,10 +5,10 @@ After=sys-subsystem-net-devices-can0.device
 
 [Service]
 Type=simple
-Environment="SILA_CETONI_NO_LOG_FILE=1"
+Environment="SILA_CETONI_NO_LOG_FILE=1" "LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libatomic.so.1.2.0"
 ExecStartPre=+-/sbin/ip link set can0 up type can bitrate 500000
 ExecStartPre=+/bin/sh -c '/sbin/ip addr show can0 | grep UP'
-ExecStart=/home/pi/sila_cetoni/sila_cetoni.sh /home/pi/sila_cetoni/configs/%i
+ExecStart=/home/pi/sila_cetoni/sila_cetoni.sh -c /home/pi/sila_cetoni/configs/%i
 KillSignal=SIGINT
 WorkingDirectory=/home/pi/sila_cetoni
 User=pi
