@@ -26,6 +26,7 @@ ________________________________________________________________________
 
 import os
 import logging
+import re
 from typing import Any, Dict, List, Union
 from lxml import etree, objectify
 
@@ -251,16 +252,14 @@ class DeviceConfiguration:
         """
         Filter the devices as they contains more than the actual physical modules that we're after
         """
-        for exclude in ('Epos', ):
-            if exclude in device.name or device.name.endswith('Valve'):
-                # A pump might have a valve attached to it that is handled by the
-                # pump server (i.e. we don't want to spawn another server just for
-                # this valve). These valves are all named "<Pump Name>_Valve".
-                # Other (standalone) valve devices (like VICI valves) also contain
-                # the word "Valve" which means we cannot just filter for all
-                # devices containing the word "Valve".
-                return False
-        return True
+        # A pump might have a valve attached to it that is handled by the
+        # pump server (i.e. we don't want to spawn another server just for
+        # this valve). These valves are all named "<Pump Name>_Valve".
+        # Same goes for the individual valves of a Festo module. All valves of a
+        # module are represented by a single server so we need to filter the
+        # individual valve devices from the device list.
+        regexp = re.compile("(.*Epos.*)|(.*Valve\d?$)")
+        return regexp.match(device.name) is None
 
     @staticmethod
     def __fix_device_name(device: Device):
