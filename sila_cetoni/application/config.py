@@ -25,9 +25,7 @@ class Config:
         if not self.__parser.read(self.__config_path):
             logging.warning(f"Could not read config file! Creating a new one ({self.__config_path}")
             self.__add_default_values()
-            os.makedirs(os.path.dirname(self.__config_path), exist_ok=True)
-            with open(self.__config_path, "w") as config_file:
-                self.__parser.write(config_file)
+            self.write()
 
     @staticmethod
     def __config_dir(self, subdir: str = "") -> str:
@@ -45,13 +43,30 @@ class Config:
         """
         self.__parser["server"] = {}
         self.__parser["server"]["uuid"] = str(uuid.uuid4())
+        self.__parser["pump"] = {}
+
+    def write(self):
+        """
+        Writes the current configuration to the file
+        """
+        os.makedirs(os.path.dirname(self.__config_path), exist_ok=True)
+        with open(self.__config_path, "w") as config_file:
+            self.__parser.write(config_file)
 
     @property
     def server_uuid(self) -> Optional[str]:
         """
         The UUID of the SiLA Server as read from the config file
         """
-        try:
-            return self.__parser["server"]["uuid"]
-        except KeyError:
-            return None
+        return self.__parser["server"].get("uuid")
+
+    @property
+    def pump_drive_position_counter(self) -> Optional[int]:
+        """
+        Returns the pump drive position counter if this config is for a pump device
+        """
+        return self.__parser["pump"].getint("drive_position_counter")
+
+    @pump_drive_position_counter.setter
+    def pump_drive_position_counter(self, drive_position_counter: int):
+        self.__parser["pump"]["drive_position_counter"] = str(drive_position_counter)

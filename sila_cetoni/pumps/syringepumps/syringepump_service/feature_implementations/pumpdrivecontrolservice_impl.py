@@ -1,12 +1,13 @@
 from __future__ import annotations
 import datetime
 import logging
+from queue import Queue
 
 import time
 from threading import Event
 from concurrent.futures import Executor
 
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 from sila2.framework import FullyQualifiedIdentifier, Command, Property
 from sila2.framework.command.execution_info import CommandExecutionStatus
@@ -14,6 +15,8 @@ from sila2.server import ObservableCommandInstance
 from sila2.framework.errors.undefined_execution_error import UndefinedExecutionError
 
 from .....application.system import ApplicationSystem
+from .....application.config import Config
+
 from qmixsdk.qmixbus import PollingTimer, DeviceError
 from qmixsdk.qmixpump import Pump
 from ..generated.pumpdrivecontrolservice import (
@@ -42,6 +45,7 @@ class SystemNotOperationalError(UndefinedExecutionError):
 class PumpDriveControlServiceImpl(PumpDriveControlServiceBase):
     __pump: Pump
     __system: ApplicationSystem
+    __config: Config
     __stop_event: Event
 
     __CALIBRATION_TIMEOUT = datetime.timedelta(seconds=60)
@@ -50,9 +54,10 @@ class PumpDriveControlServiceImpl(PumpDriveControlServiceBase):
         super().__init__()
         self.__pump = pump
         self.__system = ApplicationSystem()
+        self.__config = Config(self.__pump.get_pump_name())
         self.__stop_event = Event()
 
-        # TODO restore drive position counter
+        self._restore_last_drive_position_counter()
 
         def update_fault_state(stop_event: Event):
             new_fault_state = fault_state = self.__pump.is_in_fault_state()
@@ -62,7 +67,6 @@ class PumpDriveControlServiceImpl(PumpDriveControlServiceBase):
                 if new_fault_state != fault_state:
                     fault_state = new_fault_state
                     self.update_FaultState(fault_state)
-                    self.__force_fault_state_update = False
                 time.sleep(0.1)
 
         def update_pump_drive_state(stop_event: Event):
@@ -72,7 +76,6 @@ class PumpDriveControlServiceImpl(PumpDriveControlServiceBase):
                 if new_is_enabled != is_enabled:
                     is_enabled = new_is_enabled
                     self.update_PumpDriveState("Enabled" if is_enabled else "Disabled")
-                    self.__force_pump_drive_state_update = False
                 time.sleep(0.1)
 
         def update_drive_position_counter(stop_event: Event):
@@ -96,6 +99,24 @@ class PumpDriveControlServiceImpl(PumpDriveControlServiceBase):
         executor.submit(update_fault_state, self.__stop_event)
         executor.submit(update_pump_drive_state, self.__stop_event)
         executor.submit(update_drive_position_counter, self.__stop_event)
+
+    def _restore_last_drive_position_counter(self):
+        """
+        Reads the last drive position counter from the server's config file.
+        """
+        drive_pos_counter = self.__config.pump_drive_position_counter
+        if drive_pos_counter is not None:
+            logging.debug(f"Restoring drive position counter: {drive_pos_counter}")
+            self.__pump.restore_position_counter_value(drive_pos_counter)
+        else:
+            logging.warning(
+                f"Could not read drive position counter for {self.__pump.get_pump_name()} from config file. "
+                "Reference move needed!"
+            )
+
+    def update_DrivePositionCounter(self, DrivePositionCounter: int, queue: Optional[Queue[int]] = None):
+        self.__config.pump_drive_position_counter = DrivePositionCounter
+        return super().update_DrivePositionCounter(DrivePositionCounter, queue)
 
     def EnablePumpDrive(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> EnablePumpDrive_Responses:
         if not self.__system.state.is_operational():
@@ -174,3 +195,4 @@ class PumpDriveControlServiceImpl(PumpDriveControlServiceBase):
 
     def stop(self) -> None:
         self.__stop_event.set()
+        self.__config.write()
