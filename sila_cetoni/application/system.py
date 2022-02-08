@@ -41,6 +41,7 @@ from .device import DeviceConfiguration, Device, PumpDevice, AxisSystemDevice, \
                     ValveDevice, ControllerDevice, IODevice, BalanceDevice
 
 from .singleton import Singleton
+from .config import Config
 
 from . import CETONI_SDK_PATH
 
@@ -234,6 +235,11 @@ class ApplicationSystem(metaclass=Singleton):
                 logging.debug("System entered 'Operational' state")
                 for device in self.device_config.devices:
                     device.set_operational()
+                    if isinstance(device, PumpDevice):
+                        drive_pos_counter = Config(device.name).pump_drive_position_counter
+                        if drive_pos_counter is not None:
+                            logging.debug(f"Restoring drive position counter: {drive_pos_counter}")
+                            device.restore_position_counter_value(drive_pos_counter)
 
     #-------------------------------------------------------------------------
     # Pumps
