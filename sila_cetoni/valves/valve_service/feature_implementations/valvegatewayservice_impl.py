@@ -1,19 +1,14 @@
 from __future__ import annotations
+
 import logging
 from queue import Queue
-
 from typing import Any, Dict, List, Union
 
+from qmixsdk.qmixvalve import Valve
 from sila2.framework import Command, Feature, FullyQualifiedIdentifier, Property
 from sila2.framework.errors.framework_error import FrameworkError, FrameworkErrorType
 
-from qmixsdk.qmixvalve import Valve
-
-from ..generated.valvegatewayservice import (
-    ValveGatewayServiceBase,
-    ValveGatewayServiceFeature,
-    InvalidValveIndex,
-)
+from ..generated.valvegatewayservice import InvalidValveIndex, ValveGatewayServiceBase, ValveGatewayServiceFeature
 from ..generated.valvepositioncontroller import ValvePositionControllerFeature
 
 

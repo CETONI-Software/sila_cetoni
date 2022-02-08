@@ -1,23 +1,23 @@
 from __future__ import annotations
-import logging
-from queue import Queue
 
-import time, math
+import logging
+import math
+import time
 from concurrent.futures import Executor
+from queue import Queue
 from threading import Event
 from typing import Any, Dict, List, Optional, Union
 
+from qmixsdk.qmixanalogio import AnalogOutChannel
 from sila2.framework import Command, Feature, FullyQualifiedIdentifier, Property
 from sila2.framework.errors.framework_error import FrameworkError, FrameworkErrorType
 
 from ....application.system import ApplicationSystem
-from qmixsdk.qmixanalogio import AnalogOutChannel
-
 from ..generated.analogoutchannelcontroller import (
     AnalogOutChannelControllerBase,
     AnalogOutChannelControllerFeature,
-    SetOutputValue_Responses,
     InvalidChannelIndex,
+    SetOutputValue_Responses,
 )
 
 

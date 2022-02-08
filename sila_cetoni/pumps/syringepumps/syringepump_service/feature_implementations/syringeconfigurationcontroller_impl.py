@@ -1,18 +1,17 @@
 from __future__ import annotations
 
-import time, math
-from threading import Event
+import math
+import time
 from concurrent.futures import Executor
-
+from threading import Event
 from typing import Any, Dict, Union
 
-from sila2.framework import FullyQualifiedIdentifier, Command, Property
-from sila2.framework.errors.validation_error import ValidationError
+from qmixsdk.qmixpump import Pump
+from sila2.framework import Command, FullyQualifiedIdentifier, Property
 from sila2.framework.errors.undefined_execution_error import UndefinedExecutionError
+from sila2.framework.errors.validation_error import ValidationError
 
 from .....application.system import ApplicationSystem
-from qmixsdk.qmixpump import Pump
-
 from ..generated.syringeconfigurationcontroller import (
     SetSyringeParameters_Responses,
     SyringeConfigurationControllerBase,

@@ -2,15 +2,16 @@
 An interface for implementing a balance device driver for the CETONI SiLA SDK
 """
 
-import time
-import re
 import logging
+import re
+import time
 import traceback
+from abc import ABC, abstractmethod, abstractstaticmethod
+from typing import Union
+
 import serial
 import serial.threaded
 import serial.tools.list_ports
-from typing import Union
-from abc import ABC, abstractmethod, abstractstaticmethod
 
 
 class _ReaderThread(serial.threaded.ReaderThread):
@@ -24,11 +25,13 @@ class _ReaderThread(serial.threaded.ReaderThread):
     protocol instance that receives the data from the serial port can set the actual
     value of the balance in the `SerialBalanceInterface` instance
     """
-    balance = None #: SerialBalanceInterface
+
+    balance = None  #: SerialBalanceInterface
 
     def __init__(self, serial_instance, protocol_factory, balance):
         super().__init__(serial_instance, protocol_factory)
         self.balance: SerialBalanceInterface = balance
+
 
 class _SerialBalanceReader(serial.threaded.LineReader):
     """
@@ -39,15 +42,15 @@ class _SerialBalanceReader(serial.threaded.LineReader):
     reader class
     """
 
-    __balance = None #: SerialBalanceInterface
-    __logger = logging.getLogger('balance_driver')
+    __balance = None  #: SerialBalanceInterface
+    __logger = logging.getLogger("balance_driver")
 
     # implements serial.threaded.LineReader ----------------------------------
     def connection_made(self, transport: _ReaderThread):
         super().connection_made(transport)
 
         self.__balance: SerialBalanceInterface = transport.balance
-        self.__logger.debug('port opened')
+        self.__logger.debug("port opened")
 
         # validate that we have the correct balance
         self.write_line(self.__balance.unique_balance_identifier_request)
@@ -58,10 +61,10 @@ class _SerialBalanceReader(serial.threaded.LineReader):
             if data and self.__balance.is_valid_balance(data):
                 break
         else:
-                raise self.__balance.not_found_exception()
+            raise self.__balance.not_found_exception()
 
     def handle_line(self, data: str):
-        self.__logger.debug('line received: {}'.format(repr(data)))
+        self.__logger.debug("line received: {}".format(repr(data)))
 
         try:
             self.__balance.value = self.__balance.serial_data_to_value(data)
@@ -71,7 +74,8 @@ class _SerialBalanceReader(serial.threaded.LineReader):
     def connection_lost(self, exc):
         if exc:
             traceback.print_exception(exc, exc, None)
-        self.__logger.debug('port closed')
+        self.__logger.debug("port closed")
+
 
 class BalanceInterface(ABC):
     """
@@ -105,14 +109,15 @@ class BalanceInterface(ABC):
         raise NotImplementedError()
 
 
-
 class BalanceNotFoundException(Exception):
     """
     An exception that indicates that a balance is not available (any more) over
     a serial connection
     """
+
     def __init__(self, msg: str = "No balance detected"):
         super().__init__(msg)
+
 
 class SerialBalanceInterface(BalanceInterface):
     """
@@ -152,7 +157,7 @@ class SerialBalanceInterface(BalanceInterface):
             try:
                 ser = serial.Serial(info.device, timeout=2, write_timeout=2)
                 # read something from the balance that uniquely identifies it, e.g.
-                ser.write(f"{self.unique_balance_identifier_request}\r\n".encode('utf-8'))
+                ser.write(f"{self.unique_balance_identifier_request}\r\n".encode("utf-8"))
                 time.sleep(0.1)
                 if self.is_valid_balance(ser.read(ser.in_waiting or 1)):
                     self.__logger.info(f"Balance detected on serial port {ser.port}")

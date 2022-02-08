@@ -8,8 +8,9 @@ if platform.system() == "Windows":
 else:
     try:
         import RPi.GPIO as gpio
-        CETONI_SDK_PATH = os.path.join(os.path.expanduser('~'), "CETONI_SDK_Raspi")
+
+        CETONI_SDK_PATH = os.path.join(os.path.expanduser("~"), "CETONI_SDK_Raspi")
         print(f"Running on RaspberryPi - setting SDK path to {CETONI_SDK_PATH}")
     except (ModuleNotFoundError, ImportError):
-        CETONI_SDK_PATH = os.path.join(os.path.expanduser('~'), "CETONI_SDK")
+        CETONI_SDK_PATH = os.path.join(os.path.expanduser("~"), "CETONI_SDK")
         print(f"Running on generic Linux - setting SDK path to {CETONI_SDK_PATH}")

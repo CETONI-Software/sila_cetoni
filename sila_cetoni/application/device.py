@@ -24,22 +24,24 @@ ________________________________________________________________________
 ________________________________________________________________________
 """
 
-import os
 import logging
+import os
 import re
 from typing import Any, Dict, List, Union
+
 from lxml import etree, objectify
 
 # import qmixsdk
-from qmixsdk import qmixbus, qmixpump, qmixcontroller, qmixanalogio, qmixdigio, \
-                    qmixmotion, qmixvalve
+from qmixsdk import qmixanalogio, qmixbus, qmixcontroller, qmixdigio, qmixmotion, qmixpump, qmixvalve
 
 from ..device_drivers import balance
 
-class Device():
+
+class Device:
     """
     Simple data class that holds information about a single device on the CAN bus
     """
+
     name: str
     properties: Dict[str, Any]
 
@@ -60,10 +62,12 @@ class Device():
         return f"{self.name} {self.properties if self.properties else ''}"
 
     def __repr__(self) -> str:
-        return f"{self.name} {self.properties if self.properties else ''} " \
-               f"{[v.get_device_name() for v in self.valves]} " \
-               f"{[c.get_name() for c in self.controller_channels]} " \
-               f"{[c.get_name() for c in self.io_channels]}"
+        return (
+            f"{self.name} {self.properties if self.properties else ''} "
+            f"{[v.get_device_name() for v in self.valves]} "
+            f"{[c.get_name() for c in self.controller_channels]} "
+            f"{[c.get_name() for c in self.io_channels]}"
+        )
 
     def set_device_property(self, name: str, value: Any):
         """
@@ -98,11 +102,13 @@ class Device():
         for name, value in kwargs.items():
             obj.__setattr__(name, value)
 
+
 class PumpDevice(qmixpump.Pump, Device):
     """
     Simple wrapper around `qmixpump.Pump` with additional information from the
     `Device` class
     """
+
     def __init__(self, name: str):
         super().__init__(name)
 
@@ -112,11 +118,13 @@ class PumpDevice(qmixpump.Pump, Device):
         self.clear_fault()
         self.enable(True)
 
+
 class AxisSystemDevice(qmixmotion.AxisSystem, Device):
     """
     Simple wrapper around `qmixmotion.AxisSystem` with additional information
     from the `Device` class
     """
+
     def __init__(self, name: str):
         super().__init__(name)
 
@@ -125,29 +133,36 @@ class AxisSystemDevice(qmixmotion.AxisSystem, Device):
         self.set_communication_state(qmixbus.CommState.operational)
         self.enable(True)
 
+
 class ValveDevice(Device):
     """
     Simple class to represent a valve device that has an arbitrary number of
     valves (inherited from the `Device` class)
     """
+
     def __init__(self, name: str):
         super().__init__(name)
+
 
 class ControllerDevice(Device):
     """
     Simple class to represent a controller device that has an arbitrary number of
     controller channels (inherited from the `Device` class)
     """
+
     def __init__(self, name: str):
         super().__init__(name)
+
 
 class IODevice(Device):
     """
     Simple class to represent an I/O device that has an arbitrary number of analog
     and digital I/O channels (inherited from the `Device` class)
     """
+
     def __init__(self, name: str):
         super().__init__(name)
+
 
 class BalanceDevice(Device):
     """
@@ -160,6 +175,7 @@ class BalanceDevice(Device):
         super().__init__(name)
 
         self.device = device
+
 
 class DeviceConfiguration:
     """
@@ -190,12 +206,18 @@ class DeviceConfiguration:
         Parses the device configuration
         """
         tree: objectify.ObjectifiedElement
-        with open(os.path.join(self.path, 'device_properties.xml')) as f:
+        with open(os.path.join(self.path, "device_properties.xml")) as f:
             tree = objectify.parse(f)
         root = tree.getroot()
         for plugin in root.Core.PluginList.iterchildren():
-            if plugin.text in ('qmixelements', 'scriptingsystem', 'labbcanservice',
-                               'canopentools', 'qmixdevices', 'datalogger'):
+            if plugin.text in (
+                "qmixelements",
+                "scriptingsystem",
+                "labbcanservice",
+                "canopentools",
+                "qmixdevices",
+                "datalogger",
+            ):
                 # these files are the only ones with UTF-8 w/ BOM which leads to
                 # an error while parsing the file; since we don't need them anyway
                 # we can skip them
@@ -213,7 +235,6 @@ class DeviceConfiguration:
         except AttributeError:
             self.has_battery = False
 
-
     def _parse_plugin(self, plugin_name: str):
         """
         Parses the configuration for the plugin named `plugin_name`
@@ -224,28 +245,28 @@ class DeviceConfiguration:
         # we need to create a new parser that parses our 'broken' XML files
         # (they are regarded as 'broken' because they contain multiple root tags)
         parser = objectify.makeparser(recover=True)
-        with open(os.path.join(self.path, plugin_name + '.xml')) as f:
+        with open(os.path.join(self.path, plugin_name + ".xml")) as f:
             # wrap the 'broken' XML in a new <root> so that we can parse the
             # whole document instead of just the first root
             lines = f.readlines()
-            fixed_xml = bytes(lines[0] + '<root>' + ''.join(lines[1:]) + '</root>', 'utf-8')
+            fixed_xml = bytes(lines[0] + "<root>" + "".join(lines[1:]) + "</root>", "utf-8")
 
             plugin_tree: objectify.ObjectifiedElement = objectify.fromstring(fixed_xml, parser)
             plugin_root = plugin_tree.Plugin
             try:
                 # a balance has no labbCAN device yet
-                device_list = plugin_root.DeviceList if plugin_name == 'balance' \
-                    else plugin_root.labbCAN.DeviceList
+                device_list = plugin_root.DeviceList if plugin_name == "balance" else plugin_root.labbCAN.DeviceList
                 for device in device_list.iterchildren():
-                    self.devices += [Device(device.get('Name'))]
+                    self.devices += [Device(device.get("Name"))]
             except AttributeError:
                 pass
 
-            if 'rotaxys' in plugin_name:
+            if "rotaxys" in plugin_name:
                 # no possibility to find the jib length elsewhere
                 for device in plugin_root.DeviceList.iterchildren():
-                    self.device_by_name(device.get('Name')).set_device_property(
-                        'jib_length', abs(int(device.JibLength.text)))
+                    self.device_by_name(device.get("Name")).set_device_property(
+                        "jib_length", abs(int(device.JibLength.text))
+                    )
 
     @staticmethod
     def __unneeded_devices(device: Device):
@@ -266,7 +287,7 @@ class DeviceConfiguration:
         """
         Some devices are represented as '<device>_ChipF40' but we only want it to be '<device>'
         """
-        device.name = device.name.split('_ChipF40', 1)[0]
+        device.name = device.name.split("_ChipF40", 1)[0]
         return device
 
     def device_by_name(self, name: str):
@@ -283,11 +304,10 @@ class DeviceConfiguration:
                 return device
         raise ValueError(f"No device with name {name}")
 
-
-    def add_channels_to_device(self, channels: List[Union[qmixcontroller.ControllerChannel,
-                                                          qmixanalogio.AnalogChannel,
-                                                          qmixdigio.DigitalChannel]]) \
-        -> List[Device]:
+    def add_channels_to_device(
+        self,
+        channels: List[Union[qmixcontroller.ControllerChannel, qmixanalogio.AnalogChannel, qmixdigio.DigitalChannel]],
+    ) -> List[Device]:
         """
         A device might have controller or I/O channels. This relationship between
         a device and its channels is constructed here.
@@ -303,7 +323,7 @@ class DeviceConfiguration:
         for channel in channels:
             channel_name = channel.get_name()
             for device in self.devices:
-                if device.name.rsplit('_Pump', 1)[0] in channel_name:
+                if device.name.rsplit("_Pump", 1)[0] in channel_name:
                     logging.debug(f"Channel {channel_name} belongs to device {device}")
                     if isinstance(channel, qmixcontroller.ControllerChannel):
                         device.controller_channels += [channel]

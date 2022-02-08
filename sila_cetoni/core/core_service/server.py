@@ -1,14 +1,14 @@
 import logging
 from typing import Optional, Union
 from uuid import UUID
+
 from sila2.server import SilaServer
 
 from ...application.system import ApplicationSystem
-
-from .feature_implementations.systemstatusprovider_impl import SystemStatusProviderImpl
 from .feature_implementations.batteryprovider_impl import BatteryProviderImpl
-from .generated.systemstatusprovider import SystemStatusProviderFeature
+from .feature_implementations.systemstatusprovider_impl import SystemStatusProviderImpl
 from .generated.batteryprovider import BatteryProviderFeature
+from .generated.systemstatusprovider import SystemStatusProviderFeature
 
 
 class Server(SilaServer):
@@ -19,7 +19,8 @@ class Server(SilaServer):
         server_description: str = "",
         server_version: str = "",
         server_vendor_url: str = "",
-        server_uuid: Optional[Union[str, UUID]] = None):
+        server_uuid: Optional[Union[str, UUID]] = None,
+    ):
         super().__init__(
             server_name=server_name or "Core Service",
             server_type=server_type or "TestServer",
@@ -40,4 +41,3 @@ class Server(SilaServer):
 
         self.batteryprovider = BatteryProviderImpl(self.child_task_executor)
         self.set_feature_implementation(BatteryProviderFeature, self.batteryprovider)
-

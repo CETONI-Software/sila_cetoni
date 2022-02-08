@@ -29,6 +29,5 @@ LOCAL_IP: str
 
 # get local IP
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-    s.connect(('1.2.3.4', 80))
+    s.connect(("1.2.3.4", 80))
     LOCAL_IP = s.getsockname()[0]
-

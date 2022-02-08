@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import time
-from threading import Event
 from concurrent.futures import Executor
-
+from threading import Event
 from typing import Any, Dict
 
 from sila2.framework import FullyQualifiedIdentifier
 
 from ....application.system import ApplicationSystem
-
 from ..generated.systemstatusprovider import SystemStatusProviderBase
 
 

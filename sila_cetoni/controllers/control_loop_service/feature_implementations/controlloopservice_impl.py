@@ -1,25 +1,24 @@
 from __future__ import annotations
+
 import logging
 import math
-from queue import Queue
-
 import time
 from concurrent.futures import Executor
+from queue import Queue
 from threading import Event
 from typing import Any, Dict, List, Optional, Union
 
+from qmixsdk.qmixcontroller import ControllerChannel
 from sila2.framework import Command, Feature, FullyQualifiedIdentifier, Property
 from sila2.server import ObservableCommandInstance
 
-from qmixsdk.qmixcontroller import ControllerChannel
-
 from ..generated.controlloopservice import (
     ControlLoopServiceBase,
+    ControlLoopServiceFeature,
+    InvalidChannelIndex,
     RunControlLoop_Responses,
     StopControlLoop_Responses,
     WriteSetPoint_Responses,
-    ControlLoopServiceFeature,
-    InvalidChannelIndex,
 )
 
 

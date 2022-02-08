@@ -1,34 +1,32 @@
 from __future__ import annotations
+
 import datetime
 import logging
-from queue import Queue
-
 import time
-from threading import Event
 from concurrent.futures import Executor
-
+from queue import Queue
+from threading import Event
 from typing import Any, Dict, Optional, Union
 
-from sila2.framework import FullyQualifiedIdentifier, Command, Property
-from sila2.framework.command.execution_info import CommandExecutionStatus
-from sila2.server import ObservableCommandInstance
-from sila2.framework.errors.undefined_execution_error import UndefinedExecutionError
-
-from .....application.system import ApplicationSystem
-from .....application.config import Config
-
-from qmixsdk.qmixbus import PollingTimer, DeviceError
+from qmixsdk.qmixbus import DeviceError, PollingTimer
 from qmixsdk.qmixpump import Pump
+from sila2.framework import Command, FullyQualifiedIdentifier, Property
+from sila2.framework.command.execution_info import CommandExecutionStatus
+from sila2.framework.errors.undefined_execution_error import UndefinedExecutionError
+from sila2.server import ObservableCommandInstance
+
+from .....application.config import Config
+from .....application.system import ApplicationSystem
 from ..generated.pumpdrivecontrolservice import (
     DisablePumpDrive_Responses,
     EnablePumpDrive_Responses,
-    InitializePumpDrive_Responses,
-    PumpDriveControlServiceBase,
-    RestoreDrivePositionCounter_Responses,
-    PumpDriveControlServiceFeature,
     InitializationFailed,
     InitializationNotFinished,
+    InitializePumpDrive_Responses,
     NotSupported,
+    PumpDriveControlServiceBase,
+    PumpDriveControlServiceFeature,
+    RestoreDrivePositionCounter_Responses,
 )
 
 

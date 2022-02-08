@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-import time, math
-from threading import Event
+import math
+import time
 from concurrent.futures import Executor
-
+from threading import Event
 from typing import Any, Dict
 
+from qmixsdk.qmixanalogio import AnalogInChannel
 from sila2.framework import FullyQualifiedIdentifier
 
 from ....application.system import ApplicationSystem
-from qmixsdk.qmixanalogio import AnalogInChannel
-
 from ..generated.batteryprovider import BatteryProviderBase
 
 

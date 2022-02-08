@@ -6,8 +6,8 @@ from sila2.client import SilaClient
 
 if TYPE_CHECKING:
 
-    from .systemstatusprovider import SystemStatusProviderClient
     from .batteryprovider import BatteryProviderClient
+    from .systemstatusprovider import SystemStatusProviderClient
 
 
 class Client(SilaClient):

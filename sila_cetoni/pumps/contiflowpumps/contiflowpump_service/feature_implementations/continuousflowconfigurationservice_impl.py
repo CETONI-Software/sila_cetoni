@@ -1,16 +1,16 @@
 from __future__ import annotations
-import math
 
+import math
 import time
-from threading import Event
 from concurrent.futures import Executor
+from threading import Event
 from typing import Any, Dict
 
+from qmixsdk.qmixpump import ContiFlowProperty, ContiFlowPump, ContiFlowSwitchingMode
 from sila2.framework import FullyQualifiedIdentifier
 from sila2.framework.errors.validation_error import ValidationError
 
-from qmixsdk.qmixpump import ContiFlowProperty, ContiFlowPump, ContiFlowSwitchingMode
-
+from .....util import invert_dict
 from ..generated.continuousflowconfigurationservice import (
     ContinuousFlowConfigurationServiceBase,
     ContinuousFlowConfigurationServiceFeature,
@@ -19,8 +19,6 @@ from ..generated.continuousflowconfigurationservice import (
     SetRefillFlowRate_Responses,
     SetSwitchingMode_Responses,
 )
-
-from .....util import invert_dict
 
 
 class ContinuousFlowConfigurationServiceImpl(ContinuousFlowConfigurationServiceBase):

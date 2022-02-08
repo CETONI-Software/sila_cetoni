@@ -1,12 +1,20 @@
-
+from qmixsdk.qmixpump import Pump
 from sila2.framework import Command
 from sila2.framework.errors.validation_error import ValidationError
 
-from qmixsdk.qmixpump import Pump
-
 from . import unit_conversion as uc
 
-def validate(pump: Pump, command: Command, flow_rate: float, flow_rate_id: int, fill_level: float = None, fill_level_id: int = None, volume: float = None, volume_id: int = None):
+
+def validate(
+    pump: Pump,
+    command: Command,
+    flow_rate: float,
+    flow_rate_id: int,
+    fill_level: float = None,
+    fill_level_id: int = None,
+    volume: float = None,
+    volume_id: int = None,
+):
     """
     Validates that the given flow rate and fill level or volume are in the correct ranges for the given `pump`
         :param pump: The pump that provides the bounds for the values
@@ -40,9 +48,7 @@ def validate(pump: Pump, command: Command, flow_rate: float, flow_rate_id: int, 
         unit = uc.volume_unit_to_string(pump.get_volume_unit())
         raise ValidationError(
             command.parameters.fields[fill_level_id],
-            msg.format(
-                param="fill level", unit=unit, exclusive="", requested_val=fill_level, max_val=max_fill_level
-            ),
+            msg.format(param="fill level", unit=unit, exclusive="", requested_val=fill_level, max_val=max_fill_level),
         )
     if volume is not None and (volume <= 0 or volume > max_fill_level):
         unit = uc.volume_unit_to_string(pump.get_volume_unit())

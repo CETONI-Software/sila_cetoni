@@ -1,6 +1,6 @@
 from __future__ import annotations
-import math
 
+import math
 import time
 from concurrent.futures import Executor
 from threading import Event
@@ -9,7 +9,6 @@ from typing import Any, Dict
 from sila2.framework import FullyQualifiedIdentifier
 
 from ....device_drivers.balance import BalanceInterface
-
 from ..generated.balanceservice import BalanceServiceBase, Tare_Responses
 
 

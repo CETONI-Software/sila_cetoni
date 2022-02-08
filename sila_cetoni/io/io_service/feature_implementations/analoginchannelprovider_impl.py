@@ -1,16 +1,16 @@
 from __future__ import annotations
-from queue import Queue
 
-import time, math
+import math
+import time
 from concurrent.futures import Executor
+from queue import Queue
 from threading import Event
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, Dict, List, Optional, Union
 
+from qmixsdk.qmixanalogio import AnalogInChannel
 from sila2.framework import Command, Feature, FullyQualifiedIdentifier, Property
 
 from ....application.system import ApplicationSystem
-from qmixsdk.qmixanalogio import AnalogInChannel
-
 from ..generated.analoginchannelprovider import (
     AnalogInChannelProviderBase,
     AnalogInChannelProviderFeature,

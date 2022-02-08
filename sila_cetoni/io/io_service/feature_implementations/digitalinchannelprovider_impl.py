@@ -1,21 +1,20 @@
 from __future__ import annotations
-from queue import Queue
 
 import time
 from concurrent.futures import Executor
+from queue import Queue
 from threading import Event
 from typing import Any, Dict, List, Optional, Union
 
+from qmixsdk.qmixdigio import DigitalInChannel
 from sila2.framework import Command, Feature, FullyQualifiedIdentifier, Property
 
 from ....application.system import ApplicationSystem
-from qmixsdk.qmixdigio import DigitalInChannel
-
 from ..generated.digitalinchannelprovider import (
     DigitalInChannelProviderBase,
     DigitalInChannelProviderFeature,
-    State,
     InvalidChannelIndex,
+    State,
 )
 
 

@@ -1,23 +1,22 @@
 from __future__ import annotations
-import logging
-from queue import Queue
 
+import logging
 import time
 from concurrent.futures import Executor
+from queue import Queue
 from threading import Event
 from typing import Any, Dict, List, Optional, Union
 
+from qmixsdk.qmixdigio import DigitalOutChannel
 from sila2.framework import Command, Feature, FullyQualifiedIdentifier, Property
 
 from ....application.system import ApplicationSystem
-from qmixsdk.qmixdigio import DigitalOutChannel
-
 from ..generated.digitaloutchannelcontroller import (
     DigitalOutChannelControllerBase,
     DigitalOutChannelControllerFeature,
+    InvalidChannelIndex,
     SetOutput_Responses,
     State,
-    InvalidChannelIndex,
 )
 
 

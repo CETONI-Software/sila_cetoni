@@ -1,9 +1,9 @@
-from configparser import ConfigParser
 import logging
 import os
 import platform
-from typing import Dict, Optional
 import uuid
+from configparser import ConfigParser
+from typing import Dict, Optional
 
 
 class Config:

@@ -1,19 +1,17 @@
 from __future__ import annotations
-import math
 
+import math
 import time
-from threading import Event
 from concurrent.futures import Executor
+from threading import Event
 from typing import Any, Dict
 
-from sila2.framework import FullyQualifiedIdentifier, CommandExecutionStatus
-from sila2.server import ObservableCommandInstance
-from sila2.framework.errors.validation_error import ValidationError
-
 from qmixsdk.qmixpump import ContiFlowPump
+from sila2.framework import CommandExecutionStatus, FullyQualifiedIdentifier
+from sila2.framework.errors.validation_error import ValidationError
+from sila2.server import ObservableCommandInstance
 
 from ....validate import validate
-
 from ..generated.continuousflowdosingservice import (
     ContinuousFlowDosingServiceBase,
     ContinuousFlowDosingServiceFeature,

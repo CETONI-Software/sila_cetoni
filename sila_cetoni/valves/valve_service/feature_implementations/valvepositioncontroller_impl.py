@@ -1,33 +1,29 @@
 from __future__ import annotations
+
 import logging
-from queue import Queue
-
 import time
-from threading import Event
 from concurrent.futures import Executor
-
+from queue import Queue
+from threading import Event
 from typing import Any, Dict, List, Optional, Union
 
-from sila2.framework import FullyQualifiedIdentifier, Command, Property
-from sila2.framework.errors.validation_error import ValidationError
-from sila2.framework.errors.undefined_execution_error import UndefinedExecutionError
-
-from ....application.system import ApplicationSystem
 from qmixsdk.qmixbus import DeviceError
 from qmixsdk.qmixvalve import Valve
+from sila2.framework import Command, FullyQualifiedIdentifier, Property
+from sila2.framework.errors.undefined_execution_error import UndefinedExecutionError
+from sila2.framework.errors.validation_error import ValidationError
 
-from .valvegatewayservice_impl import ValveGatewayServiceImpl
-
+from ....application.system import ApplicationSystem
+from ..generated.valvegatewayservice import InvalidValveIndex
 from ..generated.valvepositioncontroller import (
     SwitchToPosition_Responses,
     TogglePosition_Responses,
+    ValveNotToggleable,
     ValvePositionControllerBase,
     ValvePositionControllerFeature,
-    ValveNotToggleable,
     ValvePositionNotAvailable,
 )
-
-from ..generated.valvegatewayservice import InvalidValveIndex
+from .valvegatewayservice_impl import ValveGatewayServiceImpl
 
 
 class SystemNotOperationalError(UndefinedExecutionError):
