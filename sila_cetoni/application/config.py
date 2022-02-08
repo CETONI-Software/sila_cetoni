@@ -2,7 +2,7 @@ from configparser import ConfigParser
 import logging
 import os
 import platform
-from typing import Optional
+from typing import Dict, Optional
 import uuid
 
 
@@ -10,6 +10,7 @@ class Config:
     """
     Helper class to read and write a persistent configuration file
     """
+
     __config_path: str
     __parser: ConfigParser
 
@@ -44,6 +45,7 @@ class Config:
         self.__parser["server"] = {}
         self.__parser["server"]["uuid"] = str(uuid.uuid4())
         self.__parser["pump"] = {}
+        self.__parser["axis_position_counters"] = {}
 
     def write(self):
         """
@@ -70,3 +72,17 @@ class Config:
     @pump_drive_position_counter.setter
     def pump_drive_position_counter(self, drive_position_counter: int):
         self.__parser["pump"]["drive_position_counter"] = str(drive_position_counter)
+
+    @property
+    def axis_position_counters(self) -> Optional[Dict[str, int]]:
+        """
+        Returns the axis position counters if this config is for an axis device
+        The keys of the returned dictionary are the axis names and the values are
+        the position counter values.
+        """
+        return self.__parser["axis_position_counters"]
+
+    @axis_position_counters.setter
+    def axis_position_counters(self, position_counters: Dict[str, int]):
+        logging.info(position_counters)
+        self.__parser["axis_position_counters"] = position_counters
