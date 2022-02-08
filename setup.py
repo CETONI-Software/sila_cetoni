@@ -1,7 +1,6 @@
 import re
 from os.path import basename, dirname, join
-from setuptools import setup, find_packages
-
+from setuptools import find_packages, setup
 
 def prepare_readme():
     """README contains github-internal links, which need to be extended for PyPI"""
