@@ -30,8 +30,7 @@ def parse_command_line():
                         help='The port number for the first SiLA server (default: %d)' % DEFAULT_BASE_PORT)
     return parser.parse_args()
 
-
-if __name__ == '__main__':
+def main():
     logging_level = logging.DEBUG # or use logging.ERROR for less output
     LOGGING_FORMAT = '%(asctime)s [%(threadName)-12.12s] %(levelname)-8s| %(module)s.%(funcName)s: %(message)s'
     try:
@@ -43,3 +42,6 @@ if __name__ == '__main__':
 
     app = Application(parsed_args.config_path, int(parsed_args.server_base_port))
     app.run()
+
+if __name__ == '__main__':
+    main()

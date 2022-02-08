@@ -4,3 +4,5 @@ configs/
 *.log*
 *.csv*
 .ssl/
+build/
+*.egg-info/
