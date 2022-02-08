@@ -19,9 +19,12 @@ sleep 1 # prevent sporadically not working 2nd pump
 grep -qi raspbian /etc/os-release 2>/dev/null && {
     # default directory for RaspberryPi
     export CETONI_SDK_PATH="$HOME/CETONI_SDK_Raspi"
+} || [ $(lsb_release -is) == "Ubuntu" ] 2>/dev/null && {
+    # default directory for Ubuntu Linux
+    export CETONI_SDK_PATH="/usr/share/qmix-sdk"
 } || {
     # default directory for generic Linux
-    export CETONI_SDK_PATH="$HOME/CETONI_SDK_Linux"
+    export CETONI_SDK_PATH="$HOME/CETONI_SDK"
 }
 
 export PATH="$CETONI_SDK_PATH":"$PATH"
@@ -44,7 +47,7 @@ if [ "$DISABLE_LOG" = 0 ]; then
 fi
 
 cd $curr_dir
-python3 -m sila_cetoni $@
+sila-cetoni $@
 
 # write log to SD card if it's in RUNTIME_DIRECTORY
 mkdir -p "$curr_dir/log"
