@@ -34,6 +34,7 @@ from OpenSSL import crypto
 
 from sila2.server import SilaServer
 
+
 from . import CETONI_SDK_PATH
 # adjust PATH variable to point to the SDK
 sys.path.append(CETONI_SDK_PATH)
@@ -44,6 +45,7 @@ from qmixsdk import qmixpump
 
 from .system import ApplicationSystem
 from .singleton import Singleton
+from .config import Config
 
 from ..util.local_ip import LOCAL_IP
 
@@ -173,10 +175,22 @@ class Application(metaclass=Singleton):
 
             if isinstance(pump, qmixpump.ContiFlowPump):
                 from ..pumps.contiflowpumps.contiflowpump_service.server import Server
-                server = Server(pump, server_name, server_type) #, server_uuid=)
+                server = Server(
+                    pump=pump,
+                    server_name=server_name,
+                    server_type=server_type,
+                    server_uuid=Config(pump.name).server_uuid
+                )
             else:
                 from ..pumps.syringepumps.syringepump_service import Server
-                server = Server(pump, pump.valves[0], pump.io_channels, server_name, server_type) #, server_uuid=)
+                server = Server(
+                    pump=pump,
+                    valve=pump.valves[0],
+                    io_channels=pump.io_channels,
+                    server_name=server_name,
+                    server_type=server_type,
+                    server_uuid=Config(pump.name).server_uuid
+                )
             servers += [server]
 
         #---------------------------------------------------------------------
@@ -185,7 +199,14 @@ class Application(metaclass=Singleton):
             server_name = axis_system.name.replace("_", " ")
 
             from ..motioncontrol.axis.axis_service.server import Server
-            server = Server(axis_system, axis_system.io_channels, axis_system.properties, server_name, server_type) #, server_uuid=)
+            server = Server(
+                axis_system=axis_system,
+                io_channels=axis_system.io_channels,
+                device_properties=axis_system.properties,
+                server_name=server_name,
+                server_type=server_type,
+                server_uuid=Config(axis_system.name).server_uuid
+            )
             servers += [server]
 
         #---------------------------------------------------------------------
@@ -194,7 +215,12 @@ class Application(metaclass=Singleton):
             server_name = valve_device.name.replace("_", " ")
 
             from ..valves.valve_service.server import Server
-            server = Server(valve_device.valves, server_name, server_type) #, server_uuid=)
+            server = Server(
+                valves=valve_device.valves,
+                server_name=server_name,
+                server_type=server_type,
+                server_uuid=Config(valve_device.name).server_uuid
+            )
             servers += [server]
 
         #---------------------------------------------------------------------
@@ -203,7 +229,12 @@ class Application(metaclass=Singleton):
             server_name = controller_device.name.replace("_", " ")
 
             from ..controllers.control_loop_service.server import Server
-            server = Server(controller_device.controller_channels, server_name, server_type) #, server_uuid=)
+            server = Server(
+                controller_channels=controller_device.controller_channels,
+                server_name=server_name,
+                server_type=server_type,
+                server_uuid=Config(controller_device.name).server_uuid
+            )
             servers += [server]
 
         #---------------------------------------------------------------------
@@ -212,7 +243,12 @@ class Application(metaclass=Singleton):
             server_name = io_device.name.replace("_", " ")
 
             from ..io.io_service.server import Server
-            server = Server(io_device.io_channels, server_name, server_type) #, server_uuid=)
+            server = Server(
+                io_channels=io_device.io_channels,
+                server_name=server_name,
+                server_type=server_type,
+                server_uuid=Config(io_device.name).server_uuid
+            )
             servers += [server]
 
         #---------------------------------------------------------------------
@@ -221,7 +257,12 @@ class Application(metaclass=Singleton):
             server_name = balance.name.replace("_", " ")
 
             from ..balance.balance_service.server import Server
-            server = Server(balance.device, server_name, server_type) #, server_uuid=)
+            server = Server(
+                balance=balance.device,
+                server_name=server_name,
+                server_type=server_type,
+                server_uuid=Config(balance.name).server_uuid
+            )
             servers += [server]
 
         return servers
