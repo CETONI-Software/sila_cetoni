@@ -137,7 +137,7 @@ class PumpFluidDosingServiceImpl(PumpFluidDosingServiceBase):
             instance.progress = 1
 
         target_volume = self.__pump.get_target_volume()
-        logging.debug("target volume: %f", target_volume)
+        logging.debug("target volume: %f, current volume: %f", target_volume, self.__pump.get_fill_level())
         flow_in_sec = self.__pump.get_flow_is() / self.__pump.get_flow_unit().time_unitid.value
         if flow_in_sec == 0:
             # try again, maybe the pump didn't start pumping yet
@@ -147,6 +147,7 @@ class PumpFluidDosingServiceImpl(PumpFluidDosingServiceBase):
             instance.status = CommandExecutionStatus.finishedWithError
             instance.progress = 1
             logging.error("The pump didn't start pumping. Last error: %s", self.__pump.read_last_error())
+            return
 
         logging.debug("flow_in_sec: %f", flow_in_sec)
         dosing_time = datetime.timedelta(seconds=self.__pump.get_target_volume() / flow_in_sec + 2)  # +2 sec buffer
