@@ -1,24 +1,25 @@
-<!-- omit in toc -->
+****<!-- omit in toc -->
 # SiLA CETONI Device Drivers
 
 This directory contains additional driver implementations for non-CETONI devices that are supported by the SiLA CETONI SDK.
 
-- [Overview](#overview)
-- [Supported Devices](#supported-devices)
-- [Directory Structure](#directory-structure)
-- [Example: Balances](#example-balances)
-  - [The Feature Definition](#the-feature-definition)
-  - [The Device Driver Interface](#the-device-driver-interface)
-  - [The Feature Implementation](#the-feature-implementation)
-  - [The Device Driver](#the-device-driver)
-  - [Serial Device Driver Interface](#serial-device-driver-interface)
-  - [Main Script](#main-script)
-- [Supplying your own Device Driver](#supplying-your-own-device-driver)
-  - [Adding a new balance driver](#adding-a-new-balance-driver)
-  - [Adding a new device type driver](#adding-a-new-device-type-driver)
-    - [New `Device` subclass](#new-device-subclass)
-    - [Extend `ApplicationSystem`](#extend-applicationsystem)
-    - [Extend `Application`](#extend-application)
+- [SiLA CETONI Device Drivers](#sila-cetoni-device-drivers)
+  - [Overview](#overview)
+  - [Supported Devices](#supported-devices)
+  - [Directory Structure](#directory-structure)
+  - [Example: Balances](#example-balances)
+    - [The Feature Definition](#the-feature-definition)
+    - [The Device Driver Interface](#the-device-driver-interface)
+    - [The Feature Implementation](#the-feature-implementation)
+    - [The Device Driver](#the-device-driver)
+    - [Serial Device Driver Interface](#serial-device-driver-interface)
+    - [Main Script](#main-script)
+  - [Supplying your own Device Driver](#supplying-your-own-device-driver)
+    - [Adding a new balance driver](#adding-a-new-balance-driver)
+    - [Adding a new device type driver](#adding-a-new-device-type-driver)
+      - [New `Device` subclass](#new-device-subclass)
+      - [Extend `ApplicationSystem`](#extend-applicationsystem)
+      - [Extend `Application`](#extend-application)
 
 ## Overview
 The SiLA CETONI SDK cannot only be used in combination with a CETONI device configuration to expose your CETONI system as SiLA 2 Servers.
@@ -86,62 +87,67 @@ class BalanceInterface(ABC):
 We're using a Python property for the value of the balance and an abstract method for the tare function.
 This function has to be implemented later by the specific device driver because the interface does not know how the specific device can be tared.
 
-This `BalanceInterface` class is defined in the [balance.py] file.
+This `BalanceInterface` class is defined in the [balance/abc.py] file.
 
 ### The Feature Implementation
 Now we can already implement our Feature since it will only be using the `BalanceInterface` and not the specific driver classes.  
-We're going to start in the `BalanceServer` class which creates the `BalanceService` Feature implementation.
+We're going to start in the `balance.balance_service.Server` class which creates the `BalanceServiceImpl` Feature implementation.
 ```py
-from device_drivers.balance import BalanceInterface
-from impl.de.cetoni.balance.BalanceService.BalanceService_servicer import BalanceService
+from sila_cetoni.device_drivers.balance import BalanceInterface
+from .feature_implementations.balanceservice_impl import BalanceServiceImpl
 
-class BalanceServer(SiLA2Server):
-    def __init__(self, cmd_args, balance: BalanceInterface, simulation_mode: bool = True):
+class Server(SilaServer):
+    def __init__(self, balance: BalanceInterface, ...):
         super().__init__(...)
-        # ...
-        self.BalanceService_servicer = BalanceService(simulation_mode=self.simulation_mode,
-                                                      balance=balance)
+
+        self.balanceservice = BalanceServiceImpl(balance, self.child_task_executor)
+        self.set_feature_implementation(BalanceServiceFeature, self.balanceservice)
 ```
 
-As you can see here the `BalanceServer` receives the balance driver as an argument to it's `__init__` function (we're going to see [later](#main-script) how the Server gets the specific balance driver).
-The balance driver is then passed on to the `BalanceService` which in turn dispatches it to the `BalanceServiceReal` class that contains the actual Feature implementation.
+As you can see here the `Server` receives the balance driver as an argument to it's `__init__` function (we're going to see [later](#main-script) how the Server gets the specific balance driver).
+The balance driver is then passed on to the `BalanceServiceImpl` class that contains the actual Feature implementation.
 
 ```py
-import sila2lib.framework.SiLAFramework_pb2 as silaFW_pb2
-from device_drivers.balance import BalanceInterface
+from sila_cetoni.device_drivers.balance import BalanceInterface
+from ..generated.balanceservice import BalanceServiceBase, Tare_Responses
 
-class BalanceServiceReal:
-    """
-    Implementation of the *Balance Service* in *Real* mode
-        Allows to control a balance
-    """
 
-    def __init__(self, balance: BalanceInterface = None):
-        self.balance = balance
+class BalanceServiceImpl(BalanceServiceBase):
+    __balance: BalanceInterface
+    __stop_event: Event
 
-    def Tare(self, request, context: grpc.ServicerContext) \
-            -> BalanceService_pb2.Tare_Responses:
-        self.balance.tare()
-        return BalanceService_pb2.Tare_Responses()
+    def __init__(self, balance: BalanceInterface, executor: Executor):
+        super().__init__()
+        self.__balance = balance
+        self.__stop_event = Event()
 
-    def Subscribe_Value(self, request, context: grpc.ServicerContext) \
-            -> BalanceService_pb2.Subscribe_Value_Responses:
-        while context.is_active():
-            yield BalanceService_pb2.Subscribe_Value_Responses(
-                Value=silaFW_pb2.Real(value=self.balance.value)
-            )
-            # we add a small delay to give the client a chance to keep up.
-            time.sleep(0.1)
+        def update_value(stop_event: Event):
+            new_value = value = self.__balance.value
+            while not stop_event.is_set():
+                self.update_Value(self.__balance.value)
+                time.sleep(0.1)
+
+        # initial value
+        self.update_Value(self.__balance.value)
+
+        executor.submit(update_value, self.__stop_event)
+
+    def Tare(self, *, metadata: Dict[FullyQualifiedIdentifier, Any]) -> Tare_Responses:
+        self.__balance.tare()
+
+    def stop(self) -> None:
+        self.__stop_event.set()
 ```
 
 The Feature implementation saves the balance driver in a member variable.
 
 The implementation of the `Tare` Command is as easy as it gets:
 it simply calls `tare()` on the balance driver and returns an empty Response.  
-The `Value` Property is implemented as a loop that continuously sends the current value to the SiLA Client.
-The loop will stop when the Client cancels the subscription (then `context.is_active()` returns `False`).  
+The `Value` Property is implemented as a loop that continuously updates the current value.
+The sila_python implementation handles sending the values to the Clients.
+The loop will eventually stop when the server is stopped (then `stop` will be called on all Feature implementation classes).  
 If you want to decrease the amount of values sent you can change the loop to only send a new value when it is different from the value before.
-See the complete Feature implementation in [BalanceService_real.py] for a possible implementation.
+See the complete Feature implementation in [balanceservice_impl.py] for a possible implementation.
 
 ### The Device Driver
 The only thing missing now is the specific driver implementation.
@@ -206,12 +212,12 @@ If the port was not given in `__init__` it can also be specified when calling th
 This function will open the serial communication on the given port.
 It also immediately creates and starts another thread that will continuously read all data from the balance.  
 If still no port was provided the `__autodetect_serial_port` function will try all available serial ports and pick the first one that responds as a Sartorius balance.
-The actual implementation doesn't really matter here; refer to [balance.py] for this.  
+The actual implementation doesn't really matter here; refer to [balance/abc.py] for this.  
 Onto the `__read_value` function.
 This function is responsible for reading all data that comes from the balance.
 These Sartorius balances that we're using in this example send their current value continuously via the serial protocol.
 This data is read by this function and converted into a floating point value (using a regular expression, as you can see).  
-The `tare` function does nothing more than writing the string 'T\r\n' to the serial port.  
+The `tare` function does nothing more than writing the string `'T\r\n'` to the serial port.  
 When the communication should be stopped the `close` function needs to be called which closes the serial communication and waits for the `__read_thread` to finish.  
 
 And that's already it.
@@ -235,7 +241,7 @@ We need to implement 3 methods in this class:
 - `handle_line` (actually, if we were inheriting `serial.threaded.Protocol` this would be called `data_received` but `serial.threaded.LineReader` already converts the raw data into lines): this function is continuously called when new data is available and we simply do the conversion of the data to a floating point value in this function
 - `connection_lost`: this function is called with an optional `Exception` as an argument when the serial connection was closed; the exception optionally contains a traceback of what went wrong
 
-Refer to [balance.py] for the actual implementation of these classes.  
+Refer to [balance/abc.py] for the actual implementation of these classes.  
 You'll se another class called `SerialBalanceInterface` there which already contains the boilerplate code for the serial communication as just described.
 So, if you want to implement a device driver for a balance from a different vendor that also uses a serial protocol then you can derive your driver class from this interface instead of deriving from `BalanceInterface` and doing the serial communication completely from scratch.
 
@@ -243,13 +249,13 @@ So, if you want to implement a device driver for a balance from a different vend
 The main script is responsible for passing the specific balance driver that should be used to the `BalanceServer`.
 In our case we create a `SartoriusBalance` instance and use its ability to automatically detect the serial port of a balance.
 ```py
-from device_drivers import sartorius_balance
-from serv.balance.Balance_server import BalanceServer
+from sila_cetoni.device_drivers.balance import sartorius_balance
+from sila_cetoni.balance.balance_service.server import Server
 # ...
 balance = sartorius_balance.SartoriusBalance()
 balance.open() # automatically detects a connected balance
-server = BalanceServer(cmd_args=..., balance=balance, simulation_mode=False)
-server.run(block=False)
+server = Server(balance=balance, ...)
+server.start(...)
 ```
 
 ## Supplying your own Device Driver
@@ -266,7 +272,7 @@ The SiLA CETONI SDK uses a simple `Device` class and its subclasses to represent
 That means if you want to have a new SiLA Server spun up you need to define a corresponding `Device` subclass in `application.device`:
 ```py
 # in application/device.py
-from device_drivers import my_driver # the common interface for your device type
+from sila_cetoni.device_drivers import my_driver # the common interface for your device type
 #...
 class MyDevice(Device):
     device: my_driver.MyDriverInterface
@@ -284,23 +290,23 @@ Then, in the `__init__` function fill that list.
 ```py
 # in application/system.py
 from .device import ..., MyDevice
-from device_drivers import my_device # the specific device driver
+from device_drivers.my_device_type import my_device # the specific device driver
 
 class ApplicationSystem(metaclass=Singleton):
     #...
-    my_devices: List[MyDevice] = []
+    my_devices: List[my_device.MyDevice] = []
 
     def __init__(self, ...):
         #...
         self.my_devices = self.get_available_my_devices()
 
-    def get_available_my_devices(self) -> List[MyDevice]:
+    def get_available_my_devices(self) -> List[my_device.MyDevice]:
         devices = []
         my_devices_count = ...
         for i in range(my_devices_count):
             dev = my_device.MyDevice()
             # dev.open() or something similar to start the communication
-            device = MyDevice(f"My_Device_{i}", dev)
+            device = my_device.MyDevice(f"My_Device_{i}", dev)
             devices += [device]
         return devices
 ```
@@ -319,16 +325,10 @@ class Application(metaclass=Singleton):
         #---------------------------------------------------------------------
         # my_device
         for my_device in self.system.my_devices:
-            args.server_port += 1
-            args.server_name = my_device.name.replace("_", " ")
-            args.description = "Allows to control a custom device"
+            server_name = my_device.name.replace("_", " ")
 
-            from serv.my_device.MyDevice_server import MyDeviceServer
-            server = MyDeviceServer(
-                cmd_args=args,
-                my_device=my_device.device,
-                simulation_mode=False
-            )
+            from ..my_device_type.my_device_type_service.server import Server
+            server = Server(my_device=my_device.device, server_name=server_name)
             servers += [server]
 ```
 
@@ -337,8 +337,8 @@ The `Application` class will now automatically take care of starting and stoppin
 
 [features/de/cetoni/balance/BalanceService.sila.xml]: ../features/de/cetoni/balance/BalanceService.sila.xml
 [README.md]: ../README.md
-[balance.py]: balance.py
-[BalanceService_real.py]: ../impl/de/cetoni/balance/BalanceService/BalanceService_real.py
+[balance/abc.py]: balance/abc.py
+[balanceservice_impl.py]: ../balance/balance_service/feature_implementations/balanceservice_impl.py
 [`pySerial`]: https://pyserial.readthedocs.io/en/latest/pyserial.html
 [Threading API]: https://pyserial.readthedocs.io/en/latest/pyserial_api.html#module-serial.threaded
 [Example]: #example-balances
