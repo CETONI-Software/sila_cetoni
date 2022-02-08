@@ -10,4 +10,4 @@ source $SILA_VENV_PATH/bin/activate
 echo Starting demo server...
 
 export SILA_CETONI_NO_LOG_FILE=1
-${0%/*}/sila_cetoni.sh ${0%/*}/../config/testconfig_qmixsdk
+${0%/*}/sila-cetoni.sh -c ${0%/*}/../config/testconfig_qmixsdk

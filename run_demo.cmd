@@ -16,5 +16,5 @@ set SILA_VENV_PATH=%~dp0\.sila_cetoni_venv
 echo Starting demo server...
 
 set SILA_CETONI_NO_LOG_FILE=1
-%SILA_VENV_PATH%\Scripts\python %~dp0\sila_cetoni.py %~dp0\..\..\config\testconfig_qmixsdk
+%SILA_VENV_PATH%\Scripts\sila-cetoni -c %~dp0\..\..\config\testconfig_qmixsdk
 exit /b
