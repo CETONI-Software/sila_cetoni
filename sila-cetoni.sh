@@ -19,12 +19,14 @@ sleep 1 # prevent sporadically not working 2nd pump
 grep -qi raspbian /etc/os-release 2>/dev/null && {
     # default directory for RaspberryPi
     export CETONI_SDK_PATH="$HOME/CETONI_SDK_Raspi"
-} || [ $(lsb_release -is) == "Ubuntu" ] 2>/dev/null && {
-    # default directory for Ubuntu Linux
-    export CETONI_SDK_PATH="/usr/share/qmix-sdk"
 } || {
-    # default directory for generic Linux
-    export CETONI_SDK_PATH="$HOME/CETONI_SDK"
+    [ $(lsb_release -is 2>/dev/null) == "Ubuntu" ] && {
+        # default directory for Ubuntu Linux
+        export CETONI_SDK_PATH="/usr/share/qmix-sdk"
+    } || {
+        # default directory for generic Linux
+        export CETONI_SDK_PATH="$HOME/CETONI_SDK"
+    }
 }
 
 export PATH="$CETONI_SDK_PATH":"$PATH"
