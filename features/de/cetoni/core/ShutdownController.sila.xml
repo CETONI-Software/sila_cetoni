@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="core" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>ShutdownController</Identifier>
+    <DisplayName>Shutdown Controller</DisplayName>
+    <Description>
+        Provides a generic way of telling a SiLA2 server that it is about to be shut down. The server implements a routine to be executed before the hardware is shut down (e.g. saving device parameters or bringing the device into a safe position).
+    </Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>Shutdown</Identifier>
+        <DisplayName>Shutdown</DisplayName>
+        <Description>
+            Initiates the shutdown routine. If no errors occurred during the shutdown process the server should be considered ready to be physically shutdown (i.e. the device can be shut down/powered off).
+        </Description>
+        <Observable>Yes</Observable>
+        <DefinedExecutionErrors>
+            <Identifier>ShutdownFailed</Identifier>
+        </DefinedExecutionErrors>
+    </Command>
+
+    <!-- Errors -->
+    <DefinedExecutionError>
+        <Identifier>ShutdownFailed</Identifier>
+        <DisplayName>Shutdown Failed</DisplayName>
+        <Description>
+            The shutdown routine could not be executed properly. Thus the server might not be ready to be physically shutdown.
+        </Description>
+    </DefinedExecutionError>
+</Feature>

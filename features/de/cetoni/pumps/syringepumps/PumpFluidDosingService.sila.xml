@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="pumps.syringepumps" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>PumpFluidDosingService</Identifier>
+    <DisplayName>Pump Fluid Dosing Service</DisplayName>
+    <Description>
+        Allows to dose a specified fluid. There are commands for absolute dosing (SetFillLevel) and relative dosing (DoseVolume and GenerateFlow) available.
+
+        The flow rate can be negative. In this case the pump aspirates the fluid instead of dispensing. The flow rate has to be a value between MaxFlowRate and MinFlowRate. If the value is not within this range (hence is invalid) a ValidationError will be thrown.
+        At any time the property CurrentSyringeFillLevel can be queried to see how much fluid is left in the syringe. Similarly the property CurrentFlowRate can be queried to get the current flow rate at which the pump is dosing.
+    </Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>SetFillLevel</Identifier>
+        <DisplayName>Set Fill Level</DisplayName>
+        <Description>
+                Pumps fluid with the given flow rate until the requested fill level is reached.
+                Depending on the requested fill level given in the FillLevel parameter this function may cause aspiration or dispension of fluid.
+        </Description>
+        <Observable>Yes</Observable>
+        <Parameter>
+            <Identifier>FillLevel</Identifier>
+            <DisplayName>Fill Level</DisplayName>
+            <Description>
+                The requested fill level. A level of 0 indicates a completely empty syringe. The value has to be between 0 and MaxSyringeFillLevel. Depending on the requested fill level this may cause aspiration or dispension of fluid.
+            </Description>
+            <DataType>
+                <Basic>Real</Basic>
+            </DataType>
+        </Parameter>
+        <Parameter>
+            <Identifier>FlowRate</Identifier>
+            <DisplayName>Flow Rate</DisplayName>
+            <Description>
+                    The flow rate at which the pump should dose the fluid.
+            </Description>
+            <DataType>
+                <Basic>Real</Basic>
+            </DataType>
+        </Parameter>
+    </Command>
+    <Command>
+        <Identifier>DoseVolume</Identifier>
+        <DisplayName>Dose Volume</DisplayName>
+        <Description>Dose a certain amount of volume with the given flow rate.</Description>
+        <Observable>Yes</Observable>
+        <Parameter>
+            <Identifier>Volume</Identifier>
+            <DisplayName>Volume</DisplayName>
+            <Description>
+                The amount of volume to dose. This value can be negative. In that case the pump aspirates the fluid.
+            </Description>
+            <DataType>
+                <Basic>Real</Basic>
+            </DataType>
+        </Parameter>
+        <Parameter>
+            <Identifier>FlowRate</Identifier>
+            <DisplayName>Flow Rate</DisplayName>
+            <Description>The flow rate at which the pump should dose the fluid.</Description>
+            <DataType>
+                <Basic>Real</Basic>
+            </DataType>
+        </Parameter>
+    </Command>
+    <Command>
+        <Identifier>GenerateFlow</Identifier>
+        <DisplayName>Generate Flow</DisplayName>
+        <Description>
+            Generate a continuous flow with the given flow rate. Dosing continues until it gets stopped manually by calling StopDosage or until the pusher reached one of its limits.
+        </Description>
+        <Observable>Yes</Observable>
+        <Parameter>
+            <Identifier>FlowRate</Identifier>
+            <DisplayName>Flow Rate</DisplayName>
+            <Description>
+                The flow rate at which the pump should dose the fluid. This value can be negative. In that case the pump aspirates the fluid.
+            </Description>
+            <DataType>
+                <Basic>Real</Basic>
+            </DataType>
+        </Parameter>
+    </Command>
+    <Command>
+        <Identifier>StopDosage</Identifier>
+        <DisplayName>Stop Dosage</DisplayName>
+        <Description>Stops a currently running dosage immediately.</Description>
+        <Observable>No</Observable>
+    </Command>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>MaxSyringeFillLevel</Identifier>
+        <DisplayName>Maximum Syringe Fill Level</DisplayName>
+        <Description>The maximum amount of fluid that the syringe can hold.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>SyringeFillLevel</Identifier>
+        <DisplayName>Syringe Fill Level</DisplayName>
+        <Description>The current amount of fluid left in the syringe.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>MaxFlowRate</Identifier>
+        <DisplayName>Maximum Flow Rate</DisplayName>
+        <Description>The maximum value of the flow rate at which this pump can dose a fluid.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>FlowRate</Identifier>
+        <DisplayName>Flow Rate</DisplayName>
+        <Description>The current value of the flow rate. It is 0 if the pump does not dose any fluid.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+
+    <!-- Custom Data Types -->
+    <!-- Possibility 1: Structure of a value (real) and a unit (string) -->
+    <!-- <DataTypeDefinition>
+        <Identifier>ValueWithUnit</Identifier>
+        <DisplayName>Value with Unit</DisplayName>
+        <Description>Holds a value (e.g. flow rate or fill level) and its unit (e.g. ml/h or ml)</Description>
+        <DataType>
+            <Structure>
+                <Element>
+                    <Identifier>Value</Identifier>
+                    <DisplayName>Value</DisplayName>
+                    <Description />
+                    <DataType>
+                        <Basic>Real</Basic>
+                    </DataType>
+                </Element>
+                <Element>
+                    <Identifier>Unit</Identifier>
+                    <DisplayName>Unit</DisplayName>
+                    <Description />
+                    <DataType>
+                        <Basic>String</Basic>
+                    </DataType>
+                </Element>
+            </Structure>
+        </DataType>
+    </DataTypeDefinition> -->
+    <!-- Possibility 2: Unit Constraint that constraints the value (real) to a specific unit -->
+    <!-- <DataTypeDefinition>
+        <Identifier>ValueWithUnit</Identifier>
+        <DisplayName>Value with Unit</DisplayName>
+        <Description>Holds a value (e.g. flow rate or fill level) and its unit (e.g. ml/h or ml)</Description>
+        <DataType>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>ml/s</Label>
+                        <UnitComponent>
+                            <SIUnit>Meter</SIUnit>
+                            <Exponent>3</Exponent>
+                            <Factor>0.0001</Factor>
+                            <Offset>0</Offset>
+                        </UnitComponent>
+                        <UnitComponent>
+                            <SIUnit>Second</SIUnit>
+                            <Exponent>-1</Exponent>
+                            <Factor>0.00027777777</Factor>
+                            1/3600 = 0.00027777777
+                            <Offset>0</Offset>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
+        </DataType>
+    </DataTypeDefinition> -->
+</Feature>

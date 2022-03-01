@@ -1,0 +1,8 @@
+.vscode/*
+__pycache__/
+configs/
+*.log*
+*.csv*
+.ssl/
+build/
+*.egg-info/

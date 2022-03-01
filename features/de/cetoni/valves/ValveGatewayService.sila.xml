@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="valves" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>ValveGatewayService</Identifier>
+    <DisplayName>Valve Gateway Service</DisplayName>
+    <Description>Provides means to access individual valves of a valve terminal</Description>
+
+    <!-- Metadata -->
+    <Metadata>
+        <Identifier>ValveIndex</Identifier>
+        <DisplayName>Valve Index</DisplayName>
+        <Description>The index of a single valve of a valve terminal. This value is 0-indexed, i.e. the first valve has index 0, the second one index 1 and so on.</Description>
+        <DataType>
+            <Basic>Integer</Basic>
+        </DataType>
+    <DefinedExecutionErrors>
+        <Identifier>InvalidValveIndex</Identifier>
+    </DefinedExecutionErrors>
+    </Metadata>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>NumberOfValves</Identifier>
+        <DisplayName>Number Of Valves</DisplayName>
+        <Description>The number of valves of a terminal</Description>
+        <Observable>No</Observable>
+        <DataType>
+            <Basic>Integer</Basic>
+        </DataType>
+    </Property>
+
+    <!-- Errors -->
+    <DefinedExecutionError>
+        <Identifier>InvalidValveIndex</Identifier>
+        <DisplayName>Invalid Valve Index</DisplayName>
+        <Description>The sent Valve Index is not known</Description>
+    </DefinedExecutionError>
+</Feature>

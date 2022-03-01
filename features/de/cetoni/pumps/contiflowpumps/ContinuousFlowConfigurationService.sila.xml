@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="pumps.contiflowpumps" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>ContinuousFlowConfigurationService</Identifier>
+    <DisplayName>Continuous Flow Configuration Service</DisplayName>
+    <Description>Allows to configure the parameters of a continuous flow pump.</Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>SetSwitchingMode</Identifier>
+        <DisplayName>Set Switching Mode</DisplayName>
+        <Description>Sets the switching mode for syringe pump switchover if one syringe pump runs empty.</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>SwitchingMode</Identifier>
+            <DisplayName>Switching Mode</DisplayName>
+            <Description>The new switching mode to set</Description>
+            <DataType>
+                <Constrained>
+                    <DataType>
+                        <Basic>String</Basic>
+                    </DataType>
+                    <Constraints>
+                        <Set>
+                            <Value>SwitchingCrossFlow</Value>
+                            <!-- more to come... -->
+                        </Set>
+                    </Constraints>
+                </Constrained>
+            </DataType>
+        </Parameter>
+    </Command>
+    <Command>
+        <Identifier>SetRefillFlowRate</Identifier>
+        <DisplayName>Set Refill Flow Rate</DisplayName>
+        <Description>Set the refill flow rate for the continuous flow pump. The refill flow speed limits the maximum flow that is possible with a contiflow pump.</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>RefillFlowRate</Identifier>
+            <DisplayName>Refill Flow Rate</DisplayName>
+            <Description>The refill flow rate to set</Description>
+            <DataType>
+                <Basic>Real</Basic>
+            </DataType>
+        </Parameter>
+    </Command>
+    <Command>
+        <Identifier>SetCrossFlowDuration</Identifier>
+        <DisplayName>Set Cross Flow Duration</DisplayName>
+        <Description>Set the cross flow duration for the continuous flow pump. The cross flow duration is the time the pump running empty decelerates while the filled pump accelerates.</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>CrossFlowDuration</Identifier>
+            <DisplayName>Cross Flow Duration</DisplayName>
+            <Description>The cross flow duration to set</Description>
+            <DataType>
+                <Constrained>
+                    <DataType>
+                        <Basic>Real</Basic>
+                    </DataType>
+                    <Constraints>
+                        <Unit>
+                            <Label>sec</Label>
+                            <Factor>1</Factor>
+                            <Offset>0</Offset>
+                            <UnitComponent>
+                                <SIUnit>Second</SIUnit>
+                                <Exponent>1</Exponent>
+                            </UnitComponent>
+                        </Unit>
+                    </Constraints>
+                </Constrained>
+            </DataType>
+        </Parameter>
+    </Command>
+    <Command>
+        <Identifier>SetOverlapDuration</Identifier>
+        <DisplayName>Set Overlap Duration</DisplayName>
+        <Description>Set the overlap duration for the continuous flow pump. The overlap duration is a time the refilled pump will start earlier than the empty pump stops. You can use this time to ensure that the system is already pressurized when switching over.</Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>OverlapDuration</Identifier>
+            <DisplayName>Overlap Duration</DisplayName>
+            <Description>The overlap duration to set</Description>
+            <DataType>
+                <Constrained>
+                    <DataType>
+                        <Basic>Real</Basic>
+                    </DataType>
+                    <Constraints>
+                        <Unit>
+                            <Label>sec</Label>
+                            <Factor>1</Factor>
+                            <Offset>0</Offset>
+                            <UnitComponent>
+                                <SIUnit>Second</SIUnit>
+                                <Exponent>1</Exponent>
+                            </UnitComponent>
+                        </Unit>
+                    </Constraints>
+                </Constrained>
+            </DataType>
+        </Parameter>
+    </Command>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>SwitchingMode</Identifier>
+        <DisplayName>Switching Mode</DisplayName>
+        <Description>Get the switching mode for syringe pump switchover if one syringe pump runs empty.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>String</Basic>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>MaxRefillFlowRate</Identifier>
+        <DisplayName>Max Refill Flow Rate</DisplayName>
+        <Description>Get the maximum possible refill flow rate for the continuous flow pump.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>RefillFlowRate</Identifier>
+        <DisplayName>Refill Flow Rate</DisplayName>
+        <Description>Get the refill flow rate for the continuous flow pump.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>MinFlowRate</Identifier>
+        <DisplayName>Min Flow Rate</DisplayName>
+        <Description>Get the minimum flow rate that is theoretically possible with the continuous flow pump.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Basic>Real</Basic>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>CrossFlowDuration</Identifier>
+        <DisplayName>Cross Flow Duration</DisplayName>
+        <Description>Get the cross flow duration for the continuous flow pump.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>sec</Label>
+                        <Factor>1</Factor>
+                        <Offset>0</Offset>
+                        <UnitComponent>
+                            <SIUnit>Second</SIUnit>
+                            <Exponent>1</Exponent>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>OverlapDuration</Identifier>
+        <DisplayName>Overlap Duration</DisplayName>
+        <Description>Get the overlap duration for the continuous flow pump.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>sec</Label>
+                        <Factor>1</Factor>
+                        <Offset>0</Offset>
+                        <UnitComponent>
+                            <SIUnit>Second</SIUnit>
+                            <Exponent>1</Exponent>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
+        </DataType>
+    </Property>
+</Feature>

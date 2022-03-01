@@ -1,0 +1,21 @@
+[submodule "sila_cetoni/application"]
+	path = sila_cetoni/application
+	url = https://github.com/CETONI-Software/sila_cetoni_application.git
+[submodule "sila_cetoni/controllers"]
+	path = sila_cetoni/controllers
+	url = https://github.com/CETONI-Software/sila_cetoni_controllers.git
+[submodule "sila_cetoni/core"]
+	path = sila_cetoni/core
+	url = https://github.com/CETONI-Software/sila_cetoni_core.git
+[submodule "sila_cetoni/io"]
+	path = sila_cetoni/io
+	url = https://github.com/CETONI-Software/sila_cetoni_io.git
+[submodule "sila_cetoni/motioncontrol"]
+	path = sila_cetoni/motioncontrol
+	url = https://github.com/CETONI-Software/sila_cetoni_motioncontrol.git
+[submodule "sila_cetoni/pumps"]
+	path = sila_cetoni/pumps
+	url = https://github.com/CETONI-Software/sila_cetoni_pumps.git
+[submodule "sila_cetoni/valves"]
+	path = sila_cetoni/valves
+	url = https://github.com/CETONI-Software/sila_cetoni_valves.git

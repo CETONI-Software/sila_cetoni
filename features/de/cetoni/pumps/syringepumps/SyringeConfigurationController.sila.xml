@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0" Originator="de.cetoni" Category="pumps.syringepumps" xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+    <Identifier>SyringeConfigurationController</Identifier>
+    <DisplayName>Syringe Configuration Controller</DisplayName>
+    <Description>
+            Provides syringe pump specific functions for configuration (i.e. the configuration of the syringe itself).
+    </Description>
+
+    <!-- Commands -->
+    <Command>
+        <Identifier>SetSyringeParameters</Identifier>
+        <DisplayName>Set Syringe Parameters</DisplayName>
+        <Description>
+            Set syringe parameters.
+            If you change the syringe in one device, you need to setup the new syringe parameters to get proper conversion of flow rate und volume units.
+        </Description>
+        <Observable>No</Observable>
+        <Parameter>
+            <Identifier>InnerDiameter</Identifier>
+            <DisplayName>Inner Diameter</DisplayName>
+            <Description>Inner diameter of the syringe tube in millimetres.</Description>
+            <DataType>
+                <Constrained>
+                    <DataType>
+                        <Basic>Real</Basic>
+                    </DataType>
+                    <Constraints>
+                        <Unit>
+                            <Label>mm</Label>
+                            <Factor>0.001</Factor>
+                            <Offset>0</Offset>
+                            <UnitComponent>
+                                <SIUnit>Meter</SIUnit>
+                                <Exponent>1</Exponent>
+                            </UnitComponent>
+                        </Unit>
+                    </Constraints>
+                </Constrained>
+            </DataType>
+        </Parameter>
+        <Parameter>
+            <Identifier>MaxPistonStroke</Identifier>
+            <DisplayName>Max Piston Stroke</DisplayName>
+            <Description>The maximum piston stroke defines the maximum position the piston can be moved to before it slips out of the syringe tube. The maximum piston stroke limits the maximum travel range of the syringe pump pusher.</Description>
+            <DataType>
+                <Constrained>
+                    <DataType>
+                        <Basic>Real</Basic>
+                    </DataType>
+                    <Constraints>
+                        <Unit>
+                            <Label>mm</Label>
+                            <Factor>0.001</Factor>
+                            <Offset>0</Offset>
+                            <UnitComponent>
+                                <SIUnit>Meter</SIUnit>
+                                <Exponent>1</Exponent>
+                            </UnitComponent>
+                        </Unit>
+                    </Constraints>
+                </Constrained>
+            </DataType>
+        </Parameter>
+    </Command>
+
+    <!-- Properties -->
+    <Property>
+        <Identifier>InnerDiameter</Identifier>
+        <DisplayName>Inner Diameter</DisplayName>
+        <Description>Inner diameter of the syringe tube in millimetres.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>mm</Label>
+                        <Factor>0.001</Factor>
+                        <Offset>0</Offset>
+                        <UnitComponent>
+                            <SIUnit>Meter</SIUnit>
+                            <Exponent>1</Exponent>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
+        </DataType>
+    </Property>
+    <Property>
+        <Identifier>MaxPistonStroke</Identifier>
+        <DisplayName>Max Piston Stroke</DisplayName>
+        <Description>The maximum piston stroke defines the maximum position the piston can be moved to before it slips out of the syringe tube. The maximum piston stroke limits the maximum travel range of the syringe pump pusher.</Description>
+        <Observable>Yes</Observable>
+        <DataType>
+            <Constrained>
+                <DataType>
+                    <Basic>Real</Basic>
+                </DataType>
+                <Constraints>
+                    <Unit>
+                        <Label>mm</Label>
+                        <Factor>0.001</Factor>
+                        <Offset>0</Offset>
+                        <UnitComponent>
+                            <SIUnit>Meter</SIUnit>
+                            <Exponent>1</Exponent>
+                        </UnitComponent>
+                    </Unit>
+                </Constraints>
+            </Constrained>
+        </DataType>
+    </Property>
+</Feature>
