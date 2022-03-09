@@ -85,11 +85,13 @@ Traceback (most recent call last):
 ImportError: /home/pi/.local/lib/python3.9/site-packages/grpc/_cython/cygrpc.cpython-39-arm-linux-gnueabihf.so: undefined symbol: __atomic_exchange_8
 ```
 This is a known bug in gRPC (https://github.com/grpc/grpc/issues/20400) and there exists a workaround, too (https://github.com/opencv/opencv/issues/15278#issuecomment-520893950):  
-You just need to modify `sila_cetoni.sh` like this:
-```shell
+You just need to modify `sila_cetoni/application/__init__.py` like this:
+```py
 # ...
-LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libatomic.so.1.2.0 $curr_dir/sila-cetoni $@
-#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-- add this
+env["PATH"] = f"{CETONI_SDK_PATH}:{env['PATH']}"
+env["PYTHONPATH"] = f"{CETONI_SDK_PATH}/python:{env.get('PYTHONPATH', '')}"
+env["LD_LIBRARY_PATH"] = f"{CETONI_SDK_PATH}/lib:{env.get('LD_LIBRARY_PATH', '')}"
+env["LD_PRELOAD"] = "/usr/lib/arm-linux-gnueabihf/libatomic.so.1.2.0"  #< add this line
 #...
 ```
 
