@@ -1,3 +1,5 @@
+import os
+import platform
 import re
 from os.path import dirname, join
 
@@ -78,8 +80,18 @@ for ns in redundant_namespaces:
             PACKAGES.append(short_child)
             PACKAGE_DIR[short_child] = child.replace(".", "/")
 
-setup(
+s = setup(
     packages=PACKAGES,
     package_dir=PACKAGE_DIR,
     long_description=prepare_readme(),
 )
+
+if "build" in s.command_obj:
+    here = os.path.dirname(__file__)
+    sdk_path = os.path.abspath(os.path.join(here, "..", ".." if platform.system() == "Windows" else ""))
+    file = os.path.join(here, s.command_obj["build"].build_lib, "sila_cetoni", "config.py")
+    if os.path.exists(file):
+        with open(file, "r+") as f:
+            data = f.read().replace("$CETONI_SDK_PATH", f"{sdk_path}")
+            f.seek(0)
+            f.write(data)
