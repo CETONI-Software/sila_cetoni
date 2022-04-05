@@ -58,11 +58,11 @@ $ sil-cetoni --help
 > ```shell
 > $ python -m sila_cetoni.application <arguments...>
 > ```
-> Also, in case you have installed the CETONI SDK in a non-standard location 
-> (i.e. not in `C:\CETONI_SDK` on Windows, or not in `~/CETONI_SDK_Raspi` on a RaspberryPi,
-> or not in `/usr/share/qmixsdk` on Ubuntu Linux, or not in `~/CETONI_SDK` on any other Linux)
-> you need to change the `CETONI_SDK_PATH` variable in `sila_cetoni/application/__init__.py`
-> to point to the correct path.
+> Also, in case you get the error *ModuleNotFoundError: No module named 'qmixsdk'* 
+> you have to point the script to the correct location of the CETONI SDK. This can
+> easily be done by setting the `CETONI_SDK_PATH` environment variable before calling
+> `sila-cetoni`.
+
 
 You can play around with the server's and their features by using the freely available [SiLA Browser](https://unitelabs.ch/technology/plug-and-play/sila-browser/) or even [CETONI Elements], for example.  
 Or you can also write your own SiLA Client software using the Python or any other of the [reference implementations](https://gitlab.com/SiLA2/) of SiLA 2.
