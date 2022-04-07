@@ -92,6 +92,6 @@ if "build" in s.command_obj:
     file = os.path.join(here, s.command_obj["build"].build_lib, "sila_cetoni", "config.py")
     if os.path.exists(file):
         with open(file, "r+") as f:
-            data = f.read().replace("$CETONI_SDK_PATH", f"{sdk_path}")
+            data = f.read().replace("\"$CETONI_SDK_PATH\"", f"{sdk_path!r}")
             f.seek(0)
             f.write(data)
