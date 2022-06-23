@@ -50,7 +50,7 @@ $ sila-cetoni -c <path/to/your/device_config>
 
 To se a list of all available command line options run
 ```shell
-$ sil-cetoni --help
+$ sila-cetoni --help
 ```
 
 > ##### Note:
