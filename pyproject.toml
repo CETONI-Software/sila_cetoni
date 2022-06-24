@@ -36,7 +36,7 @@ dev = [
 ]
 
 [project.scripts]
-sila-cetoni = "sila_cetoni.application.__main__:main"
+sila-cetoni = "sila_cetoni.application.__main__:app"
 
 [project.urls]
 "Homepage" = "https://cetoni.de/cobomation/#sila"
