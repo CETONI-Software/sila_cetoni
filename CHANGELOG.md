@@ -18,6 +18,9 @@ Types of changes
 
 ## Unreleased
 
+
+## v1.1.0
+
 ### Fixed
 - Fix dependencies in pyproject.toml
 
