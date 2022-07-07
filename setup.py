@@ -14,7 +14,7 @@ def prepare_readme():
 
 
 # This has been taken from https://github.com/rickstaa/stand_alone_sub_package_folder_example and modified to fit this
-# project's struture. Essentially, it takes the packages from `find_namespace_packages` and extracts the packages that
+# project's structure. Essentially, it takes the packages from `find_namespace_packages` and extracts the packages that
 # are also standalone packages (see `standalone_ns_packages`) and installs them as if they were installed one by one
 # through pip.
 # The problem that this code solves is the following:
@@ -28,7 +28,7 @@ def prepare_readme():
 # |  `- valves
 # |- ...
 # `- ...
-# If we want to install all packages with a single `pip install` the resulting strcuture would be not very nice to use
+# If we want to install all packages with a single `pip install` the resulting structure would be not very nice to use
 # and would have a lot of redundancies:
 # site_packages/
 # |- sila_cetoni/
