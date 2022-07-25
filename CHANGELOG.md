@@ -18,10 +18,18 @@ Types of changes
 
 ## Unreleased
 
+### Added
+
+- `DeviceDriverABC` as the abstract base class for all device driver interface classes
 
 ## v1.1.0
 
+### Added
+
+- sila_cetoni_heating_cooling package with feature and device driver implementation for heating/cooling devices
+
 ### Fixed
+
 - Fix dependencies in pyproject.toml
 
 ## v1.0.0
@@ -29,6 +37,7 @@ Types of changes
 First release of sila_cetoni
 
 ### Added
+
 - Plugins for
     - the main application
     - CETONI core SiLA 2 Features
