@@ -18,6 +18,8 @@ Types of changes
 
 ## Unreleased
 
+## v1.2.0
+
 ### Added
 
 - `DeviceDriverABC` as the abstract base class for all device driver interface classes
