@@ -18,6 +18,10 @@ Types of changes
 
 ## Unreleased
 
+## v1.3.0
+
+Sync with submodule v1.3.0 releases
+
 ## v1.2.0
 
 ### Added
