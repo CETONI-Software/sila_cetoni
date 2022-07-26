@@ -1,0 +1,21 @@
+
+{
+    "$schema": "https://raw.githubusercontent.com/CETONI-Software/sila_cetoni_application/main/sila_cetoni/application/resources/configuration_schema.json",
+    "version": 1,
+    "cetoni_devices": {
+        "device_config_path": "C:/CETONI_SDK/config/testconfig_qmixsdk"
+    },
+    "devices": {
+      "Sartorius Balance": {
+        "type": "balance",
+        "manufacturer": "Sartorius",
+        "port": "COM4"
+      }
+    },
+    "server_ip": null, // the default is empty which means the IP of the localhost
+    "server_base_port": 50051,
+    "regenerate_certificates": false,
+    "log_level": "info",
+    "log_file_dir": null, // the default is empty which means don't create log files
+    "scan_devices": false
+}
