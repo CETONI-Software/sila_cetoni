@@ -18,6 +18,10 @@ Types of changes
 
 ## Unreleased
 
+## v1.4.0
+
+Sync with submodule v1.4.0 releases
+
 ## v1.3.1
 
 Sync with sila_cetoni_application v1.3.1 hotfix release
@@ -33,10 +37,6 @@ Sync with submodule v1.3.0 releases
 - `DeviceDriverABC` as the abstract base class for all device driver interface classes
 
 ## v1.1.0
-
-### Added
-
-- sila_cetoni_heating_cooling package with feature and device driver implementation for heating/cooling devices
 
 ### Fixed
 
