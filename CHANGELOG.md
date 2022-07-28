@@ -18,6 +18,10 @@ Types of changes
 
 ## Unreleased
 
+## v1.4.2
+
+sila_cetoni_application v1.4.2 hotfix release
+
 ## v1.4.1
 
 sila_cetoni_application v1.4.1 hotfix release
