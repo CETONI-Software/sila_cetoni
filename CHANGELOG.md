@@ -18,6 +18,14 @@ Types of changes
 
 ## Unreleased
 
+## v1.4.1
+
+sila_cetoni_application v1.4.1 hotfix release
+
+### Fixed
+
+- Add missing dependencies in pyproject.toml
+
 ## v1.4.0
 
 Sync with submodule v1.4.0 releases
