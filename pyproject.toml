@@ -19,12 +19,15 @@ classifiers = [
 requires-python = ">=3.7"
 dependencies = [
     "coloredlogs",
+    "flask",
+    "jsonschema",
     # only for debugging the AxisSystemPositionController's positioning shape
     # matplotlib
     # most recent numpy has an issue with fmod on Windows 10 (2004)
     # see https://developercommunity.visualstudio.com/t/fmod-after-an-update-to-windows-2004-is-causing-a/1207405
     "numpy==1.19.3",
     "pyserial",
+    "requests",
     "shapely",
     "sila2[codegen]==0.8.2",
     "typer",
