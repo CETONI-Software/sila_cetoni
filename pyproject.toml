@@ -1,6 +1,6 @@
 [project]
 name = "sila_cetoni"
-version = "1.4.2"
+version = "1.5.0"
 description = "SiLA 2 implementations for CETONI devices"
 dynamic = ["readme"] # comes from setup.py # readme = "README.md"
 authors = [

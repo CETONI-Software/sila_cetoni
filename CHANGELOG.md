@@ -18,6 +18,10 @@ Types of changes
 
 ## Unreleased
 
+## v1.5.0
+
+Sync with submodule v1.5.0 releases
+
 ## v1.4.2
 
 sila_cetoni_application v1.4.2 hotfix release
