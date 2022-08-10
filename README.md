@@ -42,7 +42,7 @@ This means you can not only use the provided console script to run your CETONI d
 
 #### CETONI SDK
 
-Additionally, you'll of course need the CETONI SDK with the Python Integration.
+If you would like to use the CETONI SiLA 2 drivers to control CETONI devices, then you need to install the CETONI SDK with Python Integration.
 
 For instructions on how to install the CETONI SDK for Python on your system and get a valid configuration for your devices see the [CETONI SDK Documentation].  
 On Linux be sure to also install the correct SocketCAN driver (either [SysTec](https://www.systec-electronic.com/en/company/support/device-driver/) or [IXXAT](https://www.ixxat.com/support/file-and-documents-download/drivers/socketcan-driver) depending on your CETONI base module).
