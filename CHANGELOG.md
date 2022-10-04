@@ -18,9 +18,17 @@ Types of changes
 
 ## Unreleased
 
+Sync with submodule v1.7.1 releases
+
+## v1.7.1
+
+### Fixed
+
+- Typo in pyproject.toml
+
 ## v1.7.0
 
-Synch with submodule v1.7.0 releases
+Sync with submodule v1.7.0 releases
 
 ### Changed
 
