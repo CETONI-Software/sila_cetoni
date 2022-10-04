@@ -18,6 +18,14 @@ Types of changes
 
 ## Unreleased
 
+## v1.7.0
+
+Synch with submodule v1.7.0 releases
+
+### Changed
+
+- Bump required sila2 version to v0.10.0
+
 ## v1.6.0
 
 Sync with submodule v1.6.0 releases
