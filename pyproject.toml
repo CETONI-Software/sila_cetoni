@@ -29,7 +29,7 @@ dependencies = [
     "pyserial",
     "requests",
     "shapely",
-    "sila2[codegen]==0.10.0",
+    "sila2[codegen]==0.10.1",
     "typer",
 ]
 
