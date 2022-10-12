@@ -17,6 +17,7 @@ This repository also contains [SiLA 2] drivers for a growing number of third-par
   - [`sila-cetoni` CLI options reference](#sila-cetoni-cli-options-reference)
 - [Troubleshooting](#troubleshooting)
   - ['undefined symbol: __atomic_exchange_8' on Raspberry Pi](#undefined-symbol-__atomic_exchange_8-on-raspberry-pi)
+  - ['version `GLIBC_2.29' not found' on Raspberry Pi](#version-glibc_229-not-found-on-raspberry-pi)
 - [Modifying the drivers](#modifying-the-drivers)
 - [Contributing](#contributing)
 
@@ -233,6 +234,41 @@ This workaround is already included in `sila_cetoni/application/__init__.py`:
 # ...
 env["LD_PRELOAD"] = "/usr/lib/arm-linux-gnueabihf/libatomic.so.1.2.0"  #< workaround for grpc/grpc#20400
 #...
+```
+
+### 'version `GLIBC_2.29' not found' on Raspberry Pi
+
+If you try to run newer gRPC versions on Raspberry Pi it might happen that you get ate following error:
+
+```console
+Traceback (most recent call last):
+  ...
+  File "/home/pi/sila_cetoni/sila_cetoni/application/sila_cetoni/application/__main__.py", line 19, in <module>
+    from .application import Application
+  File "/home/pi/sila_cetoni/sila_cetoni/application/sila_cetoni/application/application.py", line 36, in <module>
+    from sila2.server import SilaServer
+  File "/home/pi/.local/lib/python3.7/site-packages/sila2/server/__init__.py", line 2, in <module>
+    from sila2.server.metadata_dict import MetadataDict
+  File "/home/pi/.local/lib/python3.7/site-packages/sila2/server/metadata_dict.py", line 5, in <module>
+    from sila2.framework import DefinedExecutionErrorNode, FullyQualifiedMetadataIdentifier, Metadata
+  File "/home/pi/.local/lib/python3.7/site-packages/sila2/framework/__init__.py", line 1, in <module>
+    from sila2.framework.abc.sila_error import SilaError
+  File "/home/pi/.local/lib/python3.7/site-packages/sila2/framework/abc/sila_error.py", line 8, in <module>
+    import grpc
+  File "/home/pi/.local/lib/python3.7/site-packages/grpc/__init__.py", line 22, in <module>
+    from grpc import _compression
+  File "/home/pi/.local/lib/python3.7/site-packages/grpc/_compression.py", line 15, in <module>
+    from grpc._cython import cygrpc
+ImportError: /lib/arm-linux-gnueabihf/libm.so.6: version `GLIBC_2.29' not found (required by /home/pi/.local/lib/python3.7/site-packages/grpc/_cython/cygrpc.cpython-37m-arm-linux-gnueabihf.so)
+```
+
+The problem is that the binaries uploaded to PyPI require libc version 2.29.
+Luckily, the `grpcio` and `grpcio-tools` packages are also available from piwheels and those work with libc 2.28 (which is installed on Raspberry Pi OS 10).  
+So, simply uninstall the existing packages and reinstall them from piwheel:
+
+```console
+pip3 uninstall grpcio grpcio-tools
+pip3 install grpcio grpcio-tools -i https://www.piwheels.org/simple
 ```
 
 ## Modifying the drivers
